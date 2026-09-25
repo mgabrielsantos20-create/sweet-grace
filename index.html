@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Sweet Grace, doceria artesanal: brigadeiro, beijinho, bicho de pé e docinhos para festas, feitos à mão.">
+<title>Sweet Grace Doceria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Jost:wght@300;400;500&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --creme: #FBEFE1;
+    --creme-2: #F3E6D5;
+    --papel: #FFFBF5;
+    --ouro: #B0843A;
+    --ouro-escuro: #8A6528;
+    --cacau: #4B3526;
+    --cacau-suave: #7A6252;
+    --rosa: #E9B8B5;
+    --salvia: #B9C6AE;
+    --lilas: #CDB8D6;
+    --linha: #E4D3BC;
+    --display: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+    --caps: "Marcellus", "Cormorant Garamond", Georgia, serif;
+    --texto: "Jost", "Futura", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--creme);
+    color: var(--cacau);
+    font: 300 17px/1.65 var(--texto);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--ouro); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: 20px; }
+
+  /* Rótulos em caixa alta, como "DOCERIA ARTESANAL" no logo */
+  .rotulo {
+    font: 400 12.5px/1.2 var(--texto);
+    letter-spacing: .32em;
+    text-transform: uppercase;
+    color: var(--ouro-escuro);
+  }
+  h1, h2, h3 { font-family: var(--display); font-weight: 500; color: var(--cacau); text-wrap: balance; margin: 0; }
+  h2 { font-size: clamp(34px, 5vw, 52px); line-height: 1.05; }
+  h2 em { font-style: italic; color: var(--ouro); font-weight: 400; }
+  p { margin: 0; }
+
+  /* Divisor com coração, tirado do logo */
+  .divisor { display: flex; align-items: center; gap: 12px; color: var(--ouro); }
+  .divisor::before, .divisor::after { content: ""; height: 1px; width: 56px; background: currentColor; opacity: .7; }
+  .divisor svg { width: 12px; height: 12px; fill: currentColor; }
+
+  /* Topo */
+  .topo {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+    background: color-mix(in srgb, var(--creme) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--linha);
+  }
+  .topo .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+  .marca { font: 400 19px/1 var(--caps); letter-spacing: .22em; text-transform: uppercase; color: var(--ouro-escuro); text-decoration: none; white-space: nowrap; }
+  .nav { display: flex; gap: 28px; }
+  .nav a { text-decoration: none; font-size: 14px; letter-spacing: .08em; color: var(--cacau-suave); }
+  .nav a:hover { color: var(--ouro-escuro); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font: 500 14px/1 var(--texto); letter-spacing: .12em; text-transform: uppercase;
+    text-decoration: none; border: 0; cursor: pointer;
+    padding: 16px 26px; border-radius: 999px;
+    background: var(--ouro); color: var(--papel);
+    transition: background .2s, transform .2s;
+  }
+  .btn:hover { background: var(--ouro-escuro); transform: translateY(-1px); }
+  .btn svg { width: 18px; height: 18px; fill: currentColor; }
+  .btn.pequeno { padding: 11px 18px; font-size: 12px; }
+  .btn.contorno { background: transparent; color: var(--ouro-escuro); box-shadow: inset 0 0 0 1px var(--ouro); }
+  .btn.contorno:hover { background: var(--ouro); color: var(--papel); }
+
+  /* Hero */
+  .hero { padding-block: 56px 72px; position: relative; overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; align-items: center; gap: 48px; }
+  .hero-logo { position: relative; }
+  .hero-logo img { display: block; width: 100%; max-width: 520px; margin-inline: auto; height: auto; }
+  .hero-texto { display: grid; gap: 24px; justify-items: start; }
+  .hero h1 { font-size: clamp(44px, 6.4vw, 76px); line-height: .98; letter-spacing: -.01em; }
+  .hero h1 em { font-style: italic; font-weight: 400; color: var(--ouro); }
+  .hero .lead { font-size: 19px; color: var(--cacau-suave); max-width: 30ch; }
+  .hero-acoes { display: flex; flex-wrap: wrap; gap: 12px; }
+  .selos { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--cacau-suave); padding-top: 4px; }
+  .selos span { display: inline-flex; align-items: center; gap: 8px; }
+  .selos i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* Seções */
+  section { scroll-margin-top: 70px; }
+  .secao { padding-block: 88px; }
+  .cabeca { display: grid; gap: 14px; justify-items: center; text-align: center; margin-bottom: 52px; }
+  .cabeca p.sub { color: var(--cacau-suave); max-width: 52ch; }
+
+  /* Cardápio */
+  .cardapio { background: var(--papel); border-block: 1px solid var(--linha); }
+  .doces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .doce {
+    display: grid; grid-template-rows: auto 1fr; background: var(--creme);
+    border-radius: 20px 20px 4px 4px; overflow: hidden;
+  }
+  .doce-foto { aspect-ratio: 1 / 1; max-width: 100%; position: relative; overflow: hidden; }
+  .doce-foto img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 62%; }
+  .doce-foto .tag { z-index: 1;
+    position: absolute; left: 14px; top: 14px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    background: var(--papel); color: var(--cacau-suave); padding: 5px 10px; border-radius: 999px;
+  }
+  .doce-corpo { padding: 22px 22px 24px; display: grid; gap: 8px; align-content: start; }
+  .doce h3 { font-size: 27px; line-height: 1.1; }
+  .doce p { font-size: 15px; color: var(--cacau-suave); }
+  .preco { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 10px; padding-top: 14px; border-top: 1px dashed var(--linha); }
+  .preco strong { font: 500 22px/1 var(--display); color: var(--ouro-escuro); font-variant-numeric: tabular-nums; }
+  .preco strong small { font: 300 13px/1 var(--texto); letter-spacing: .06em; color: var(--cacau-suave); margin-left: 4px; }
+  .preco strong, .preco span { white-space: nowrap; }
+  .preco { flex-wrap: wrap; }
+  .preco span { font-size: 13px; letter-spacing: .08em; color: var(--cacau-suave); }
+
+  /* Docinho desenhado: bolinha na forminha plissada, até chegarem as fotos */
+  .docinho { width: 42%; aspect-ratio: 1; position: relative; }
+  .docinho .forminha {
+    position: absolute; inset: 38% 0 0 0; border-radius: 0 0 46% 46% / 0 0 60% 60%;
+    background: repeating-linear-gradient(90deg, var(--f1) 0 7px, var(--f2) 7px 14px);
+    box-shadow: 0 14px 22px -12px rgba(75,53,38,.35);
+  }
+  .docinho .bola {
+    position: absolute; inset: 4% 9% 22% 9%; border-radius: 50%;
+    background: var(--bola);
+    box-shadow: inset -10px -12px 18px rgba(0,0,0,.18), inset 8px 8px 14px rgba(255,255,255,.25);
+  }
+  .docinho .bola::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--cob, none); background-size: 11px 11px; opacity: .95; }
+  .docinho .topo-doce { position: absolute; left: 50%; top: -2%; transform: translateX(-50%); }
+
+  .d-brigadeiro { --bola: radial-gradient(circle at 35% 30%, #6b4128, #3b2116 70%); --cob: radial-gradient(ellipse 2px 3.5px at 50% 50%, #2a150c 90%, transparent 100%); --f1: #d9b36c; --f2: #c79d52; }
+  .d-coco { --bola: radial-gradient(circle at 35% 30%, #fffdf8, #efe4d0 75%); --cob: radial-gradient(ellipse 1.6px 3px at 50% 50%, #ffffff 90%, transparent 100%); --f1: #f5d4d2; --f2: #eab9b6; }
+  .d-morango { --bola: radial-gradient(circle at 35% 30%, #f6b7bf, #df7f8f 75%); --cob: radial-gradient(circle 1.7px at 50% 50%, #fff4f0 90%, transparent 100%); --f1: #cfdac6; --f2: #b9c6ae; }
+  .d-ninho { --bola: radial-gradient(circle at 35% 30%, #fffaf0, #eadcc2 75%); --cob: radial-gradient(circle 2.4px at 50% 50%, #f7efe2 80%, transparent 100%); --f1: #ddcfe4; --f2: #cdb8d6; }
+  .d-cajuzinho { --bola: radial-gradient(circle at 35% 30%, #d99a62, #a8683a 75%); --cob: radial-gradient(circle 1.4px at 50% 50%, #f4e3c6 90%, transparent 100%); --f1: #d9b36c; --f2: #c79d52; }
+  .d-casadinho { --bola: linear-gradient(90deg, #4a2a1a 0 50%, #fbf5ea 50% 100%); --cob: none; --f1: #f5d4d2; --f2: #eab9b6; }
+  .d-cajuzinho .bola { inset: 0 22% 22% 22%; border-radius: 50% 50% 46% 46% / 64% 64% 36% 36%; }
+
+  .fundo-rosa { background: linear-gradient(160deg, #F6DCDA, #F1CFCC); }
+  .fundo-salvia { background: linear-gradient(160deg, #E1E8DA, #D2DCC8); }
+  .fundo-lilas { background: linear-gradient(160deg, #EBE1F0, #DDCFE4); }
+  .fundo-ouro { background: linear-gradient(160deg, #F2E3C6, #E8D3AC); }
+
+  .aviso-preco { text-align: center; margin-top: 32px; font-size: 14px; color: var(--cacau-suave); }
+
+  /* Monte seu pedido */
+  .pedido { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: start; }
+  .pedido-texto { display: grid; gap: 20px; position: sticky; top: 100px; }
+  .pedido-texto p { color: var(--cacau-suave); max-width: 42ch; }
+  .passos { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 18px; counter-reset: passo; }
+  .passos li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; counter-increment: passo; }
+  .passos li::before {
+    content: counter(passo); width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; font: 500 20px/1 var(--display); color: var(--ouro-escuro);
+    box-shadow: inset 0 0 0 1px var(--ouro);
+  }
+  .passos strong { display: block; font-weight: 500; color: var(--cacau); }
+  .passos span { font-size: 15px; color: var(--cacau-suave); }
+
+  .caixa {
+    background: var(--papel); border: 1px solid var(--linha); border-radius: 24px;
+    padding: 28px; display: grid; gap: 20px;
+    box-shadow: 0 30px 60px -40px rgba(75,53,38,.35);
+  }
+  .caixa-topo { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .caixa-topo h3 { font-size: 30px; }
+  .linhas { display: grid; gap: 4px; }
+  .linha { display: grid; grid-template-columns: 14px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--creme-2); }
+  .linha:last-child { border-bottom: 0; }
+  .linha .ponto { width: 12px; height: 12px; border-radius: 50%; }
+  .linha label { font-size: 16px; font-weight: 400; }
+  .qtd { display: inline-flex; align-items: center; gap: 4px; }
+  .qtd button {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--linha); background: var(--creme);
+    color: var(--ouro-escuro); font: 400 20px/1 var(--texto); cursor: pointer;
+  }
+  .qtd button:hover { border-color: var(--ouro); }
+  .qtd output { min-width: 44px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .campo { display: grid; gap: 6px; }
+  .campo label { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--cacau-suave); }
+  .campo input, .campo textarea {
+    font: 400 16px/1.4 var(--texto); color: var(--cacau); background: var(--creme);
+    border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; width: 100%;
+  }
+  .campo textarea { resize: vertical; min-height: 70px; }
+  .resumo { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 6px; }
+  .resumo .total { font: 500 30px/1 var(--display); font-variant-numeric: tabular-nums; }
+  .resumo .total .valor { font: 400 15px/1.4 var(--texto); color: var(--ouro-escuro); margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .resumo .total small { font: 300 14px/1 var(--texto); color: var(--cacau-suave); margin-left: 6px; }
+  .nota { font-size: 13px; color: var(--cacau-suave); }
+  .nota.alerta { color: #A1534F; }
+
+  /* Sobre */
+  .sobre { background: var(--creme-2); }
+  .sobre .wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: center; }
+  .foto-sobre {
+    aspect-ratio: 4 / 5; max-width: 100%; border-radius: 200px 200px 16px 16px;
+    background:
+      radial-gradient(circle at 30% 25%, rgba(233,184,181,.7), transparent 45%),
+      radial-gradient(circle at 75% 70%, rgba(185,198,174,.75), transparent 45%),
+      radial-gradient(circle at 70% 25%, rgba(205,184,214,.6), transparent 40%),
+      var(--papel);
+    display: block; width: 100%; height: auto; object-fit: cover;
+    border: 1px solid var(--linha);
+  }
+  .sobre-texto { display: grid; gap: 22px; }
+  .sobre-texto p { color: var(--cacau-suave); max-width: 58ch; }
+  .sobre-texto blockquote {
+    margin: 6px 0 0; font: italic 400 clamp(24px, 3vw, 30px)/1.3 var(--display); color: var(--ouro-escuro);
+    padding-left: 22px; border-left: 1px solid var(--ouro);
+  }
+  .fatos { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 12px 40px; padding-top: 8px; }
+  .fatos dt { font: 500 34px/1 var(--display); color: var(--cacau); }
+  .fatos dd { margin: 6px 0 0; font-size: 13px; letter-spacing: .06em; color: var(--cacau-suave); }
+
+  /* Dúvidas */
+  .duvidas { display: grid; gap: 0; max-width: 760px; margin-inline: auto; }
+  .duvidas details { border-bottom: 1px solid var(--linha); padding-block: 4px; }
+  .duvidas summary {
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 20px; align-items: center;
+    padding-block: 18px; font: 500 22px/1.25 var(--display);
+  }
+  .duvidas summary::-webkit-details-marker { display: none; }
+  .duvidas summary::after { content: "+"; font: 300 26px/1 var(--texto); color: var(--ouro); transition: transform .25s; }
+  .duvidas details[open] summary::after { transform: rotate(45deg); }
+  .duvidas details p { padding-bottom: 20px; color: var(--cacau-suave); max-width: 62ch; }
+
+  /* Contato */
+  .contato { background: var(--cacau); color: var(--creme); }
+  .contato .wrap { display: grid; gap: 28px; justify-items: center; text-align: center; }
+  .contato h2 { color: var(--creme); }
+  .contato h2 em { color: #D9B36C; }
+  .contato .rotulo { color: #D9B36C; }
+  .contato p { color: #D8C8B6; max-width: 46ch; }
+  .contato .btn { background: #D9B36C; color: var(--cacau); }
+  .contato .btn:hover { background: var(--creme); }
+  .canais { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 36px; font-size: 15px; color: #D8C8B6; }
+  .canais b { font-weight: 500; color: var(--creme); }
+  .contato .divisor { color: #D9B36C; }
+
+  footer { background: var(--cacau); color: #A8927F; border-top: 1px solid rgba(250,241,230,.12); }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding-block: 22px; font-size: 13px; }
+
+  /* Botão flutuante do WhatsApp */
+  .zap-flutuante {
+    position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 20;
+    width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+    background: #25D366; color: #fff; box-shadow: 0 10px 24px -8px rgba(0,0,0,.35);
+    transition: transform .2s;
+  }
+  .zap-flutuante:hover { transform: scale(1.06); }
+  .zap-flutuante svg { width: 30px; height: 30px; fill: currentColor; }
+
+  /* Entrada suave do hero */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-logo img { animation: surge 1.1s cubic-bezier(.2,.7,.2,1) both; }
+    .hero-texto > * { animation: sobe .8s cubic-bezier(.2,.7,.2,1) both; }
+    .hero-texto > *:nth-child(2) { animation-delay: .08s; }
+    .hero-texto > *:nth-child(3) { animation-delay: .16s; }
+    .hero-texto > *:nth-child(4) { animation-delay: .24s; }
+    .hero-texto > *:nth-child(5) { animation-delay: .32s; }
+    .doce-foto img { transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+    .doce:hover .doce-foto img { transform: scale(1.04); }
+  }
+  @keyframes surge { from { opacity: .4; transform: scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes sobe { from { opacity: .3; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 920px) {
+    .nav { display: none; }
+    .hero .wrap, .pedido, .sobre .wrap { grid-template-columns: 1fr; }
+    .hero { padding-block: 24px 56px; }
+    .hero-logo img { max-width: 380px; }
+    .hero-texto { justify-items: center; text-align: center; }
+    .hero .lead { margin-inline: auto; }
+    .hero-acoes, .selos { justify-content: center; }
+    .doces { grid-template-columns: repeat(2, 1fr); }
+    .pedido-texto { position: static; }
+    .foto-sobre { max-width: 360px; margin-inline: auto; width: 100%; }
+  }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .secao { padding-block: 64px; }
+    .doces { grid-template-columns: 1fr; }
+    .marca { font-size: 15px; }
+    .topo .btn.pequeno { padding: 10px 14px; }
+    .caixa { padding: 20px; }
+    .fatos { grid-template-columns: repeat(3, 1fr); gap: 12px 16px; }
+    .fatos dt { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="wrap">
+    <a class="marca" href="#inicio">Sweet Grace</a>
+    <nav class="nav" aria-label="Seções">
+      <a href="#doces">Doces</a>
+      <a href="#pedido">Como pedir</a>
+      <a href="#sobre">Sobre</a>
+      <a href="#duvidas">Dúvidas</a>
+    </nav>
+    <a class="btn pequeno" href="#contato">Encomendar</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="inicio">
+    <div class="wrap">
+      <div class="hero-logo">
+        <img src="assets/logo.jpeg" alt="Sweet Grace, doceria artesanal" width="1254" height="1254">
+      </div>
+      <div class="hero-texto">
+        <span class="rotulo">Doceria artesanal</span>
+        <h1>Docinhos feitos à mão, <em>um a um</em>, para a sua festa.</h1>
+        <p class="lead">Brigadeiro, beijinho, bicho de pé e outros clássicos enrolados na hora, com ingredientes de verdade e aquele capricho de doce de vó.</p>
+        <div class="hero-acoes">
+          <a class="btn" href="#pedido">Montar meu pedido</a>
+          <a class="btn contorno" href="#doces">Ver os doces</a>
+        </div>
+        <div class="selos">
+          <span><i style="background:var(--rosa)"></i>Chocolate nobre</span>
+          <span><i style="background:var(--salvia)"></i>Sem conservantes</span>
+          <span><i style="background:var(--lilas)"></i>Festas e presentes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao cardapio" id="doces">
+    <div class="wrap">
+      <div class="cabeca">
+        <span class="rotulo">Cardápio</span>
+        <h2>Os nossos <em>docinhos</em></h2>
+        <div class="divisor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.3 5.3 3.2 1.6-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
+        <p class="sub">Vendidos por cento, em forminhas que combinam com a sua mesa. Dá para misturar sabores no mesmo pedido.</p>
+      </div>
+
+      <div class="doces">
+        <article class="doce">
+          <div class="doce-foto fundo-ouro"><span class="tag">Mais pedido</span><img src="assets/brigadeiro.jpg" alt="Brigadeiro tradicional com granulado em forminha dourada" width="469" height="533" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Brigadeiro tradicional</h3>
+            <p>Chocolate meio amargo, ponto cremoso e granulado belga.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+        <article class="doce">
+          <div class="doce-foto fundo-rosa"><img src="assets/beijinho.jpg" alt="Beijinho de coco com cravo em forminha rosa" width="469" height="533" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Beijinho de coco</h3>
+            <p>Coco fresco ralado, leite condensado e um cravo por cima.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+        <article class="doce">
+          <div class="doce-foto fundo-salvia"><img src="assets/bicho-de-pe.jpg" alt="Bicho de pé de morango com açúcar cristal em forminha verde" width="469" height="533" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Bicho de pé</h3>
+            <p>O docinho de morango rosado, passado no açúcar cristal.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+        <article class="doce">
+          <div class="doce-foto fundo-lilas"><img src="assets/ninho.jpg" alt="Brigadeiro de Ninho em forminha lilás" width="469" height="533" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Brigadeiro de Ninho</h3>
+            <p>Leite em pó, branquinho e macio, que agrada as crianças.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+        <article class="doce">
+          <div class="doce-foto fundo-ouro"><img src="assets/cajuzinho.jpg" alt="Cajuzinho com amendoim em forminha dourada" width="469" height="533" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Cajuzinho</h3>
+            <p>Amendoim torrado com chocolate, no formato de caju.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+        <article class="doce">
+          <div class="doce-foto fundo-rosa"><img src="assets/casadinho.jpg" alt="Casadinho metade brigadeiro, metade beijinho, em forminha rosa" width="700" height="525" style="object-position: center" loading="lazy"></div>
+          <div class="doce-corpo">
+            <h3>Casadinho</h3>
+            <p>Metade brigadeiro, metade beijinho. Para quem não decide.</p>
+            <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
+          </div>
+        </article>
+      </div>
+      <p class="aviso-preco">Todos os sabores têm o mesmo preço: R$ 2,00 a unidade ou R$ 150,00 o cento. Pedido mínimo de 10 docinhos.</p>
+    </div>
+  </section>
+
+  <section class="secao" id="pedido">
+    <div class="wrap pedido">
+      <div class="pedido-texto">
+        <span class="rotulo">Como pedir</span>
+        <h2>Monte a sua <em>encomenda</em></h2>
+        <p>Escolha os sabores e as quantidades aqui ao lado. A gente recebe tudo pelo WhatsApp e confirma com você.</p>
+        <ol class="passos">
+          <li><div><strong>Escolha os sabores</strong><span>De 10 em 10 unidades, misturando como quiser.</span></div></li>
+          <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido e a data da festa.</span></div></li>
+          <li><div><strong>Confirme com o sinal</strong><span>Reservamos a sua data com 50% de entrada via Pix.</span></div></li>
+          <li><div><strong>Retire o seu pedido</strong><span>Fresquinho no dia combinado. Se preferir entrega, ela fica por conta de quem compra.</span></div></li>
+        </ol>
+      </div>
+
+      <form class="caixa" id="form-pedido" novalidate>
+        <div class="caixa-topo">
+          <h3>Seu pedido</h3>
+          <span class="rotulo">unidades</span>
+        </div>
+        <div class="linhas" id="linhas"></div>
+        <div class="campo">
+          <label for="data-festa">Data da festa</label>
+          <input type="date" id="data-festa" name="data">
+        </div>
+        <div class="campo">
+          <label for="obs">Observações</label>
+          <textarea id="obs" name="obs" placeholder="Cor das forminhas, tema da festa, retirada ou entrega..."></textarea>
+        </div>
+        <div class="resumo">
+          <div class="total"><span id="total">0</span><small>docinhos</small><div class="valor" id="valor">R$ 0,00</div></div>
+          <button class="btn" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.3-.6-2.2-1.2-3-2.6-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+            Enviar pelo WhatsApp
+          </button>
+        </div>
+        <p class="nota" id="nota">Escolha pelo menos um sabor para enviar.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="secao sobre" id="sobre">
+    <div class="wrap">
+      <img class="foto-sobre" src="assets/cozinha.jpg" alt="Mãos da confeiteira enrolando brigadeiros na cozinha, com bandeja de docinhos em forminhas coloridas" width="900" height="1125" loading="lazy">
+      <div class="sobre-texto">
+        <span class="rotulo">Sobre a Sweet Grace</span>
+        <h2>Feito com <em>tempo</em> e carinho</h2>
+        <p>A Sweet Grace nasceu na cozinha de casa, entre panelas de brigadeiro mexidas até o ponto certo e festas de família que sempre pediam mais uma bandeja. Cada docinho é enrolado à mão, com chocolate nobre, leite condensado de verdade e nada de conservantes.</p>
+        <p>Fazemos poucos pedidos por semana, justamente para que cada um saia caprichado, com a forminha certa e o acabamento que a sua mesa merece.</p>
+        <blockquote>Doce bom é doce feito sem pressa.</blockquote>
+        <dl class="fatos">
+          <div><dt>100%</dt><dd>feito à mão</dd></div>
+          <div><dt>6</dt><dd>sabores clássicos</dd></div>
+          <div><dt>3 dias</dt><dd>de antecedência</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao" id="duvidas">
+    <div class="wrap">
+      <div class="cabeca">
+        <span class="rotulo">Dúvidas</span>
+        <h2>Perguntas <em>frequentes</em></h2>
+      </div>
+      <div class="duvidas">
+        <details open>
+          <summary>Com quanto tempo de antecedência preciso pedir?</summary>
+          <p>O ideal é pedir com pelo menos 3 dias de antecedência. Para casamentos e festas grandes, recomendamos reservar a data com 2 a 3 semanas.</p>
+        </details>
+        <details>
+          <summary>Posso misturar sabores no mesmo cento?</summary>
+          <p>Pode, sim. O pedido mínimo é de 10 docinhos e você combina os sabores como quiser, de 10 em 10.</p>
+        </details>
+        <details>
+          <summary>Como funciona a entrega?</summary>
+          <p>A entrega fica por conta do comprador: você pode retirar com horário marcado ou mandar um motorista ou motoboy de sua confiança buscar a encomenda.</p>
+        </details>
+        <details>
+          <summary>Quanto tempo os docinhos duram?</summary>
+          <p>Até 3 dias em temperatura ambiente, longe do sol, ou até 5 dias na geladeira. Tire da geladeira meia hora antes de servir.</p>
+        </details>
+        <details>
+          <summary>Quais formas de pagamento vocês aceitam?</summary>
+          <p>Pix, transferência e cartão. Pedimos 50% de sinal para reservar a data e o restante na retirada ou entrega.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao contato" id="contato">
+    <div class="wrap">
+      <span class="rotulo">Encomendas</span>
+      <h2>Vamos adoçar a sua <em>festa</em>?</h2>
+      <div class="divisor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.3 5.3 3.2 1.6-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
+      <p>Chame no WhatsApp para tirar dúvidas, pedir orçamento ou reservar a sua data.</p>
+      <a class="btn" id="zap-contato" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.3-.6-2.2-1.2-3-2.6-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+        Falar no WhatsApp
+      </a>
+      <div class="canais">
+        <span>WhatsApp <b>(91) 98561-4644</b></span>
+        <span>Instagram <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener"><b>@doceriasweetgrace</b></a></span>
+        <span>Atendimento <b>seg. a sáb., 9h às 18h</b></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Sweet Grace · Doceria artesanal</span>
+    <span>Feito à mão, com carinho.</span>
+  </div>
+</footer>
+
+<a class="zap-flutuante" id="zap-flutuante" href="#" target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.3-.6-2.2-1.2-3-2.6-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+</a>
+
+<script>
+  // Troque pelo número real: 55 + DDD + número, só dígitos.
+  const WHATSAPP = "5591985614644";
+  const zapLink = (texto) => "https://wa.me/" + WHATSAPP + (texto ? "?text=" + encodeURIComponent(texto) : "");
+
+  const saudacao = "Olá, Sweet Grace! Gostaria de fazer uma encomenda de docinhos.";
+  document.getElementById("zap-contato").href = zapLink(saudacao);
+  document.getElementById("zap-flutuante").href = zapLink(saudacao);
+
+  const SABORES = [
+    { id: "brigadeiro", nome: "Brigadeiro tradicional", cor: "#5a3420" },
+    { id: "beijinho", nome: "Beijinho de coco", cor: "#efe4d0" },
+    { id: "bicho-de-pe", nome: "Bicho de pé", cor: "#e8909e" },
+    { id: "ninho", nome: "Brigadeiro de Ninho", cor: "#eadcc2" },
+    { id: "cajuzinho", nome: "Cajuzinho", cor: "#b8763f" },
+    { id: "casadinho", nome: "Casadinho", cor: "linear-gradient(90deg,#4a2a1a 50%,#efe4d0 50%)" }
+  ];
+  const PASSO = 10;
+  const qtd = Object.fromEntries(SABORES.map(s => [s.id, 0]));
+  const linhas = document.getElementById("linhas");
+
+  SABORES.forEach(s => {
+    const el = document.createElement("div");
+    el.className = "linha";
+    el.innerHTML =
+      '<span class="ponto" style="background:' + s.cor + '"></span>' +
+      '<label id="lbl-' + s.id + '">' + s.nome + '</label>' +
+      '<div class="qtd" role="group" aria-labelledby="lbl-' + s.id + '">' +
+        '<button type="button" id="menos-' + s.id + '" aria-label="Menos ' + s.nome + '">−</button>' +
+        '<output id="qtd-' + s.id + '" aria-live="polite">0</output>' +
+        '<button type="button" id="mais-' + s.id + '" aria-label="Mais ' + s.nome + '">+</button>' +
+      '</div>';
+    linhas.appendChild(el);
+    el.querySelector("#menos-" + s.id).addEventListener("click", () => mudar(s.id, -1));
+    el.querySelector("#mais-" + s.id).addEventListener("click", () => mudar(s.id, 1));
+  });
+
+  function mudar(id, dir) {
+    let v = qtd[id];
+    v = Math.max(0, v + dir * PASSO);
+    qtd[id] = v;
+    document.getElementById("qtd-" + id).textContent = v;
+    atualizar();
+  }
+
+  // Cento a R$ 150,00; o que passar do cento sai a R$ 2,00 a unidade.
+  const valor = (n) => Math.floor(n / 100) * 150 + (n % 100) * 2;
+  const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const nota = document.getElementById("nota");
+  function atualizar() {
+    const total = Object.values(qtd).reduce((a, b) => a + b, 0);
+    document.getElementById("total").textContent = total.toLocaleString("pt-BR");
+    document.getElementById("valor").textContent = "Estimativa: " + brl(valor(total));
+    nota.classList.remove("alerta");
+    nota.textContent = total ? "Você vai revisar a mensagem no WhatsApp antes de enviar." : "Escolha pelo menos um sabor para enviar.";
+    return total;
+  }
+
+  document.getElementById("form-pedido").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const total = atualizar();
+    if (!total) {
+      nota.textContent = "Adicione pelo menos um sabor antes de enviar.";
+      nota.classList.add("alerta");
+      return;
+    }
+    const itens = SABORES.filter(s => qtd[s.id]).map(s => "• " + qtd[s.id] + " " + s.nome).join("\n");
+    const data = document.getElementById("data-festa").value;
+    const obs = document.getElementById("obs").value.trim();
+    let msg = "Olá, Sweet Grace! Gostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
+    if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
+    if (obs) msg += "\nObservações: " + obs;
+    const a = document.createElement("a");
+    a.href = zapLink(msg); a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+</script>
+</body>
+</html>
