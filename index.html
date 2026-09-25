@@ -292,7 +292,16 @@
   @media (max-width: 560px) {
     body { font-size: 16px; }
     .secao { padding-block: 64px; }
-    .doces { grid-template-columns: 1fr; }
+    .doces { grid-template-columns: 1fr; gap: 12px; }
+    .doce { grid-template-rows: none; grid-template-columns: 116px 1fr; border-radius: 16px; }
+    .doce-foto { aspect-ratio: auto; height: 100%; min-height: 116px; }
+    .doce-foto .tag { left: 6px; top: 6px; font-size: 9px; padding: 3px 7px; letter-spacing: .1em; }
+    .doce-corpo { padding: 14px 14px 14px 16px; gap: 4px; }
+    .doce h3 { font-size: 21px; }
+    .doce p { font-size: 13.5px; line-height: 1.45; }
+    .preco { margin-top: 6px; padding-top: 8px; gap: 2px 10px; }
+    .preco strong { font-size: 18px; }
+    .preco span { font-size: 12px; }
     .marca { font-size: 15px; }
     .topo .btn.pequeno { padding: 10px 14px; }
     .caixa { padding: 20px; }
