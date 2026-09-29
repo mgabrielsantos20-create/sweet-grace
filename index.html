@@ -3,8 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Sweet Grace, doceria artesanal: brigadeiro, beijinho, bicho de pé e docinhos para festas, feitos à mão.">
-<title>Sweet Grace Doceria</title>
+<meta name="description" content="Sweet Grace, doceria artesanal em Belém: brigadeiro, beijinho, bicho de pé e docinhos para festas, feitos à mão. R$ 150,00 o cento, com entrega em Belém e Ananindeua.">
+<title>Sweet Grace | Docinhos artesanais para festas em Belém</title>
+<link rel="canonical" href="https://mgabrielsantos20-create.github.io/sweet-grace/">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#FBEFE1">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Sweet Grace">
+<meta property="og:title" content="Sweet Grace | Docinhos artesanais para festas em Belém">
+<meta property="og:description" content="Brigadeiro, beijinho, bicho de pé e mais, feitos à mão. R$ 150,00 o cento. Retirada na Augusto Montenegro ou entrega em Belém e Ananindeua.">
+<meta property="og:url" content="https://mgabrielsantos20-create.github.io/sweet-grace/">
+<meta property="og:image" content="https://mgabrielsantos20-create.github.io/sweet-grace/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo da Sweet Grace ao lado de brigadeiro, beijinho e bicho de pé">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Bakery",
+  "name": "Sweet Grace",
+  "description": "Doceria artesanal em Belém: brigadeiro, beijinho, bicho de pé e docinhos para festas, feitos à mão.",
+  "url": "https://mgabrielsantos20-create.github.io/sweet-grace/",
+  "image": "https://mgabrielsantos20-create.github.io/sweet-grace/assets/og-image.jpg",
+  "logo": "https://mgabrielsantos20-create.github.io/sweet-grace/assets/logo.jpeg",
+  "telephone": "+55 91 98561-4644",
+  "priceRange": "R$ 2,00 a unidade · R$ 150,00 o cento",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Anísio Teixeira, 2 - Augusto Montenegro",
+    "addressLocality": "Belém",
+    "addressRegion": "PA",
+    "addressCountry": "BR"
+  },
+  "areaServed": [{"@type": "City", "name": "Belém"}, {"@type": "City", "name": "Ananindeua"}],
+  "openingHoursSpecification": [{
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "opens": "09:00",
+    "closes": "18:00"
+  }],
+  "sameAs": ["https://instagram.com/doceriasweetgrace"]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Marcellus&family=Jost:wght@300;400;500&display=swap">
@@ -250,6 +293,38 @@
   .canais b { font-weight: 500; color: var(--creme); }
   .contato .divisor { color: #D9B36C; }
 
+  footer a { color: #D8C8B6; }
+  .economia {
+    margin: 14px auto 0; max-width: 560px; text-align: center; font-size: 15px; color: var(--cacau);
+    background: var(--creme); border: 1px dashed var(--ouro); border-radius: 999px; padding: 10px 20px;
+  }
+  .economia strong { color: var(--ouro-escuro); font-weight: 500; }
+  .kits { margin-top: 72px; }
+  .cabeca-kits { margin-bottom: 32px; }
+  .kits-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+  .kit {
+    position: relative; display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+    background: var(--creme); border: 1px solid var(--linha); border-radius: 20px; padding: 28px 24px 24px;
+  }
+  .kit.destaque { border-color: var(--ouro); box-shadow: 0 24px 50px -36px rgba(75,53,38,.45); }
+  .kit h3 { font-size: 28px; }
+  .kit-qtd { font-weight: 500; color: var(--cacau); }
+  .kit-uso { font-size: 15px; color: var(--cacau-suave); }
+  .kit-preco { font: 500 30px/1.1 var(--display); color: var(--ouro-escuro); margin: 6px 0 10px; font-variant-numeric: tabular-nums; }
+  .kit-btn { margin-top: auto; }
+  .kit-selo {
+    position: absolute; top: -12px; left: 24px; background: var(--ouro); color: var(--papel);
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px;
+  }
+  .dica { font-size: 13px; color: var(--cacau-suave); }
+  .dica-cento { color: var(--ouro-escuro); }
+  .depoimentos { background: var(--papel); border-top: 1px solid var(--linha); }
+  .depo-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .depo { margin: 0; background: var(--creme); border-radius: 20px; padding: 26px; display: grid; gap: 14px; }
+  .depo blockquote { margin: 0; font: italic 400 21px/1.4 var(--display); color: var(--cacau); }
+  .depo figcaption { font-size: 14px; color: var(--cacau-suave); }
+  .depo figcaption b { font-weight: 500; color: var(--cacau); }
+  .depo-mais { text-align: center; margin-top: 28px; }
   footer { background: var(--cacau); color: #A8927F; border-top: 1px solid rgba(250,241,230,.12); }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding-block: 22px; font-size: 13px; }
 
@@ -288,6 +363,7 @@
     .doces { grid-template-columns: repeat(2, 1fr); }
     .pedido-texto { position: static; }
     .foto-sobre { max-width: 360px; margin-inline: auto; width: 100%; }
+    .kits-lista { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; }
   }
   @media (max-width: 560px) {
     body { font-size: 16px; }
@@ -321,7 +397,7 @@
       <a href="#sobre">Sobre</a>
       <a href="#duvidas">Dúvidas</a>
     </nav>
-    <a class="btn pequeno" href="#contato">Encomendar</a>
+    <a class="btn pequeno" href="#pedido">Encomendar</a>
   </div>
 </header>
 
@@ -332,9 +408,9 @@
         <img src="assets/logo.jpeg" alt="Sweet Grace, doceria artesanal" width="1254" height="1254">
       </div>
       <div class="hero-texto">
-        <span class="rotulo">Doceria artesanal</span>
+        <span class="rotulo">Doceria artesanal · Belém</span>
         <h1>Docinhos feitos à mão, <em>um a um</em>, para a sua festa.</h1>
-        <p class="lead">Brigadeiro, beijinho, bicho de pé e outros clássicos enrolados na hora, com ingredientes de verdade e aquele capricho de doce de vó.</p>
+        <p class="lead">Brigadeiro, beijinho, bicho de pé e outros clássicos enrolados na hora, com ingredientes de verdade e aquele capricho de doce de vó. Retirada na Augusto Montenegro ou entrega em Belém e Ananindeua.</p>
         <div class="hero-acoes">
           <a class="btn" href="#pedido">Montar meu pedido</a>
           <a class="btn contorno" href="#doces">Ver os doces</a>
@@ -342,7 +418,7 @@
         <div class="selos">
           <span><i style="background:var(--rosa)"></i>Chocolate nobre</span>
           <span><i style="background:var(--salvia)"></i>Sem conservantes</span>
-          <span><i style="background:var(--lilas)"></i>Festas e presentes</span>
+          <span><i style="background:var(--lilas)"></i>Entrega em Belém e Ananindeua</span>
         </div>
       </div>
     </div>
@@ -354,7 +430,7 @@
         <span class="rotulo">Cardápio</span>
         <h2>Os nossos <em>docinhos</em></h2>
         <div class="divisor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.3 5.3 3.2 1.6-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
-        <p class="sub">Vendidos por cento, em forminhas que combinam com a sua mesa. Dá para misturar sabores no mesmo pedido.</p>
+        <p class="sub">A partir de 10 docinhos, em forminhas que combinam com a sua mesa. Dá para misturar sabores no mesmo pedido.</p>
       </div>
 
       <div class="doces">
@@ -407,7 +483,40 @@
           </div>
         </article>
       </div>
-      <p class="aviso-preco">Todos os sabores têm o mesmo preço: R$ 2,00 a unidade ou R$ 150,00 o cento. Pedido mínimo de 10 docinhos.</p>
+      <p class="aviso-preco">Todos os sabores têm o mesmo preço. Pedido mínimo de 10 docinhos.</p>
+      <div class="economia"><strong>No cento, cada docinho sai por R$ 1,50.</strong> Você economiza R$ 50,00 em relação ao preço da unidade.</div>
+
+      <div class="kits" id="kits">
+        <div class="cabeca cabeca-kits">
+          <span class="rotulo">Kits prontos</span>
+          <h2>Não sabe quantos <em>pedir</em>?</h2>
+          <p class="sub">Escolha um kit pelo tamanho da festa e diga os sabores pelo WhatsApp.</p>
+        </div>
+        <div class="kits-lista">
+          <article class="kit">
+            <h3>Mesa pequena</h3>
+            <p class="kit-qtd">50 docinhos · até 3 sabores</p>
+            <p class="kit-uso">Para aniversários em casa e lembrancinhas.</p>
+            <p class="kit-preco">R$ 100,00</p>
+            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 3 sabores, R$ 100,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+          </article>
+          <article class="kit destaque">
+            <span class="kit-selo">Melhor preço por docinho</span>
+            <h3>Aniversário</h3>
+            <p class="kit-qtd">100 docinhos · até 4 sabores</p>
+            <p class="kit-uso">Para festas de 30 a 50 convidados.</p>
+            <p class="kit-preco">R$ 150,00</p>
+            <a class="btn kit-btn" data-kit="Aniversário (100 docinhos, até 4 sabores, R$ 150,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+          </article>
+          <article class="kit">
+            <h3>Festa grande</h3>
+            <p class="kit-qtd">200 docinhos · até 6 sabores</p>
+            <p class="kit-uso">Para chás, batizados e festas maiores.</p>
+            <p class="kit-preco">R$ 300,00</p>
+            <a class="btn contorno kit-btn" data-kit="Festa grande (200 docinhos, até 6 sabores, R$ 300,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+          </article>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -421,7 +530,7 @@
           <li><div><strong>Escolha os sabores</strong><span>De 10 em 10 unidades, misturando como quiser.</span></div></li>
           <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido e a data da festa.</span></div></li>
           <li><div><strong>Confirme com o sinal</strong><span>Reservamos a sua data com 50% de entrada via Pix.</span></div></li>
-          <li><div><strong>Retire o seu pedido</strong><span>Fresquinho no dia combinado. Se preferir entrega, ela fica por conta de quem compra.</span></div></li>
+          <li><div><strong>Retire ou receba</strong><span>Retirada na Anísio Teixeira, 2 (Augusto Montenegro) ou entrega em Belém e Ananindeua, com frete a consultar.</span></div></li>
         </ol>
       </div>
 
@@ -433,11 +542,12 @@
         <div class="linhas" id="linhas"></div>
         <div class="campo">
           <label for="data-festa">Data da festa</label>
-          <input type="date" id="data-festa" name="data">
+          <input type="date" id="data-festa" name="data" aria-describedby="data-dica">
+          <span class="dica" id="data-dica">Pedidos com pelo menos 3 dias de antecedência.</span>
         </div>
         <div class="campo">
           <label for="obs">Observações</label>
-          <textarea id="obs" name="obs" placeholder="Cor das forminhas, tema da festa, retirada ou entrega..."></textarea>
+          <textarea id="obs" name="obs" placeholder="Cor das forminhas, tema da festa, retirada ou entrega (bairro)..."></textarea>
         </div>
         <div class="resumo">
           <div class="total"><span id="total">0</span><small>docinhos</small><div class="valor" id="valor">R$ 0,00</div></div>
@@ -446,6 +556,7 @@
             Enviar pelo WhatsApp
           </button>
         </div>
+        <p class="nota dica-cento" id="dica-cento" hidden></p>
         <p class="nota" id="nota">Escolha pelo menos um sabor para enviar.</p>
       </form>
     </div>
@@ -469,6 +580,17 @@
     </div>
   </section>
 
+  <section class="secao depoimentos" id="depoimentos" hidden>
+    <div class="wrap">
+      <div class="cabeca">
+        <span class="rotulo">Quem já provou</span>
+        <h2>O que dizem os <em>clientes</em></h2>
+      </div>
+      <div class="depo-lista" id="depo-lista"></div>
+      <p class="depo-mais"><a class="btn contorno" href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener">Ver mais no Instagram</a></p>
+    </div>
+  </section>
+
   <section class="secao" id="duvidas">
     <div class="wrap">
       <div class="cabeca">
@@ -485,8 +607,8 @@
           <p>Pode, sim. O pedido mínimo é de 10 docinhos e você combina os sabores como quiser, de 10 em 10.</p>
         </details>
         <details>
-          <summary>Como funciona a entrega?</summary>
-          <p>A entrega fica por conta do comprador: você pode retirar com horário marcado ou mandar um motorista ou motoboy de sua confiança buscar a encomenda.</p>
+          <summary>Vocês entregam? Onde retiro?</summary>
+          <p>Entregamos em qualquer bairro de Belém e Ananindeua, com frete a consultar pelo WhatsApp. Se preferir, é só retirar com horário marcado na Anísio Teixeira, 2, na Augusto Montenegro (<a href="https://www.google.com/maps/search/?api=1&amp;query=An%C3%ADsio+Teixeira+2+Augusto+Montenegro+Bel%C3%A9m+PA" target="_blank" rel="noopener">ver no mapa</a>).</p>
         </details>
         <details>
           <summary>Quanto tempo os docinhos duram?</summary>
@@ -514,6 +636,8 @@
         <span>WhatsApp <b>(91) 98561-4644</b></span>
         <span>Instagram <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener"><b>@doceriasweetgrace</b></a></span>
         <span>Atendimento <b>seg. a sáb., 9h às 18h</b></span>
+        <span>Retirada <a href="https://www.google.com/maps/search/?api=1&amp;query=An%C3%ADsio+Teixeira+2+Augusto+Montenegro+Bel%C3%A9m+PA" target="_blank" rel="noopener"><b>Anísio Teixeira, 2 · Augusto Montenegro</b></a></span>
+        <span>Entrega <b>Belém e Ananindeua</b></span>
       </div>
     </div>
   </section>
@@ -521,8 +645,8 @@
 
 <footer>
   <div class="wrap">
-    <span>© 2026 Sweet Grace · Doceria artesanal</span>
-    <span>Feito à mão, com carinho.</span>
+    <span>© 2026 Sweet Grace · Doceria artesanal em Belém, PA</span>
+    <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener">@doceriasweetgrace</a>
   </div>
 </footer>
 
@@ -538,6 +662,52 @@
   const saudacao = "Olá, Sweet Grace! Gostaria de fazer uma encomenda de docinhos.";
   document.getElementById("zap-contato").href = zapLink(saudacao);
   document.getElementById("zap-flutuante").href = zapLink(saudacao);
+  document.querySelectorAll(".kit-btn").forEach(b => {
+    b.href = zapLink("Olá, Sweet Grace! Quero o kit " + b.dataset.kit + ". Sabores: ");
+    b.addEventListener("click", () => medir("clique_kit", { kit: b.dataset.kit }));
+  });
+  document.getElementById("zap-contato").addEventListener("click", () => medir("clique_whatsapp", { local: "contato" }));
+  document.getElementById("zap-flutuante").addEventListener("click", () => medir("clique_whatsapp", { local: "botao_flutuante" }));
+
+  // Medição de visitas e cliques (Google Analytics 4).
+  // Fica desligada até colocar aqui o ID da conta, no formato "G-XXXXXXXXXX".
+  const GA_ID = "";
+  function medir(evento, dados) {
+    if (window.gtag) window.gtag("event", evento, dados || {});
+  }
+  if (GA_ID) {
+    const s = document.createElement("script");
+    s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag("js", new Date()); gtag("config", GA_ID);
+  }
+
+  // Depoimentos: a seção só aparece quando houver pelo menos um.
+  // Use apenas depoimentos reais, com autorização do cliente. Exemplo:
+  // { texto: "Os docinhos foram o sucesso da festa!", nome: "Ana", festa: "Aniversário de 1 ano" },
+  const DEPOIMENTOS = [];
+  if (DEPOIMENTOS.length) {
+    const lista = document.getElementById("depo-lista");
+    DEPOIMENTOS.forEach(d => {
+      const f = document.createElement("figure");
+      f.className = "depo";
+      const q = document.createElement("blockquote"); q.textContent = "“" + d.texto + "”";
+      const c = document.createElement("figcaption");
+      const b = document.createElement("b"); b.textContent = d.nome;
+      c.append(b, d.festa ? " · " + d.festa : "");
+      f.append(q, c); lista.appendChild(f);
+    });
+    document.getElementById("depoimentos").hidden = false;
+  }
+
+  // Data da festa: no mínimo 3 dias a partir de hoje.
+  const ANTECEDENCIA = 3;
+  const campoData = document.getElementById("data-festa");
+  const hoje = new Date(); hoje.setDate(hoje.getDate() + ANTECEDENCIA);
+  const dataMin = hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0") + "-" + String(hoje.getDate()).padStart(2, "0");
+  campoData.min = dataMin;
 
   const SABORES = [
     { id: "brigadeiro", nome: "Brigadeiro tradicional", cor: "#5a3420" },
@@ -585,6 +755,10 @@
     document.getElementById("valor").textContent = "Estimativa: " + brl(valor(total));
     nota.classList.remove("alerta");
     nota.textContent = total ? "Você vai revisar a mensagem no WhatsApp antes de enviar." : "Escolha pelo menos um sabor para enviar.";
+    const resto = total % 100, falta = 100 - resto;
+    const dica = document.getElementById("dica-cento");
+    dica.hidden = resto < 50;
+    if (!dica.hidden) dica.textContent = "Faltam " + falta + " docinhos para fechar mais um cento, com cada um a R$ 1,50.";
     return total;
   }
 
@@ -597,7 +771,14 @@
       return;
     }
     const itens = SABORES.filter(s => qtd[s.id]).map(s => "• " + qtd[s.id] + " " + s.nome).join("\n");
-    const data = document.getElementById("data-festa").value;
+    const data = campoData.value;
+    if (data && data < dataMin) {
+      nota.textContent = "Escolha uma data com pelo menos 3 dias de antecedência.";
+      nota.classList.add("alerta");
+      campoData.focus();
+      return;
+    }
+    medir("envio_pedido", { docinhos: total });
     const obs = document.getElementById("obs").value.trim();
     let msg = "Olá, Sweet Grace! Gostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
