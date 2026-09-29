@@ -818,12 +818,16 @@
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
     if (obs) msg += "\nObservações: " + obs;
     msg += "\nCódigo do pedido: " + codigo;
+    // Com o Pix cadastrado no painel, mostra o QR Code antes de ir para o WhatsApp.
+    if (window.abrirPagamento && abrirPagamento({ msg, codigo, valor: valor(total) })) return;
     const a = document.createElement("a");
     a.href = zapLink(msg); a.target = "_blank"; a.rel = "noopener";
     document.body.appendChild(a); a.click(); a.remove();
   });
 </script>
 <script src="config-supabase.js"></script>
+<script src="vendor/qrcode-generator-2.0.4.js"></script>
+<script src="pix.js"></script>
 <script src="loja.js"></script>
 </body>
 </html>
