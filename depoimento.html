@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Conte como foi · Sweet Grace</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<meta name="theme-color" content="#FBEFE1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light; --creme: #FBEFE1; --papel: #FFFBF5; --ouro: #B0843A; --ouro-escuro: #8A6528; --cacau: #4B3526; --cacau-suave: #7A6252; --linha: #E4D3BC; --alerta: #A4453A; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--creme); color: var(--cacau); font: 400 16px/1.55 "Jost", system-ui, sans-serif; }
+  :focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  form, .obrigado { width: min(460px, 100%); background: var(--papel); border: 1px solid var(--linha); border-radius: 18px; padding: 26px 22px; display: grid; gap: 14px; }
+  img { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; margin: 0 auto; }
+  h1 { font: 500 32px/1.1 "Cormorant Garamond", Georgia, serif; margin: 0; text-align: center; }
+  p { margin: 0; color: var(--cacau-suave); text-align: center; }
+  label { display: grid; gap: 4px; font-size: 14px; color: var(--cacau-suave); }
+  input, textarea { font: inherit; color: inherit; width: 100%; padding: 11px 12px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; }
+  textarea { min-height: 120px; resize: vertical; }
+  .marcar { display: flex; align-items: flex-start; gap: 10px; color: var(--cacau); font-size: 15px; }
+  .marcar input { width: 20px; height: 20px; flex: none; margin-top: 2px; accent-color: var(--ouro); }
+  button, .btn { font: 500 14px/1 "Jost", sans-serif; letter-spacing: .1em; text-transform: uppercase; border: 0; border-radius: 999px; padding: 15px 22px; background: var(--ouro); color: var(--papel); cursor: pointer; text-align: center; text-decoration: none; }
+  button:hover, .btn:hover { background: var(--ouro-escuro); }
+  button:disabled { opacity: .6; }
+  .erro { color: var(--alerta); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<form id="form" novalidate>
+  <img src="assets/logo.jpeg" alt="Sweet Grace">
+  <h1>Como foi a sua festa?</h1>
+  <p>Conte o que achou dos docinhos. A sua opinião ajuda muito o nosso trabalho.</p>
+  <label>Seu nome<input id="nome" autocomplete="given-name" maxlength="60" required></label>
+  <label>Que festa foi? (opcional)<input id="festa" maxlength="80" placeholder="Aniversário de 1 ano, chá de bebê..."></label>
+  <label>Seu depoimento<textarea id="texto" maxlength="600" required></textarea></label>
+  <label class="marcar"><input type="checkbox" id="autorizo" required> Autorizo a Sweet Grace a publicar este depoimento no site com o meu primeiro nome.</label>
+  <p class="erro" id="erro" role="alert" hidden></p>
+  <button type="submit" id="enviar">Enviar</button>
+</form>
+<div class="obrigado" id="obrigado" hidden>
+  <img src="assets/logo.jpeg" alt="Sweet Grace">
+  <h1>Muito obrigada!</h1>
+  <p>Recebemos o seu depoimento com carinho.</p>
+  <a class="btn" href="./">Voltar para o site</a>
+</div>
+<script src="config-supabase.js"></script>
+<script>
+  const cfg = window.SWEET_GRACE_SUPABASE || {};
+  const pedido = (new URLSearchParams(location.search).get("pedido") || "").replace(/[^A-Z0-9]/gi, "").slice(0, 12);
+  const erro = document.getElementById("erro");
+  document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = (id) => document.getElementById(id).value.trim();
+    const falhar = (m) => { erro.textContent = m; erro.hidden = false; };
+    if (!v("nome") || !v("texto")) return falhar("Preencha o seu nome e o depoimento.");
+    if (!document.getElementById("autorizo").checked) return falhar("Marque a autorização para podermos publicar.");
+    if (!cfg.url) return falhar("O envio ainda não está funcionando. Mande o seu depoimento pelo WhatsApp.");
+    const botao = document.getElementById("enviar"); botao.disabled = true; erro.hidden = true;
+    try {
+      const r = await fetch(cfg.url + "/rest/v1/rpc/enviar_depoimento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: cfg.chave, Authorization: "Bearer " + cfg.chave },
+        body: JSON.stringify({ p_nome: v("nome"), p_festa: v("festa"), p_texto: v("texto"), p_autorizado: true, p_pedido: pedido })
+      });
+      if (!r.ok) throw new Error(r.status);
+      e.target.hidden = true;
+      document.getElementById("obrigado").hidden = false;
+    } catch {
+      falhar("Não foi possível enviar agora. Tente de novo em instantes.");
+      botao.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Painel · Sweet Grace</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FBEFE1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Painel SG">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Marcellus&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --creme: #FBEFE1;
+    --creme-2: #F3E6D5;
+    --papel: #FFFBF5;
+    --ouro: #B0843A;
+    --ouro-escuro: #8A6528;
+    --cacau: #4B3526;
+    --cacau-suave: #7A6252;
+    --rosa: #E9B8B5;
+    --salvia: #B9C6AE;
+    --lilas: #CDB8D6;
+    --linha: #E4D3BC;
+    --alerta: #A4453A;
+    --ok: #4F6B43;
+    --display: "Cormorant Garamond", Georgia, serif;
+    --caps: "Marcellus", Georgia, serif;
+    --texto: "Jost", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--creme); color: var(--cacau); font: 400 16px/1.5 var(--texto); -webkit-font-smoothing: antialiased; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--ouro); outline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 500; margin: 0; line-height: 1.1; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: 880px; margin-inline: auto; padding-inline: 16px; }
+
+  /* Topo e abas */
+  .topo { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--creme) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--linha); padding-top: env(safe-area-inset-top, 0px); }
+  .topo-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px 6px; }
+  .marca { font: 400 15px/1 var(--caps); letter-spacing: .22em; text-transform: uppercase; color: var(--ouro-escuro); }
+  .marca small { display: block; font: 400 11px/1.4 var(--texto); letter-spacing: .12em; color: var(--cacau-suave); margin-top: 4px; }
+  .abas { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 8px; }
+  .abas::-webkit-scrollbar { display: none; }
+  .aba { flex: none; border: 0; background: none; padding: 8px 12px; border-radius: 999px; font-size: 14px; color: var(--cacau-suave); cursor: pointer; position: relative; }
+  .aba[aria-selected="true"] { background: var(--cacau); color: var(--papel); }
+  .aba .bolinha { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-left: 6px; border-radius: 9px; background: var(--rosa); color: var(--cacau); font-size: 11px; font-weight: 500; }
+
+  main { padding-block: 18px 80px; }
+  .painel-sec { display: grid; gap: 14px; }
+  .sec-cabeca { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .sec-cabeca h2 { font-size: 30px; }
+  .sub { color: var(--cacau-suave); font-size: 14px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; padding: 11px 18px; border-radius: 999px; background: var(--ouro); color: var(--papel); font-weight: 500; font-size: 14px; text-decoration: none; }
+  .btn:hover { background: var(--ouro-escuro); }
+  .btn.contorno { background: transparent; color: var(--ouro-escuro); box-shadow: inset 0 0 0 1.5px var(--ouro); }
+  .btn.contorno:hover { background: var(--creme-2); }
+  .btn.discreto { background: transparent; color: var(--cacau-suave); padding: 8px 10px; }
+  .btn.perigo { background: transparent; color: var(--alerta); box-shadow: inset 0 0 0 1.5px currentColor; }
+  .btn.peq { padding: 7px 12px; font-size: 13px; }
+  .btn:disabled { opacity: .5; cursor: default; }
+
+  .caixa { background: var(--papel); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; }
+  .vazio { text-align: center; color: var(--cacau-suave); padding: 28px 16px; }
+
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--linha); background: var(--papel); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; color: var(--cacau-suave); }
+  .chip[aria-pressed="true"] { border-color: var(--ouro); background: var(--creme-2); color: var(--cacau); }
+  .busca { width: 100%; padding: 10px 14px; border: 1px solid var(--linha); border-radius: 999px; background: var(--papel); }
+
+  /* Cartões de pedido */
+  .lista { display: grid; gap: 10px; }
+  .pedido { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; text-align: left; width: 100%; border: 1px solid var(--linha); background: var(--papel); border-radius: 14px; padding: 14px 16px; cursor: pointer; }
+  .pedido:hover { border-color: var(--ouro); }
+  .pedido .nome { font-weight: 500; }
+  .pedido .cod { font-size: 12px; color: var(--cacau-suave); letter-spacing: .06em; margin-left: 6px; }
+  .pedido .meta { font-size: 14px; color: var(--cacau-suave); grid-column: 1 / -1; }
+  .pedido .valor { font-weight: 500; text-align: right; }
+  .selos { display: flex; gap: 6px; flex-wrap: wrap; grid-column: 1 / -1; margin-top: 4px; }
+  .selo { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--creme-2); color: var(--cacau); }
+  .selo.novo { background: var(--rosa); }
+  .selo.aguardando_sinal { background: #F2D9A6; }
+  .selo.confirmado { background: var(--lilas); }
+  .selo.em_producao { background: #EFC9A4; }
+  .selo.pronto { background: var(--salvia); }
+  .selo.entregue { background: #DCE4D4; color: var(--ok); }
+  .selo.cancelado { background: #EEDDDA; color: var(--alerta); text-decoration: line-through; }
+  .selo.pago { background: transparent; box-shadow: inset 0 0 0 1px var(--ok); color: var(--ok); }
+  .selo.devendo { background: transparent; box-shadow: inset 0 0 0 1px var(--alerta); color: var(--alerta); }
+
+  /* Agenda */
+  .dia { display: grid; gap: 10px; }
+  .dia-cabeca { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .dia-cabeca h3 { font-size: 24px; }
+  .dia-cabeca h3 small { font: 400 13px var(--texto); color: var(--cacau-suave); margin-left: 6px; }
+  .producao { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+  .producao b { font-weight: 500; }
+  .dia.bloqueado { background: repeating-linear-gradient(135deg, var(--papel) 0 10px, var(--creme-2) 10px 20px); }
+  .atrasado h3 { color: var(--alerta); }
+
+  /* Números */
+  .numeros { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+  .numero { background: var(--papel); border: 1px solid var(--linha); border-radius: 14px; padding: 14px 16px; }
+  .numero span { display: block; font-size: 13px; color: var(--cacau-suave); }
+  .numero strong { display: block; font: 500 30px/1.1 var(--display); margin-top: 4px; font-variant-numeric: lining-nums tabular-nums; }
+  .barras { display: grid; gap: 10px; }
+  .barra { display: grid; grid-template-columns: minmax(110px, 38%) 1fr auto; align-items: center; gap: 10px; font-size: 14px; }
+  .barra-trilho { height: 12px; border-radius: 6px; background: var(--creme-2); overflow: hidden; }
+  .barra-trilho i { display: block; height: 100%; background: var(--ouro); border-radius: 6px; }
+  .barra b { font-weight: 500; font-variant-numeric: tabular-nums; }
+  .mes-nav { display: flex; align-items: center; gap: 6px; }
+  .mes-nav strong { min-width: 150px; text-align: center; font: 500 20px var(--display); text-transform: capitalize; }
+
+  /* Linhas de pagamento e cardápio */
+  .linha { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-top: 1px solid var(--linha); flex-wrap: wrap; }
+  .linha:first-of-type { border-top: 0; }
+  .linha .info { min-width: 0; flex: 1 1 200px; }
+  .linha .info small { display: block; color: var(--cacau-suave); font-size: 13px; }
+  .acoes { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chave { position: relative; width: 50px; height: 30px; flex: none; }
+  .chave input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .chave span { position: absolute; inset: 0; border-radius: 15px; background: var(--linha); transition: background .2s; pointer-events: none; }
+  .chave span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s; }
+  .chave input:checked + span { background: var(--ok); }
+  .chave input:checked + span::after { transform: translateX(20px); }
+  .chave input:focus-visible + span { outline: 2px solid var(--ouro); outline-offset: 2px; }
+
+  /* Formulários */
+  .campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .campo { display: grid; gap: 4px; }
+  .campo.largo { grid-column: 1 / -1; }
+  .campo label, .campo .rot { font-size: 13px; color: var(--cacau-suave); }
+  .campo input, .campo select, .campo textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; }
+  .campo textarea { min-height: 70px; resize: vertical; }
+  .marcar { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+  .marcar input { width: 20px; height: 20px; accent-color: var(--ok); }
+  .itens { display: grid; gap: 8px; }
+  .item { display: grid; grid-template-columns: 1fr 110px; align-items: center; gap: 10px; font-size: 15px; }
+  .item input { padding: 8px 10px; border: 1px solid var(--linha); border-radius: 10px; text-align: right; width: 100%; }
+  .item.esgotado span::after { content: " (esgotado)"; color: var(--cacau-suave); font-size: 13px; }
+
+  dialog { border: 0; padding: 0; border-radius: 18px; width: min(640px, calc(100vw - 20px)); max-height: calc(100dvh - 20px); background: var(--papel); color: var(--cacau); box-shadow: 0 20px 60px rgba(75,53,38,.3); }
+  dialog::backdrop { background: rgba(75,53,38,.35); }
+  .dlg-cabeca { position: sticky; top: 0; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 18px; background: var(--papel); border-bottom: 1px solid var(--linha); }
+  .dlg-cabeca h2 { font-size: 26px; }
+  .dlg-corpo { padding: 16px 18px; display: grid; gap: 16px; }
+  .dlg-rodape { position: sticky; bottom: 0; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 12px 18px; background: var(--papel); border-top: 1px solid var(--linha); }
+  .grupo-titulo { font: 400 12px var(--texto); letter-spacing: .2em; text-transform: uppercase; color: var(--ouro-escuro); margin-bottom: 8px; }
+  .totais { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 14px; color: var(--cacau-suave); }
+  .totais b { color: var(--cacau); font-weight: 500; }
+
+  /* Entrar */
+  .entrar { min-height: 100dvh; display: grid; place-items: center; padding: 20px 16px; }
+  .entrar .caixa { width: min(380px, 100%); display: grid; gap: 14px; padding: 26px 22px; text-align: center; }
+  .entrar img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin: 0 auto; }
+  .entrar h1 { font-size: 30px; }
+  .entrar .campo { text-align: left; }
+  .erro { color: var(--alerta); font-size: 14px; }
+  .aviso-demo { background: var(--lilas); color: var(--cacau); font-size: 13px; text-align: center; padding: 8px 16px; }
+  .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--cacau); color: var(--papel); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); }
+  .copiar { display: flex; gap: 8px; }
+  .copiar input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; font-size: 14px; }
+  .depo-texto { font: italic 400 19px/1.35 var(--display); }
+</style>
+</head>
+<body>
+
+<div id="aviso-demo" class="aviso-demo" hidden>Modo demonstração: os pedidos são de exemplo e nada é salvo.</div>
+
+<!-- Tela de entrada -->
+<section class="entrar" id="tela-entrar" hidden>
+  <form class="caixa" id="form-entrar">
+    <img src="../assets/logo.jpeg" alt="Sweet Grace">
+    <h1>Área da confeiteira</h1>
+    <p class="sub" id="entrar-sub">Entre com o seu e-mail e senha.</p>
+    <div class="campo"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required></div>
+    <div class="campo"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" required></div>
+    <p class="erro" id="entrar-erro" role="alert" hidden></p>
+    <button class="btn" type="submit" id="btn-entrar">Entrar</button>
+    <a class="btn discreto" href="../">Voltar para o site</a>
+  </form>
+</section>
+
+<!-- Painel -->
+<div id="tela-painel" hidden>
+  <header class="topo">
+    <div class="wrap">
+      <div class="topo-linha">
+        <div class="marca">Sweet Grace<small>Painel da confeiteira</small></div>
+        <button class="btn discreto peq" id="btn-sair" type="button">Sair</button>
+      </div>
+      <nav class="abas" role="tablist" aria-label="Seções do painel">
+        <button class="aba" role="tab" data-aba="pedidos" aria-selected="true">Pedidos<span class="bolinha" id="bolinha-novos" hidden></span></button>
+        <button class="aba" role="tab" data-aba="agenda" aria-selected="false">Agenda</button>
+        <button class="aba" role="tab" data-aba="pagamentos" aria-selected="false">Pagamentos</button>
+        <button class="aba" role="tab" data-aba="cardapio" aria-selected="false">Cardápio</button>
+        <button class="aba" role="tab" data-aba="resumo" aria-selected="false">Resumo</button>
+        <button class="aba" role="tab" data-aba="depoimentos" aria-selected="false">Depoimentos</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Pedidos -->
+    <section class="painel-sec" data-sec="pedidos">
+      <div class="sec-cabeca">
+        <h2>Pedidos</h2>
+        <button class="btn" type="button" id="btn-novo">+ Novo pedido</button>
+      </div>
+      <input class="busca" id="busca" type="search" placeholder="Buscar por nome, código ou telefone">
+      <div class="chips" id="filtros">
+        <button class="chip" data-filtro="ativos" aria-pressed="true">Em andamento</button>
+        <button class="chip" data-filtro="novo" aria-pressed="false">Novos</button>
+        <button class="chip" data-filtro="entregue" aria-pressed="false">Entregues</button>
+        <button class="chip" data-filtro="cancelado" aria-pressed="false">Cancelados</button>
+        <button class="chip" data-filtro="todos" aria-pressed="false">Todos</button>
+      </div>
+      <div class="lista" id="lista-pedidos"></div>
+    </section>
+
+    <!-- Agenda -->
+    <section class="painel-sec" data-sec="agenda" hidden>
+      <div class="sec-cabeca">
+        <h2>Agenda de produção</h2>
+      </div>
+      <p class="sub">O que precisa ficar pronto em cada dia, com a soma de cada sabor. Dias bloqueados não aparecem para pedido no site.</p>
+      <form class="caixa campos" id="form-bloqueio">
+        <div class="campo"><label for="bloq-data">Bloquear um dia</label><input type="date" id="bloq-data" required></div>
+        <div class="campo"><label for="bloq-motivo">Motivo (só você vê)</label><input id="bloq-motivo" placeholder="Agenda cheia, folga..."></div>
+        <div class="campo" style="align-self:end"><button class="btn contorno" type="submit">Bloquear dia</button></div>
+      </form>
+      <div class="lista" id="lista-agenda"></div>
+    </section>
+
+    <!-- Pagamentos -->
+    <section class="painel-sec" data-sec="pagamentos" hidden>
+      <div class="sec-cabeca"><h2>Pagamentos</h2></div>
+      <div class="numeros" id="numeros-pag"></div>
+      <div class="caixa">
+        <div class="grupo-titulo">Esperando o sinal de 50%</div>
+        <div id="lista-sinal"></div>
+      </div>
+      <div class="caixa">
+        <div class="grupo-titulo">Sinal pago, falta o restante</div>
+        <div id="lista-restante"></div>
+      </div>
+    </section>
+
+    <!-- Cardápio -->
+    <section class="painel-sec" data-sec="cardapio" hidden>
+      <div class="sec-cabeca"><h2>Cardápio</h2></div>
+      <div class="caixa">
+        <div class="grupo-titulo">Sabores no site</div>
+        <p class="sub">Desligue um sabor quando ele acabar. No site ele aparece como esgotado e sai do montador de pedido.</p>
+        <div id="lista-sabores"></div>
+      </div>
+      <form class="caixa" id="form-precos">
+        <div class="grupo-titulo">Preços</div>
+        <div class="campos">
+          <div class="campo"><label for="preco-unidade">Unidade (R$)</label><input id="preco-unidade" type="number" step="0.01" min="0.01" required></div>
+          <div class="campo"><label for="preco-cento">Cento (R$)</label><input id="preco-cento" type="number" step="0.01" min="1" required></div>
+        </div>
+        <p class="sub" style="margin-top:10px">Os preços do cardápio, dos kits e do montador de pedido mudam juntos no site.</p>
+        <div style="margin-top:12px"><button class="btn" type="submit">Salvar preços</button></div>
+      </form>
+    </section>
+
+    <!-- Resumo -->
+    <section class="painel-sec" data-sec="resumo" hidden>
+      <div class="sec-cabeca">
+        <h2>Resumo do mês</h2>
+        <div class="mes-nav">
+          <button class="btn discreto" type="button" id="mes-ant" aria-label="Mês anterior">‹</button>
+          <strong id="mes-nome"></strong>
+          <button class="btn discreto" type="button" id="mes-prox" aria-label="Próximo mês">›</button>
+        </div>
+      </div>
+      <p class="sub">Conta os pedidos com festa neste mês, sem os cancelados.</p>
+      <div class="numeros" id="numeros-mes"></div>
+      <div class="caixa">
+        <div class="grupo-titulo">Sabores mais pedidos</div>
+        <div class="barras" id="barras-sabores"></div>
+      </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section class="painel-sec" data-sec="depoimentos" hidden>
+      <div class="sec-cabeca">
+        <h2>Depoimentos</h2>
+        <button class="btn" type="button" id="btn-novo-depo">+ Adicionar</button>
+      </div>
+      <div class="caixa">
+        <div class="grupo-titulo">Link para pedir depoimento</div>
+        <p class="sub" style="margin-bottom:10px">Mande para a cliente depois da festa. O que ela escrever chega aqui e só vai para o site quando você publicar.</p>
+        <div class="copiar"><input id="link-depo" readonly aria-label="Link do formulário de depoimento"><button class="btn contorno peq" type="button" id="copiar-depo">Copiar</button></div>
+      </div>
+      <div class="lista" id="lista-depos"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Editar pedido -->
+<dialog id="dlg-pedido" aria-labelledby="dlg-pedido-titulo">
+  <form id="form-pedido" method="dialog">
+    <div class="dlg-cabeca">
+      <h2 id="dlg-pedido-titulo">Pedido</h2>
+      <button class="btn discreto" type="button" data-fechar aria-label="Fechar">✕</button>
+    </div>
+    <div class="dlg-corpo">
+      <div>
+        <div class="grupo-titulo">Cliente</div>
+        <div class="campos">
+          <div class="campo"><label for="p-nome">Nome</label><input id="p-nome" autocomplete="off"></div>
+          <div class="campo"><label for="p-tel">WhatsApp</label><input id="p-tel" type="tel" inputmode="tel" placeholder="(91) 90000-0000"></div>
+        </div>
+      </div>
+      <div>
+        <div class="grupo-titulo">Docinhos</div>
+        <div class="itens" id="p-itens"></div>
+      </div>
+      <div>
+        <div class="grupo-titulo">Festa e entrega</div>
+        <div class="campos">
+          <div class="campo"><label for="p-data">Data da festa</label><input id="p-data" type="date"></div>
+          <div class="campo"><label for="p-entrega">Como vai receber</label>
+            <select id="p-entrega"><option value="a_combinar">A combinar</option><option value="retirada">Retirada</option><option value="entrega">Entrega</option></select></div>
+          <div class="campo largo" id="p-endereco-campo"><label for="p-endereco">Endereço de entrega</label><input id="p-endereco"></div>
+          <div class="campo largo"><label for="p-obs">Observações da cliente</label><textarea id="p-obs"></textarea></div>
+          <div class="campo largo"><label for="p-notas">Anotações (só você vê)</label><textarea id="p-notas" placeholder="Cor das forminhas, combinado de horário..."></textarea></div>
+        </div>
+      </div>
+      <div>
+        <div class="grupo-titulo">Valores e andamento</div>
+        <div class="campos">
+          <div class="campo"><label for="p-valor">Docinhos (R$)</label><input id="p-valor" type="number" step="0.01" min="0"></div>
+          <div class="campo"><label for="p-frete">Frete (R$)</label><input id="p-frete" type="number" step="0.01" min="0"></div>
+          <div class="campo"><label for="p-status">Situação</label>
+            <select id="p-status"></select></div>
+        </div>
+        <div class="totais" style="margin-top:12px"><span>Total <b id="p-total">R$ 0,00</b></span><span>Sinal (50%) <b id="p-sinal">R$ 0,00</b></span><span>Restante <b id="p-resto">R$ 0,00</b></span></div>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px">
+          <label class="marcar"><input type="checkbox" id="p-sinal-pago"> Sinal pago</label>
+          <label class="marcar"><input type="checkbox" id="p-resto-pago"> Restante pago</label>
+        </div>
+      </div>
+      <div class="acoes" id="p-acoes-zap"></div>
+    </div>
+    <div class="dlg-rodape">
+      <button class="btn perigo peq" type="button" id="p-excluir">Excluir</button>
+      <div class="acoes">
+        <button class="btn discreto" type="button" data-fechar>Cancelar</button>
+        <button class="btn" type="submit" id="p-salvar">Salvar</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Adicionar depoimento -->
+<dialog id="dlg-depo" aria-labelledby="dlg-depo-titulo">
+  <form id="form-depo" method="dialog">
+    <div class="dlg-cabeca">
+      <h2 id="dlg-depo-titulo">Novo depoimento</h2>
+      <button class="btn discreto" type="button" data-fechar aria-label="Fechar">✕</button>
+    </div>
+    <div class="dlg-corpo">
+      <p class="sub">Use só depoimentos reais, com a autorização da cliente. Um print de conversa serve de base.</p>
+      <div class="campos">
+        <div class="campo"><label for="d-nome">Nome da cliente</label><input id="d-nome" required></div>
+        <div class="campo"><label for="d-festa">Festa (opcional)</label><input id="d-festa" placeholder="Aniversário de 1 ano"></div>
+        <div class="campo largo"><label for="d-texto">O que ela disse</label><textarea id="d-texto" required></textarea></div>
+      </div>
+      <label class="marcar"><input type="checkbox" id="d-autorizado" required> A cliente autorizou publicar</label>
+    </div>
+    <div class="dlg-rodape">
+      <span></span>
+      <div class="acoes"><button class="btn discreto" type="button" data-fechar>Cancelar</button><button class="btn" type="submit">Salvar</button></div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="../config-supabase.js"></script>
+<script>
+(function () {
+  const cfg = window.SWEET_GRACE_SUPABASE || {};
+  const configurado = Boolean(cfg.url && cfg.chave);
+  const DEMO = new URLSearchParams(location.search).has("demo");
+
+  const STATUS = [
+    ["novo", "Novo"],
+    ["aguardando_sinal", "Aguardando sinal"],
+    ["confirmado", "Confirmado"],
+    ["em_producao", "Em produção"],
+    ["pronto", "Pronto"],
+    ["entregue", "Entregue"],
+    ["cancelado", "Cancelado"]
+  ];
+  const nomeStatus = Object.fromEntries(STATUS);
+  const ENCERRADOS = ["entregue", "cancelado"];
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const SEMANA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+
+  // ---------- utilidades ----------
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, props, ...filhos) => {
+    const e = document.createElement(tag);
+    if (props) for (const [k, v] of Object.entries(props)) {
+      if (v == null || v === false) continue;
+      if (k === "class") e.className = v;
+      else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+      else if (k in e && k !== "list") e[k] = v;
+      else e.setAttribute(k, v);
+    }
+    for (const f of filhos.flat()) if (f != null && f !== false) e.append(f);
+    return e;
+  };
+  const brl = (v) => Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const num = (v) => Number(v || 0).toLocaleString("pt-BR");
+  const isoLocal = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const hojeIso = () => isoLocal(new Date());
+  const paraData = (iso) => { const [a, m, d] = iso.split("-").map(Number); return new Date(a, m - 1, d); };
+  const diasAte = (iso) => Math.round((paraData(iso) - paraData(hojeIso())) / 86400000);
+  const dataCurta = (iso) => { if (!iso) return "sem data"; const d = paraData(iso); return SEMANA[d.getDay()].slice(0, 3) + ", " + String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0"); };
+  const quando = (iso) => { if (!iso) return ""; const n = diasAte(iso); return n === 0 ? "hoje" : n === 1 ? "amanhã" : n === -1 ? "ontem" : n > 0 ? "em " + n + " dias" : "há " + (-n) + " dias"; };
+  const totalPedido = (p) => Number(p.valor || 0) + Number(p.frete || 0);
+  const sinalDe = (p) => Math.round(totalPedido(p) * 50) / 100;
+  const novoCodigo = () => { const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s = ""; const r = crypto.getRandomValues(new Uint8Array(6)); r.forEach(b => s += c[b % c.length]); return s; };
+  const soDigitos = (t) => (t || "").replace(/\D/g, "");
+  const zap = (tel, msg) => { let d = soDigitos(tel); if (d.length <= 11) d = "55" + d; return "https://wa.me/" + d + "?text=" + encodeURIComponent(msg); };
+  const valorDocinhos = (n, precos) => Math.floor(n / 100) * precos.preco_cento + (n % 100) * precos.preco_unidade;
+
+  let toastTimer;
+  function aviso(msg) {
+    const t = $("#toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2600);
+  }
+
+  // ---------- dados ----------
+  // Duas fontes com as mesmas funções: o banco de verdade (Supabase) e um de exemplo (?demo).
+  function bancoSupabase() {
+    const sb = window.supabase.createClient(cfg.url, cfg.chave);
+    const ok = ({ data, error }) => { if (error) throw error; return data; };
+    return {
+      async sessao() { const { data } = await sb.auth.getSession(); return data.session; },
+      async entrar(email, senha) { ok(await sb.auth.signInWithPassword({ email, password: senha })); },
+      async sair() { await sb.auth.signOut(); },
+      async souEquipe() { return ok(await sb.rpc("eh_equipe")); },
+      async pedidos() { return ok(await sb.from("pedidos").select("*").order("data_festa", { ascending: true, nullsFirst: false }).limit(2000)); },
+      async salvarPedido(p) {
+        const { id, criado_em, ...dados } = p;
+        return id ? ok(await sb.from("pedidos").update(dados).eq("id", id).select().single())
+                  : ok(await sb.from("pedidos").insert(dados).select().single());
+      },
+      async excluirPedido(id) { ok(await sb.from("pedidos").delete().eq("id", id)); },
+      async sabores() { return ok(await sb.from("sabores").select("*").order("ordem")); },
+      async salvarSabor(s) { ok(await sb.from("sabores").update({ disponivel: s.disponivel }).eq("id", s.id)); },
+      async precos() { return ok(await sb.from("config").select("*").eq("id", 1).single()); },
+      async salvarPrecos(c) { ok(await sb.from("config").update(c).eq("id", 1)); },
+      async bloqueios() { return ok(await sb.from("dias_bloqueados").select("*").order("data")); },
+      async bloquear(data, motivo) { ok(await sb.from("dias_bloqueados").upsert({ data, motivo })); },
+      async desbloquear(data) { ok(await sb.from("dias_bloqueados").delete().eq("data", data)); },
+      async depoimentos() { return ok(await sb.from("depoimentos").select("*").order("criado_em", { ascending: false })); },
+      async salvarDepoimento(d) {
+        const { id, criado_em, ...dados } = d;
+        return id ? ok(await sb.from("depoimentos").update(dados).eq("id", id).select().single())
+                  : ok(await sb.from("depoimentos").insert(dados).select().single());
+      },
+      async excluirDepoimento(id) { ok(await sb.from("depoimentos").delete().eq("id", id)); }
+    };
+  }
+
+  function bancoDemo() {
+    const d = (n) => { const x = new Date(); x.setDate(x.getDate() + n); return isoLocal(x); };
+    const sab = [
+      { id: "brigadeiro", nome: "Brigadeiro tradicional", disponivel: true, ordem: 1 },
+      { id: "beijinho", nome: "Beijinho de coco", disponivel: true, ordem: 2 },
+      { id: "bicho-de-pe", nome: "Bicho de pé", disponivel: true, ordem: 3 },
+      { id: "ninho", nome: "Brigadeiro de Ninho", disponivel: true, ordem: 4 },
+      { id: "cajuzinho", nome: "Cajuzinho", disponivel: false, ordem: 5 },
+      { id: "casadinho", nome: "Casadinho", disponivel: true, ordem: 6 }
+    ];
+    const it = (...pares) => pares.map(([id, qtd]) => ({ id, nome: sab.find(s => s.id === id).nome, qtd }));
+    const ped = (o) => Object.assign({ id: crypto.randomUUID(), codigo: novoCodigo(), criado_em: new Date().toISOString(), origem: "site", cliente_telefone: "", frete: 0, entrega: "a_combinar", endereco: "", observacoes: "", anotacoes: "", sinal_pago: false, restante_pago: false }, o);
+    const somar = (p) => { p.total_docinhos = p.itens.reduce((a, i) => a + i.qtd, 0); p.valor = valorDocinhos(p.total_docinhos, { preco_unidade: 2, preco_cento: 150 }); return p; };
+    const db = {
+      pedidos: [
+        ped({ cliente_nome: "Cliente exemplo 1", itens: it(["brigadeiro", 60], ["beijinho", 40]), data_festa: d(4), status: "novo", observacoes: "Forminhas rosa" }),
+        ped({ cliente_nome: "Cliente exemplo 2", cliente_telefone: "91900000000", itens: it(["ninho", 50]), data_festa: d(5), status: "aguardando_sinal" }),
+        ped({ cliente_nome: "Cliente exemplo 3", itens: it(["brigadeiro", 100], ["bicho-de-pe", 50], ["casadinho", 50]), data_festa: d(5), status: "confirmado", sinal_pago: true, entrega: "entrega", frete: 15, endereco: "Marco, Belém" }),
+        ped({ cliente_nome: "Cliente exemplo 4", itens: it(["beijinho", 30]), data_festa: d(1), status: "em_producao", sinal_pago: true, entrega: "retirada" }),
+        ped({ cliente_nome: "Cliente exemplo 5", itens: it(["brigadeiro", 100]), data_festa: d(-2), status: "entregue", sinal_pago: true, restante_pago: true, origem: "manual" }),
+        ped({ cliente_nome: "Cliente exemplo 6", itens: it(["brigadeiro", 40], ["ninho", 60]), data_festa: d(-6), status: "entregue", sinal_pago: true, restante_pago: false })
+      ].map(somar),
+      sabores: sab,
+      precos: { id: 1, preco_unidade: 2, preco_cento: 150 },
+      bloqueios: [{ data: d(9), motivo: "Agenda cheia" }],
+      depoimentos: [{ id: crypto.randomUUID(), criado_em: new Date().toISOString(), nome: "Exemplo", festa: "Aniversário", texto: "Este é só um exemplo de como um depoimento aparece aqui.", autorizado: true, publicado: false }]
+    };
+    const copia = (x) => JSON.parse(JSON.stringify(x));
+    let logado = false;
+    return {
+      async sessao() { return logado ? {} : null; },
+      async entrar() { logado = true; },
+      async sair() { logado = false; },
+      async souEquipe() { return true; },
+      async pedidos() { return copia(db.pedidos); },
+      async salvarPedido(p) { p = copia(p); if (!p.id) p.id = crypto.randomUUID(); const i = db.pedidos.findIndex(x => x.id === p.id); if (i >= 0) db.pedidos[i] = Object.assign(db.pedidos[i], p); else db.pedidos.push(Object.assign({ criado_em: new Date().toISOString() }, p)); return copia(p); },
+      async excluirPedido(id) { db.pedidos = db.pedidos.filter(x => x.id !== id); },
+      async sabores() { return copia(db.sabores); },
+      async salvarSabor(s) { db.sabores.find(x => x.id === s.id).disponivel = s.disponivel; },
+      async precos() { return copia(db.precos); },
+      async salvarPrecos(c) { Object.assign(db.precos, c); },
+      async bloqueios() { return copia(db.bloqueios).sort((a, b) => a.data < b.data ? -1 : 1); },
+      async bloquear(data, motivo) { db.bloqueios = db.bloqueios.filter(b => b.data !== data).concat({ data, motivo }); },
+      async desbloquear(data) { db.bloqueios = db.bloqueios.filter(b => b.data !== data); },
+      async depoimentos() { return copia(db.depoimentos); },
+      async salvarDepoimento(x) { x = copia(x); if (!x.id) { x.id = crypto.randomUUID(); x.criado_em = new Date().toISOString(); db.depoimentos.unshift(x); } else Object.assign(db.depoimentos.find(y => y.id === x.id), x); return x; },
+      async excluirDepoimento(id) { db.depoimentos = db.depoimentos.filter(x => x.id !== id); }
+    };
+  }
+
+  // ---------- estado ----------
+  const estado = { pedidos: [], sabores: [], precos: { preco_unidade: 2, preco_cento: 150 }, bloqueios: [], depoimentos: [], filtro: "ativos", busca: "", aba: "pedidos", mes: new Date() };
+  let banco;
+
+  async function carregar() {
+    const [pedidos, sabores, precos, bloqueios, depoimentos] = await Promise.all([banco.pedidos(), banco.sabores(), banco.precos(), banco.bloqueios(), banco.depoimentos()]);
+    Object.assign(estado, { pedidos, sabores, precos: { preco_unidade: Number(precos.preco_unidade), preco_cento: Number(precos.preco_cento) }, bloqueios, depoimentos });
+    desenhar();
+  }
+
+  function desenhar() {
+    const novos = estado.pedidos.filter(p => p.status === "novo").length;
+    const b = $("#bolinha-novos"); b.hidden = !novos; b.textContent = novos;
+    ({ pedidos: desenharPedidos, agenda: desenharAgenda, pagamentos: desenharPagamentos, cardapio: desenharCardapio, resumo: desenharResumo, depoimentos: desenharDepoimentos })[estado.aba]();
+  }
+
+  async function tentar(fn, sucesso) {
+    try { await fn(); if (sucesso) aviso(sucesso); }
+    catch (e) { console.error(e); aviso("Não deu certo: " + (e.message || "tente de novo")); }
+  }
+
+  // ---------- abas ----------
+  document.querySelectorAll(".aba").forEach(a => a.addEventListener("click", () => {
+    estado.aba = a.dataset.aba;
+    document.querySelectorAll(".aba").forEach(x => x.setAttribute("aria-selected", String(x === a)));
+    document.querySelectorAll("[data-sec]").forEach(s => s.hidden = s.dataset.sec !== estado.aba);
+    desenhar();
+    window.scrollTo({ top: 0 });
+  }));
+
+  // ---------- pedidos ----------
+  function selosPedido(p) {
+    const s = [el("span", { class: "selo " + p.status }, nomeStatus[p.status])];
+    if (p.status !== "cancelado") {
+      if (p.restante_pago) s.push(el("span", { class: "selo pago" }, "Pago"));
+      else if (p.sinal_pago) s.push(el("span", { class: "selo pago" }, "Sinal pago"));
+      else s.push(el("span", { class: "selo devendo" }, "Sem sinal"));
+    }
+    if (p.entrega !== "a_combinar") s.push(el("span", { class: "selo" }, p.entrega === "entrega" ? "Entrega" : "Retirada"));
+    return el("div", { class: "selos" }, s);
+  }
+
+  function cartaoPedido(p) {
+    const sabores = (p.itens || []).map(i => i.qtd + " " + i.nome).join(" · ");
+    return el("button", { class: "pedido", type: "button", onclick: () => abrirPedido(p) },
+      el("div", null, el("span", { class: "nome" }, p.cliente_nome || "Sem nome"), el("span", { class: "cod" }, "#" + p.codigo)),
+      el("div", { class: "valor" }, brl(totalPedido(p))),
+      el("div", { class: "meta" }, dataCurta(p.data_festa) + (p.data_festa ? " (" + quando(p.data_festa) + ")" : "") + " · " + num(p.total_docinhos) + " docinhos"),
+      sabores ? el("div", { class: "meta" }, sabores) : null,
+      selosPedido(p));
+  }
+
+  function desenharPedidos() {
+    const busca = estado.busca.trim().toLowerCase();
+    let lista = estado.pedidos.filter(p => {
+      if (estado.filtro === "ativos" && ENCERRADOS.includes(p.status)) return false;
+      if (!["ativos", "todos"].includes(estado.filtro) && p.status !== estado.filtro) return false;
+      if (busca && ![p.cliente_nome, p.codigo, p.cliente_telefone].some(x => (x || "").toLowerCase().includes(busca))) return false;
+      return true;
+    });
+    const recentePrimeiro = ["entregue", "cancelado", "todos"].includes(estado.filtro);
+    lista.sort((a, b) => {
+      const x = a.data_festa || "9999", y = b.data_festa || "9999";
+      return recentePrimeiro ? (x < y ? 1 : -1) : (x < y ? -1 : 1);
+    });
+    const alvo = $("#lista-pedidos");
+    alvo.replaceChildren(...(lista.length ? lista.map(cartaoPedido) : [el("div", { class: "vazio caixa" }, "Nenhum pedido aqui.")]));
+  }
+
+  $("#filtros").addEventListener("click", (e) => {
+    const c = e.target.closest(".chip"); if (!c) return;
+    estado.filtro = c.dataset.filtro;
+    document.querySelectorAll("#filtros .chip").forEach(x => x.setAttribute("aria-pressed", String(x === c)));
+    desenharPedidos();
+  });
+  $("#busca").addEventListener("input", (e) => { estado.busca = e.target.value; desenharPedidos(); });
+
+  // Editor de pedido
+  const dlg = $("#dlg-pedido");
+  let editando = null;
+  $("#p-status").append(...STATUS.map(([v, t]) => el("option", { value: v }, t)));
+
+  function abrirPedido(p) {
+    editando = p ? JSON.parse(JSON.stringify(p)) : { codigo: novoCodigo(), origem: "manual", itens: [], status: "novo", entrega: "a_combinar", valor: 0, frete: 0, sinal_pago: false, restante_pago: false };
+    $("#dlg-pedido-titulo").textContent = p ? "Pedido #" + editando.codigo : "Novo pedido";
+    $("#p-nome").value = editando.cliente_nome || "";
+    $("#p-tel").value = editando.cliente_telefone || "";
+    $("#p-data").value = editando.data_festa || "";
+    $("#p-entrega").value = editando.entrega;
+    $("#p-endereco").value = editando.endereco || "";
+    $("#p-obs").value = editando.observacoes || "";
+    $("#p-notas").value = editando.anotacoes || "";
+    $("#p-valor").value = Number(editando.valor || 0).toFixed(2);
+    $("#p-frete").value = Number(editando.frete || 0).toFixed(2);
+    $("#p-status").value = editando.status;
+    $("#p-sinal-pago").checked = editando.sinal_pago;
+    $("#p-resto-pago").checked = editando.restante_pago;
+    $("#p-excluir").hidden = !p;
+
+    const qtds = Object.fromEntries((editando.itens || []).map(i => [i.id, i.qtd]));
+    const conhecidos = new Set(estado.sabores.map(s => s.id));
+    const extras = (editando.itens || []).filter(i => !conhecidos.has(i.id)).map(i => ({ id: i.id, nome: i.nome, disponivel: false }));
+    $("#p-itens").replaceChildren(...estado.sabores.concat(extras).map(s =>
+      el("label", { class: "item" + (s.disponivel ? "" : " esgotado") },
+        el("span", null, s.nome),
+        el("input", { type: "number", min: "0", step: "10", inputMode: "numeric", value: qtds[s.id] || "", placeholder: "0", "data-id": s.id, "data-nome": s.nome, oninput: recalcularValor }))));
+    atualizarTotais();
+    $("#p-endereco-campo").hidden = editando.entrega !== "entrega";
+    desenharAcoesZap();
+    dlg.showModal();
+  }
+
+  function lerItens() {
+    return [...document.querySelectorAll("#p-itens input")].map(i => ({ id: i.dataset.id, nome: i.dataset.nome, qtd: parseInt(i.value, 10) || 0 })).filter(i => i.qtd > 0);
+  }
+  function recalcularValor() {
+    const n = lerItens().reduce((a, i) => a + i.qtd, 0);
+    $("#p-valor").value = valorDocinhos(n, estado.precos).toFixed(2);
+    atualizarTotais();
+  }
+  function atualizarTotais() {
+    const p = { valor: $("#p-valor").value, frete: $("#p-frete").value };
+    $("#p-total").textContent = brl(totalPedido(p));
+    $("#p-sinal").textContent = brl(sinalDe(p));
+    $("#p-resto").textContent = brl(totalPedido(p) - sinalDe(p));
+  }
+  ["#p-valor", "#p-frete"].forEach(s => $(s).addEventListener("input", atualizarTotais));
+  $("#p-entrega").addEventListener("change", (e) => $("#p-endereco-campo").hidden = e.target.value !== "entrega");
+  $("#p-tel").addEventListener("input", desenharAcoesZap);
+  $("#p-status").addEventListener("change", desenharAcoesZap);
+
+  function desenharAcoesZap() {
+    const tel = $("#p-tel").value;
+    const alvo = $("#p-acoes-zap");
+    if (soDigitos(tel).length < 10) { alvo.replaceChildren(); return; }
+    const nome = ($("#p-nome").value || "").split(" ")[0];
+    const oi = "Olá" + (nome ? ", " + nome : "") + "! Aqui é da Sweet Grace. ";
+    const p = { valor: $("#p-valor").value, frete: $("#p-frete").value };
+    const botoes = [el("a", { class: "btn contorno peq", href: zap(tel, oi), target: "_blank", rel: "noopener" }, "Abrir conversa")];
+    if (!$("#p-sinal-pago").checked) botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
+      href: zap(tel, oi + "Seu pedido #" + editando.codigo + " ficou em " + brl(totalPedido(p)) + ". Para reservar a data, o sinal de 50% é " + brl(sinalDe(p)) + " via Pix. Posso te mandar a chave?") }, "Cobrar sinal"));
+    if ($("#p-status").value === "entregue") botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
+      href: zap(tel, oi + "Esperamos que a festa tenha sido linda! Se puder, conta pra gente o que achou dos docinhos: " + linkDepoimento(editando.codigo)) }, "Pedir depoimento"));
+    alvo.replaceChildren(...botoes);
+  }
+
+  dlg.querySelectorAll("[data-fechar]").forEach(b => b.addEventListener("click", () => dlg.close()));
+  $("#form-pedido").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const itens = lerItens();
+    const p = Object.assign({}, editando, {
+      cliente_nome: $("#p-nome").value.trim() || null,
+      cliente_telefone: $("#p-tel").value.trim() || null,
+      data_festa: $("#p-data").value || null,
+      entrega: $("#p-entrega").value,
+      endereco: $("#p-endereco").value.trim() || null,
+      observacoes: $("#p-obs").value.trim() || null,
+      anotacoes: $("#p-notas").value.trim() || null,
+      itens,
+      total_docinhos: itens.reduce((a, i) => a + i.qtd, 0),
+      valor: Number($("#p-valor").value || 0),
+      frete: Number($("#p-frete").value || 0),
+      status: $("#p-status").value,
+      sinal_pago: $("#p-sinal-pago").checked,
+      restante_pago: $("#p-resto-pago").checked
+    });
+    tentar(async () => { await banco.salvarPedido(p); dlg.close(); await carregar(); }, "Pedido salvo");
+  });
+  $("#p-sinal-pago").addEventListener("change", (e) => {
+    if (e.target.checked && ["novo", "aguardando_sinal"].includes($("#p-status").value)) $("#p-status").value = "confirmado";
+    desenharAcoesZap();
+  });
+  $("#p-excluir").addEventListener("click", () => {
+    if (!confirm("Excluir este pedido? Não dá para desfazer.")) return;
+    tentar(async () => { await banco.excluirPedido(editando.id); dlg.close(); await carregar(); }, "Pedido excluído");
+  });
+  $("#btn-novo").addEventListener("click", () => abrirPedido(null));
+
+  // ---------- agenda ----------
+  function desenharAgenda() {
+    const hoje = hojeIso();
+    const ativos = estado.pedidos.filter(p => p.data_festa && !ENCERRADOS.includes(p.status));
+    const porDia = {};
+    ativos.forEach(p => (porDia[p.data_festa] ||= []).push(p));
+    estado.bloqueios.filter(b => b.data >= hoje).forEach(b => porDia[b.data] ||= []);
+    const dias = Object.keys(porDia).sort();
+    const bloq = Object.fromEntries(estado.bloqueios.map(b => [b.data, b]));
+    const semData = estado.pedidos.filter(p => !p.data_festa && !ENCERRADOS.includes(p.status));
+
+    const blocos = dias.map(dia => {
+      const peds = porDia[dia];
+      const soma = {};
+      peds.forEach(p => (p.itens || []).forEach(i => soma[i.nome] = (soma[i.nome] || 0) + i.qtd));
+      const total = Object.values(soma).reduce((a, b) => a + b, 0);
+      const b = bloq[dia];
+      const atrasado = dia < hoje;
+      return el("div", { class: "caixa dia" + (b ? " bloqueado" : "") + (atrasado ? " atrasado" : "") },
+        el("div", { class: "dia-cabeca" },
+          el("h3", null, dataCurta(dia), el("small", null, atrasado ? "passou, falta marcar como entregue" : quando(dia))),
+          el("div", { class: "acoes" },
+            total ? el("span", { class: "selo" }, num(total) + " docinhos") : null,
+            b ? el("button", { class: "btn contorno peq", type: "button", onclick: () => tentar(async () => { await banco.desbloquear(dia); await carregar(); }, "Dia liberado") }, "Liberar dia")
+              : atrasado ? null : el("button", { class: "btn discreto peq", type: "button", onclick: () => tentar(async () => { await banco.bloquear(dia, "Agenda cheia"); await carregar(); }, "Dia bloqueado no site") }, "Bloquear dia"))),
+        b ? el("p", { class: "sub" }, "Bloqueado no site" + (b.motivo ? ": " + b.motivo : "")) : null,
+        total ? el("div", { class: "producao" }, Object.entries(soma).sort((a, b) => b[1] - a[1]).map(([n, q]) => el("span", null, el("b", null, num(q)), " " + n))) : null,
+        peds.length ? el("div", { class: "lista" }, peds.map(cartaoPedido)) : null);
+    });
+    if (semData.length) blocos.push(el("div", { class: "caixa dia" }, el("div", { class: "dia-cabeca" }, el("h3", null, "Sem data definida")), el("div", { class: "lista" }, semData.map(cartaoPedido))));
+    $("#lista-agenda").replaceChildren(...(blocos.length ? blocos : [el("div", { class: "vazio caixa" }, "Nenhuma festa marcada por enquanto.")]));
+  }
+  $("#bloq-data").min = hojeIso();
+  $("#form-bloqueio").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = $("#bloq-data").value, motivo = $("#bloq-motivo").value.trim() || null;
+    tentar(async () => { await banco.bloquear(data, motivo); e.target.reset(); await carregar(); }, "Dia bloqueado no site");
+  });
+
+  // ---------- pagamentos ----------
+  function linhaPagamento(p, tipo) {
+    const valor = tipo === "sinal" ? sinalDe(p) : totalPedido(p) - sinalDe(p);
+    const marcar = () => tentar(async () => {
+      const mud = tipo === "sinal" ? { sinal_pago: true } : { restante_pago: true };
+      if (tipo === "sinal" && ["novo", "aguardando_sinal"].includes(p.status)) mud.status = "confirmado";
+      await banco.salvarPedido(Object.assign({}, p, mud)); await carregar();
+    }, tipo === "sinal" ? "Sinal marcado como pago" : "Pedido quitado");
+    return el("div", { class: "linha" },
+      el("div", { class: "info" }, el("b", null, (p.cliente_nome || "Sem nome") + " · " + brl(valor)), el("small", null, "#" + p.codigo + " · festa " + dataCurta(p.data_festa) + (p.data_festa ? " (" + quando(p.data_festa) + ")" : ""))),
+      el("div", { class: "acoes" },
+        el("button", { class: "btn discreto peq", type: "button", onclick: () => abrirPedido(p) }, "Ver"),
+        el("button", { class: "btn contorno peq", type: "button", onclick: marcar }, tipo === "sinal" ? "Sinal recebido" : "Recebido")));
+  }
+  function desenharPagamentos() {
+    const vivos = estado.pedidos.filter(p => p.status !== "cancelado");
+    const semSinal = vivos.filter(p => !p.sinal_pago && !p.restante_pago);
+    const faltaResto = vivos.filter(p => p.sinal_pago && !p.restante_pago);
+    const ordenar = (l) => l.sort((a, b) => (a.data_festa || "9") < (b.data_festa || "9") ? -1 : 1);
+    const aReceber = semSinal.reduce((a, p) => a + totalPedido(p), 0) + faltaResto.reduce((a, p) => a + totalPedido(p) - sinalDe(p), 0);
+    const mes = hojeIso().slice(0, 7);
+    const doMes = vivos.filter(p => (p.data_festa || "").startsWith(mes));
+    const recebidoMes = doMes.reduce((a, p) => a + (p.restante_pago ? totalPedido(p) : p.sinal_pago ? sinalDe(p) : 0), 0);
+    $("#numeros-pag").replaceChildren(
+      el("div", { class: "numero" }, el("span", null, "A receber (tudo)"), el("strong", null, brl(aReceber))),
+      el("div", { class: "numero" }, el("span", null, "Sinais pendentes"), el("strong", null, num(semSinal.length))),
+      el("div", { class: "numero" }, el("span", null, "Recebido das festas do mês"), el("strong", null, brl(recebidoMes))));
+    $("#lista-sinal").replaceChildren(...(semSinal.length ? ordenar(semSinal).map(p => linhaPagamento(p, "sinal")) : [el("p", { class: "sub" }, "Nenhum sinal pendente.")]));
+    $("#lista-restante").replaceChildren(...(faltaResto.length ? ordenar(faltaResto).map(p => linhaPagamento(p, "resto")) : [el("p", { class: "sub" }, "Nada pendente.")]));
+  }
+
+  // ---------- cardápio ----------
+  function desenharCardapio() {
+    $("#lista-sabores").replaceChildren(...estado.sabores.map(s => {
+      const id = "sab-" + s.id;
+      return el("div", { class: "linha" },
+        el("label", { class: "info", htmlFor: id }, el("b", null, s.nome), el("small", null, s.disponivel ? "Disponível" : "Esgotado no site")),
+        el("span", { class: "chave" },
+          el("input", { type: "checkbox", id, checked: s.disponivel, role: "switch", "aria-label": s.nome + " disponível", onchange: (e) => tentar(async () => { await banco.salvarSabor({ id: s.id, disponivel: e.target.checked }); await carregar(); }, e.target.checked ? s.nome + " voltou ao site" : s.nome + " marcado como esgotado") }),
+          el("span")));
+    }));
+    if (document.activeElement?.id !== "preco-unidade" && document.activeElement?.id !== "preco-cento") {
+      $("#preco-unidade").value = estado.precos.preco_unidade.toFixed(2);
+      $("#preco-cento").value = estado.precos.preco_cento.toFixed(2);
+    }
+  }
+  $("#form-precos").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const c = { preco_unidade: Number($("#preco-unidade").value), preco_cento: Number($("#preco-cento").value) };
+    tentar(async () => { await banco.salvarPrecos(c); await carregar(); }, "Preços atualizados no site");
+  });
+
+  // ---------- resumo ----------
+  function desenharResumo() {
+    const m = estado.mes;
+    const chave = m.getFullYear() + "-" + String(m.getMonth() + 1).padStart(2, "0");
+    $("#mes-nome").textContent = MESES[m.getMonth()] + " " + m.getFullYear();
+    const doMes = estado.pedidos.filter(p => p.status !== "cancelado" && (p.data_festa || "").startsWith(chave));
+    const fat = doMes.reduce((a, p) => a + totalPedido(p), 0);
+    const doces = doMes.reduce((a, p) => a + (p.total_docinhos || 0), 0);
+    $("#numeros-mes").replaceChildren(
+      el("div", { class: "numero" }, el("span", null, "Faturamento"), el("strong", null, brl(fat))),
+      el("div", { class: "numero" }, el("span", null, "Pedidos"), el("strong", null, num(doMes.length))),
+      el("div", { class: "numero" }, el("span", null, "Docinhos"), el("strong", null, num(doces))),
+      el("div", { class: "numero" }, el("span", null, "Valor médio por pedido"), el("strong", null, brl(doMes.length ? fat / doMes.length : 0))));
+    const soma = {};
+    doMes.forEach(p => (p.itens || []).forEach(i => soma[i.nome] = (soma[i.nome] || 0) + i.qtd));
+    const lista = Object.entries(soma).sort((a, b) => b[1] - a[1]);
+    const max = lista.length ? lista[0][1] : 1;
+    $("#barras-sabores").replaceChildren(...(lista.length ? lista.map(([n, q]) =>
+      el("div", { class: "barra" }, el("span", null, n), el("div", { class: "barra-trilho", "aria-hidden": "true" }, el("i", { style: "width:" + (q / max * 100) + "%" })), el("b", null, num(q))))
+      : [el("p", { class: "sub" }, "Nenhum pedido neste mês.")]));
+  }
+  $("#mes-ant").addEventListener("click", () => { estado.mes = new Date(estado.mes.getFullYear(), estado.mes.getMonth() - 1, 1); desenharResumo(); });
+  $("#mes-prox").addEventListener("click", () => { estado.mes = new Date(estado.mes.getFullYear(), estado.mes.getMonth() + 1, 1); desenharResumo(); });
+
+  // ---------- depoimentos ----------
+  const linkDepoimento = (codigo) => new URL("../depoimento.html" + (codigo ? "?pedido=" + codigo : ""), location.href).href;
+  function desenharDepoimentos() {
+    $("#link-depo").value = linkDepoimento();
+    $("#lista-depos").replaceChildren(...(estado.depoimentos.length ? estado.depoimentos.map(d => {
+      const id = "depo-" + d.id;
+      return el("div", { class: "caixa", style: "display:grid;gap:10px" },
+        el("p", { class: "depo-texto" }, "“" + d.texto + "”"),
+        el("div", { class: "sub" }, el("b", null, d.nome), d.festa ? " · " + d.festa : "", d.pedido_codigo ? " · pedido #" + d.pedido_codigo : "", " · recebido em " + new Date(d.criado_em).toLocaleDateString("pt-BR")),
+        el("div", { class: "linha", style: "border:0;padding:0" },
+          el("label", { class: "marcar", htmlFor: id },
+            el("span", { class: "chave" }, el("input", { type: "checkbox", id, role: "switch", checked: d.publicado, onchange: (e) => tentar(async () => { await banco.salvarDepoimento({ id: d.id, publicado: e.target.checked }); await carregar(); }, e.target.checked ? "Publicado no site" : "Tirado do site") }), el("span")),
+            d.publicado ? "Aparece no site" : "Não aparece no site"),
+          el("button", { class: "btn perigo peq", type: "button", onclick: () => { if (confirm("Excluir este depoimento?")) tentar(async () => { await banco.excluirDepoimento(d.id); await carregar(); }, "Depoimento excluído"); } }, "Excluir")));
+    }) : [el("div", { class: "vazio caixa" }, "Nenhum depoimento ainda. Mande o link acima para as clientes depois da festa.")]));
+  }
+  $("#copiar-depo").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("#link-depo").value); aviso("Link copiado"); }
+    catch { $("#link-depo").select(); aviso("Selecione e copie o link"); }
+  });
+  const dlgDepo = $("#dlg-depo");
+  dlgDepo.querySelectorAll("[data-fechar]").forEach(b => b.addEventListener("click", () => dlgDepo.close()));
+  $("#btn-novo-depo").addEventListener("click", () => { $("#form-depo").reset(); dlgDepo.showModal(); });
+  $("#form-depo").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const d = { nome: $("#d-nome").value.trim(), festa: $("#d-festa").value.trim() || null, texto: $("#d-texto").value.trim(), autorizado: $("#d-autorizado").checked, publicado: false };
+    tentar(async () => { await banco.salvarDepoimento(d); dlgDepo.close(); await carregar(); }, "Depoimento salvo. Publique quando quiser.");
+  });
+
+  // ---------- entrar e sair ----------
+  async function mostrarPainel() {
+    $("#tela-entrar").hidden = true;
+    $("#tela-painel").hidden = false;
+    await tentar(carregar);
+  }
+  function mostrarEntrar(msg) {
+    $("#tela-painel").hidden = true;
+    $("#tela-entrar").hidden = false;
+    const erro = $("#entrar-erro"); erro.hidden = !msg; erro.textContent = msg || "";
+  }
+
+  $("#form-entrar").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const botao = $("#btn-entrar"); botao.disabled = true;
+    try {
+      await banco.entrar($("#email").value.trim(), $("#senha").value);
+      if (!(await banco.souEquipe())) { await banco.sair(); mostrarEntrar("Este e-mail não tem acesso ao painel."); return; }
+      $("#senha").value = "";
+      await mostrarPainel();
+    } catch (err) {
+      mostrarEntrar(/invalid/i.test(err.message || "") ? "E-mail ou senha incorretos." : "Não foi possível entrar. Confira a internet e tente de novo.");
+    } finally { botao.disabled = false; }
+  });
+  $("#btn-sair").addEventListener("click", async () => { await banco.sair(); mostrarEntrar(); });
+
+  // Atualiza sozinho quando ela volta para o painel e a cada 2 minutos.
+  let ultima = Date.now();
+  const atualizarSeLogado = () => { if (!$("#tela-painel").hidden && !dlg.open && Date.now() - ultima > 30000) { ultima = Date.now(); carregar().catch(() => {}); } };
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) atualizarSeLogado(); });
+  setInterval(atualizarSeLogado, 120000);
+
+  async function iniciar() {
+    if (DEMO) {
+      banco = bancoDemo();
+      $("#aviso-demo").hidden = false;
+      $("#entrar-sub").textContent = "Demonstração: digite qualquer e-mail e senha.";
+      mostrarEntrar();
+      return;
+    }
+    if (!configurado) {
+      mostrarEntrar();
+      $("#form-entrar").replaceChildren(
+        el("img", { src: "../assets/logo.jpeg", alt: "Sweet Grace" }),
+        el("h1", null, "Área da confeiteira"),
+        el("p", { class: "sub" }, "O painel ainda não foi ligado ao banco de dados."),
+        el("a", { class: "btn contorno", href: "?demo" }, "Ver demonstração"),
+        el("a", { class: "btn discreto", href: "../" }, "Voltar para o site"));
+      return;
+    }
+    await new Promise((ok, falha) => {
+      const s = document.createElement("script");
+      s.src = "supabase-2.117.2.js";
+      s.onload = ok; s.onerror = falha; document.head.appendChild(s);
+    }).catch(() => {});
+    if (!window.supabase) { mostrarEntrar("Não foi possível carregar o painel. Confira a internet e recarregue a página."); return; }
+    banco = bancoSupabase();
+    const sessao = await banco.sessao();
+    if (sessao && await banco.souEquipe().catch(() => false)) mostrarPainel();
+    else mostrarEntrar();
+  }
+  iniciar();
+})();
+</script>
+</body>
+</html>

@@ -327,6 +327,12 @@
   .depo-mais { text-align: center; margin-top: 28px; }
   footer { background: var(--cacau); color: #A8927F; border-top: 1px solid rgba(250,241,230,.12); }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding-block: 22px; font-size: 13px; }
+  footer .links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  footer .area { color: #A8927F; text-decoration: none; }
+  footer .area:hover { color: #D8C8B6; text-decoration: underline; }
+  .doce.esgotado img { filter: grayscale(.6); opacity: .75; }
+  .linha.esgotado { opacity: .5; }
+  .qtd button:disabled { cursor: not-allowed; }
 
   /* Botão flutuante do WhatsApp */
   .zap-flutuante {
@@ -541,6 +547,10 @@
         </div>
         <div class="linhas" id="linhas"></div>
         <div class="campo">
+          <label for="nome-cliente">Seu nome</label>
+          <input type="text" id="nome-cliente" name="nome" autocomplete="name" maxlength="80">
+        </div>
+        <div class="campo">
           <label for="data-festa">Data da festa</label>
           <input type="date" id="data-festa" name="data" aria-describedby="data-dica">
           <span class="dica" id="data-dica">Pedidos com pelo menos 3 dias de antecedência.</span>
@@ -646,7 +656,10 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Sweet Grace · Doceria artesanal em Belém, PA</span>
-    <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener">@doceriasweetgrace</a>
+    <span class="links">
+      <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener">@doceriasweetgrace</a>
+      <a class="area" href="painel/">Área da confeiteira</a>
+    </span>
   </div>
 </footer>
 
@@ -746,7 +759,9 @@
   }
 
   // Cento a R$ 150,00; o que passar do cento sai a R$ 2,00 a unidade.
-  const valor = (n) => Math.floor(n / 100) * 150 + (n % 100) * 2;
+  // Quando o painel está ligado, loja.js troca pelos preços salvos lá.
+  const PRECOS = { unidade: 2, cento: 150 };
+  const valor = (n) => Math.floor(n / 100) * PRECOS.cento + (n % 100) * PRECOS.unidade;
   const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const nota = document.getElementById("nota");
   function atualizar() {
@@ -758,7 +773,7 @@
     const resto = total % 100, falta = 100 - resto;
     const dica = document.getElementById("dica-cento");
     dica.hidden = resto < 50;
-    if (!dica.hidden) dica.textContent = "Faltam " + falta + " docinhos para fechar mais um cento, com cada um a R$ 1,50.";
+    if (!dica.hidden) dica.textContent = "Faltam " + falta + " docinhos para fechar mais um cento, com cada um a " + brl(PRECOS.cento / 100) + ".";
     return total;
   }
 
@@ -778,15 +793,28 @@
       campoData.focus();
       return;
     }
+    if (data && (window.DIAS_BLOQUEADOS || []).includes(data)) {
+      nota.textContent = "Essa data já está com a agenda cheia. Escolha outro dia ou fale com a gente no WhatsApp.";
+      nota.classList.add("alerta");
+      campoData.focus();
+      return;
+    }
     medir("envio_pedido", { docinhos: total });
     const obs = document.getElementById("obs").value.trim();
-    let msg = "Olá, Sweet Grace! Gostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
+    const nome = document.getElementById("nome-cliente").value.trim();
+    const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const codigo = Array.from(crypto.getRandomValues(new Uint8Array(6)), b => letras[b % letras.length]).join("");
+    if (window.salvarPedido) salvarPedido({ codigo, nome, data, obs, itens: SABORES.filter(s => qtd[s.id]).map(s => ({ id: s.id, qtd: qtd[s.id] })) });
+    let msg = "Olá, Sweet Grace! " + (nome ? "Sou " + nome + " e g" : "G") + "ostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
     if (obs) msg += "\nObservações: " + obs;
+    msg += "\nCódigo do pedido: " + codigo;
     const a = document.createElement("a");
     a.href = zapLink(msg); a.target = "_blank"; a.rel = "noopener";
     document.body.appendChild(a); a.click(); a.remove();
   });
 </script>
+<script src="config-supabase.js"></script>
+<script src="loja.js"></script>
 </body>
 </html>
