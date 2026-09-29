@@ -185,7 +185,26 @@
     <div class="campo"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" required></div>
     <p class="erro" id="entrar-erro" role="alert" hidden></p>
     <button class="btn" type="submit" id="btn-entrar">Entrar</button>
+    <button class="btn discreto" type="button" id="btn-esqueci">Esqueci a senha</button>
     <a class="btn discreto" href="../">Voltar para o site</a>
+  </form>
+  <form class="caixa" id="form-esqueci" hidden>
+    <img src="../assets/logo.jpeg" alt="Sweet Grace">
+    <h1>Trocar a senha</h1>
+    <p class="sub" id="esqueci-sub">Digite o seu e-mail. Vamos mandar um link para você criar uma senha nova.</p>
+    <div class="campo"><label for="esqueci-email">E-mail</label><input id="esqueci-email" type="email" autocomplete="username" required></div>
+    <p class="erro" id="esqueci-erro" role="alert" hidden></p>
+    <button class="btn" type="submit" id="btn-enviar-link">Enviar link</button>
+    <button class="btn discreto" type="button" id="btn-voltar-entrar">Voltar</button>
+  </form>
+  <form class="caixa" id="form-nova-senha" hidden>
+    <img src="../assets/logo.jpeg" alt="Sweet Grace">
+    <h1>Nova senha</h1>
+    <p class="sub">Escolha uma senha com pelo menos 8 caracteres.</p>
+    <div class="campo"><label for="nova-senha">Nova senha</label><input id="nova-senha" type="password" autocomplete="new-password" minlength="8" required></div>
+    <div class="campo"><label for="nova-senha-2">Repita a senha</label><input id="nova-senha-2" type="password" autocomplete="new-password" minlength="8" required></div>
+    <p class="erro" id="nova-erro" role="alert" hidden></p>
+    <button class="btn" type="submit" id="btn-salvar-senha">Salvar senha</button>
   </form>
 </section>
 
@@ -453,6 +472,9 @@
       async sessao() { const { data } = await sb.auth.getSession(); return data.session; },
       async entrar(email, senha) { ok(await sb.auth.signInWithPassword({ email, password: senha })); },
       async sair() { await sb.auth.signOut(); },
+      async esqueci(email) { ok(await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname })); },
+      async novaSenha(senha) { ok(await sb.auth.updateUser({ password: senha })); },
+      aoRecuperar(fn) { sb.auth.onAuthStateChange((evento) => { if (evento === "PASSWORD_RECOVERY") fn(); }); },
       async souEquipe() { return ok(await sb.rpc("eh_equipe")); },
       async pedidos() { return ok(await sb.from("pedidos").select("*").order("data_festa", { ascending: true, nullsFirst: false }).limit(2000)); },
       async salvarPedido(p) {
@@ -511,6 +533,9 @@
       async sessao() { return logado ? {} : null; },
       async entrar() { logado = true; },
       async sair() { logado = false; },
+      async esqueci() {},
+      async novaSenha() { logado = true; },
+      aoRecuperar() {},
       async souEquipe() { return true; },
       async pedidos() { return copia(db.pedidos); },
       async salvarPedido(p) { p = copia(p); if (!p.id) p.id = crypto.randomUUID(); const i = db.pedidos.findIndex(x => x.id === p.id); if (i >= 0) db.pedidos[i] = Object.assign(db.pedidos[i], p); else db.pedidos.push(Object.assign({ criado_em: new Date().toISOString() }, p)); return copia(p); },
@@ -856,11 +881,51 @@
     $("#tela-painel").hidden = false;
     await tentar(carregar);
   }
-  function mostrarEntrar(msg) {
+  function mostrarEntrar(msg, form) {
     $("#tela-painel").hidden = true;
     $("#tela-entrar").hidden = false;
-    const erro = $("#entrar-erro"); erro.hidden = !msg; erro.textContent = msg || "";
+    form = form || "form-entrar";
+    ["form-entrar", "form-esqueci", "form-nova-senha"].forEach(id => $("#" + id).hidden = id !== form);
+    const erro = $("#" + { "form-entrar": "entrar-erro", "form-esqueci": "esqueci-erro", "form-nova-senha": "nova-erro" }[form]);
+    erro.hidden = !msg; erro.textContent = msg || "";
   }
+
+  // Esqueci a senha: manda um link por e-mail; o link volta para cá e pede a senha nova.
+  $("#btn-esqueci").addEventListener("click", () => {
+    $("#esqueci-email").value = $("#email").value;
+    $("#esqueci-sub").textContent = "Digite o seu e-mail. Vamos mandar um link para você criar uma senha nova.";
+    $("#btn-enviar-link").hidden = false;
+    mostrarEntrar(null, "form-esqueci");
+  });
+  $("#btn-voltar-entrar").addEventListener("click", () => mostrarEntrar());
+  $("#form-esqueci").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const botao = $("#btn-enviar-link"); botao.disabled = true;
+    try {
+      await banco.esqueci($("#esqueci-email").value.trim());
+      mostrarEntrar(null, "form-esqueci");
+      $("#esqueci-sub").textContent = "Pronto! Se este e-mail tiver acesso ao painel, o link chega em alguns minutos. Olhe também a caixa de spam.";
+      botao.hidden = true;
+    } catch (err) {
+      mostrarEntrar(/rate|seconds|limit/i.test(err.message || "") ? "Muitos pedidos seguidos. Espere alguns minutos e tente de novo." : "Não foi possível enviar agora. Tente de novo.", "form-esqueci");
+    } finally { botao.disabled = false; }
+  });
+  $("#form-nova-senha").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const a = $("#nova-senha").value, b = $("#nova-senha-2").value;
+    if (a.length < 8) return mostrarEntrar("A senha precisa ter pelo menos 8 caracteres.", "form-nova-senha");
+    if (a !== b) return mostrarEntrar("As duas senhas não são iguais.", "form-nova-senha");
+    const botao = $("#btn-salvar-senha"); botao.disabled = true;
+    try {
+      await banco.novaSenha(a);
+      $("#nova-senha").value = $("#nova-senha-2").value = "";
+      aviso("Senha trocada");
+      if (await banco.souEquipe().catch(() => false)) await mostrarPainel();
+      else { await banco.sair(); mostrarEntrar("Este e-mail não tem acesso ao painel."); }
+    } catch (err) {
+      mostrarEntrar(/expired|session/i.test(err.message || "") ? "O link expirou. Peça um novo em \"Esqueci a senha\"." : "Não foi possível salvar a senha. Tente de novo.", "form-nova-senha");
+    } finally { botao.disabled = false; }
+  });
 
   $("#form-entrar").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -906,9 +971,14 @@
       s.onload = ok; s.onerror = falha; document.head.appendChild(s);
     }).catch(() => {});
     if (!window.supabase) { mostrarEntrar("Não foi possível carregar o painel. Confira a internet e recarregue a página."); return; }
+    const hash = new URLSearchParams(location.hash.slice(1));
+    let recuperando = hash.get("type") === "recovery";
     banco = bancoSupabase();
+    banco.aoRecuperar(() => { recuperando = true; mostrarEntrar(null, "form-nova-senha"); });
     const sessao = await banco.sessao();
-    if (sessao && await banco.souEquipe().catch(() => false)) mostrarPainel();
+    if (hash.get("error_description")) { history.replaceState(null, "", location.pathname); mostrarEntrar("O link de troca de senha expirou ou já foi usado. Peça um novo em \"Esqueci a senha\"."); return; }
+    if (recuperando && sessao) mostrarEntrar(null, "form-nova-senha");
+    else if (sessao && await banco.souEquipe().catch(() => false)) mostrarPainel();
     else mostrarEntrar();
   }
   iniciar();
