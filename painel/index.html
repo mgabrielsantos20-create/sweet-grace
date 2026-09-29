@@ -168,6 +168,15 @@
   .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--cacau); color: var(--papel); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); }
   .copiar { display: flex; gap: 8px; }
   .copiar input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; font-size: 14px; }
+  .foto-sabor { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
+  .foto-sabor img { width: 96px; height: 96px; object-fit: cover; border-radius: 14px; background: var(--creme-2); }
+  .receita-linha { display: grid; grid-template-columns: 1fr 100px 40px; gap: 8px; align-items: center; }
+  .receita-linha select, .receita-linha input { width: 100%; padding: 8px 10px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; }
+  .sabor-linha { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; gap: 10px; }
+  .sabor-linha .info { flex: none; }
+  .miniatura { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--creme-2); flex: none; }
+  .lotado { color: var(--alerta); }
+  .alerta-nota { background: #F6E1DC; color: var(--alerta); border-radius: 10px; padding: 8px 12px; font-size: 14px; }
   .depo-texto { font: italic 400 19px/1.35 var(--display); }
 </style>
 </head>
@@ -219,15 +228,19 @@
       <nav class="abas" role="tablist" aria-label="Seções do painel">
         <button class="aba" role="tab" data-aba="pedidos" aria-selected="true">Pedidos<span class="bolinha" id="bolinha-novos" hidden></span></button>
         <button class="aba" role="tab" data-aba="agenda" aria-selected="false">Agenda</button>
+        <button class="aba" role="tab" data-aba="compras" aria-selected="false">Compras</button>
         <button class="aba" role="tab" data-aba="pagamentos" aria-selected="false">Pagamentos</button>
+        <button class="aba" role="tab" data-aba="clientes" aria-selected="false">Clientes</button>
         <button class="aba" role="tab" data-aba="cardapio" aria-selected="false">Cardápio</button>
         <button class="aba" role="tab" data-aba="resumo" aria-selected="false">Resumo</button>
         <button class="aba" role="tab" data-aba="depoimentos" aria-selected="false">Depoimentos</button>
+        <button class="aba" role="tab" data-aba="ajustes" aria-selected="false">Ajustes</button>
       </nav>
     </div>
   </header>
 
   <main class="wrap">
+    <p class="caixa sub" id="aviso-atualizar" hidden style="margin-bottom:14px">Falta rodar a atualização 2 do banco (arquivo supabase/atualizacao-2.sql). Compras, custos, fotos e avisos só funcionam depois dela.</p>
     <!-- Pedidos -->
     <section class="painel-sec" data-sec="pedidos">
       <div class="sec-cabeca">
@@ -259,6 +272,31 @@
       <div class="lista" id="lista-agenda"></div>
     </section>
 
+    <!-- Compras -->
+    <section class="painel-sec" data-sec="compras" hidden>
+      <div class="sec-cabeca"><h2>Lista de compras</h2></div>
+      <p class="sub">Soma os ingredientes dos pedidos em andamento com festa no período, pelas receitas de cada sabor (aba Cardápio).</p>
+      <div class="caixa campos">
+        <div class="campo"><label for="compras-de">De</label><input type="date" id="compras-de"></div>
+        <div class="campo"><label for="compras-ate">Até</label><input type="date" id="compras-ate"></div>
+      </div>
+      <div class="caixa">
+        <div class="sec-cabeca" style="margin-bottom:6px"><div class="grupo-titulo" style="margin:0" id="compras-titulo">Comprar</div><button class="btn contorno peq" type="button" id="compras-copiar">Copiar lista</button></div>
+        <div id="lista-compras"></div>
+      </div>
+      <div class="caixa">
+        <div class="grupo-titulo">Ingredientes e custos</div>
+        <p class="sub" style="margin-bottom:8px">Quanto custa cada unidade. Ex.: leite condensado, "lata", R$ 6,50; chocolate, "g", R$ 0,05.</p>
+        <div id="lista-ingredientes"></div>
+        <form class="campos" id="form-ingrediente" style="margin-top:12px">
+          <div class="campo"><label for="ing-nome">Ingrediente</label><input id="ing-nome" required placeholder="Leite condensado"></div>
+          <div class="campo"><label for="ing-unidade">Unidade</label><input id="ing-unidade" required placeholder="lata, g, ml, un"></div>
+          <div class="campo"><label for="ing-custo">Custo por unidade (R$)</label><input id="ing-custo" type="number" step="0.001" min="0" value="0"></div>
+          <div class="campo" style="align-self:end"><button class="btn contorno" type="submit">Adicionar</button></div>
+        </form>
+      </div>
+    </section>
+
     <!-- Pagamentos -->
     <section class="painel-sec" data-sec="pagamentos" hidden>
       <div class="sec-cabeca"><h2>Pagamentos</h2></div>
@@ -273,6 +311,18 @@
       </div>
     </section>
 
+    <!-- Clientes -->
+    <section class="painel-sec" data-sec="clientes" hidden>
+      <div class="sec-cabeca"><h2>Clientes</h2></div>
+      <div class="caixa" id="caixa-lembretes">
+        <div class="grupo-titulo">Faz um ano da festa</div>
+        <p class="sub" style="margin-bottom:6px">Festas do ano passado nos próximos 30 dias. Uma boa hora para oferecer os docinhos de novo.</p>
+        <div id="lista-lembretes"></div>
+      </div>
+      <input class="busca" id="busca-clientes" type="search" placeholder="Buscar cliente">
+      <div class="caixa"><div id="lista-clientes"></div></div>
+    </section>
+
     <!-- Cardápio -->
     <section class="painel-sec" data-sec="cardapio" hidden>
       <div class="sec-cabeca"><h2>Cardápio</h2></div>
@@ -280,6 +330,7 @@
         <div class="grupo-titulo">Sabores no site</div>
         <p class="sub">Desligue um sabor quando ele acabar. No site ele aparece como esgotado e sai do montador de pedido.</p>
         <div id="lista-sabores"></div>
+        <button class="btn contorno" type="button" id="btn-novo-sabor" style="margin-top:12px">+ Novo sabor</button>
       </div>
       <form class="caixa" id="form-precos">
         <div class="grupo-titulo">Preços</div>
@@ -304,6 +355,7 @@
       </div>
       <p class="sub">Conta os pedidos com festa neste mês, sem os cancelados.</p>
       <div class="numeros" id="numeros-mes"></div>
+      <p class="sub" id="resumo-custo-dica">Para ver custo e lucro, cadastre os ingredientes (aba Compras) e as receitas (aba Cardápio).</p>
       <div class="caixa">
         <div class="grupo-titulo">Sabores mais pedidos</div>
         <div class="barras" id="barras-sabores"></div>
@@ -323,6 +375,45 @@
       </div>
       <div class="lista" id="lista-depos"></div>
     </section>
+    <!-- Ajustes -->
+    <section class="painel-sec" data-sec="ajustes" hidden>
+      <div class="sec-cabeca"><h2>Ajustes</h2></div>
+      <form class="caixa" id="form-pix">
+        <div class="grupo-titulo">Pix para receber</div>
+        <p class="sub" style="margin-bottom:10px">Usado no link de pagamento e na mensagem de cobrança. O nome deve ser igual ao que aparece no banco.</p>
+        <div class="campos">
+          <div class="campo"><label for="pix-tipo">Tipo de chave</label>
+            <select id="pix-tipo"><option value="celular">Celular</option><option value="cpf">CPF</option><option value="cnpj">CNPJ</option><option value="email">E-mail</option><option value="aleatoria">Chave aleatória</option></select></div>
+          <div class="campo"><label for="pix-chave">Chave Pix</label><input id="pix-chave" autocomplete="off"></div>
+          <div class="campo"><label for="pix-nome">Nome no banco</label><input id="pix-nome" maxlength="25"></div>
+          <div class="campo"><label for="pix-cidade">Cidade</label><input id="pix-cidade" maxlength="15" placeholder="Belém"></div>
+        </div>
+        <div class="acoes" style="margin-top:12px"><button class="btn" type="submit">Salvar Pix</button><a class="btn discreto" id="pix-teste" target="_blank" rel="noopener" hidden>Ver página de pagamento</a></div>
+      </form>
+      <form class="caixa" id="form-limite">
+        <div class="grupo-titulo">Limite por dia</div>
+        <p class="sub" style="margin-bottom:10px">Quantos docinhos dá para fazer por dia. Quando a soma dos pedidos chega nesse número, o site não deixa escolher o dia. Deixe vazio para não ter limite.</p>
+        <div class="campos">
+          <div class="campo"><label for="limite-dia">Docinhos por dia</label><input id="limite-dia" type="number" min="10" step="10" placeholder="Sem limite"></div>
+          <div class="campo" style="align-self:end"><button class="btn" type="submit">Salvar limite</button></div>
+        </div>
+      </form>
+      <div class="caixa" id="caixa-avisos">
+        <div class="grupo-titulo">Aviso de pedido novo no celular</div>
+        <ol class="sub" style="margin:0 0 12px;padding-left:20px">
+          <li>Instale o app <b>ntfy</b> (grátis, na Play Store ou App Store).</li>
+          <li>No app, toque em <b>+</b> e digite o código abaixo em "Topic name".</li>
+          <li>Toque em "Enviar aviso de teste" para conferir.</li>
+        </ol>
+        <div class="copiar"><input id="ntfy-topico" readonly aria-label="Código do aviso"><button class="btn contorno peq" type="button" id="copiar-topico">Copiar</button></div>
+        <p class="sub" style="margin-top:8px">Guarde este código só com você: quem tiver ele recebe os avisos.</p>
+        <div class="acoes" style="margin-top:12px">
+          <button class="btn contorno peq" type="button" id="testar-aviso">Enviar aviso de teste</button>
+          <label class="marcar"><span class="chave"><input type="checkbox" id="avisos-ligado" role="switch"><span></span></span> Avisos ligados</label>
+        </div>
+        <div class="acoes" style="margin-top:12px"><button class="btn discreto peq" type="button" id="avisos-navegador">Avisar também neste navegador</button></div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -334,6 +425,7 @@
       <button class="btn discreto" type="button" data-fechar aria-label="Fechar">✕</button>
     </div>
     <div class="dlg-corpo">
+      <p class="alerta-nota" id="p-alerta" hidden></p>
       <div>
         <div class="grupo-titulo">Cliente</div>
         <div class="campos">
@@ -364,13 +456,17 @@
           <div class="campo"><label for="p-status">Situação</label>
             <select id="p-status"></select></div>
         </div>
-        <div class="totais" style="margin-top:12px"><span>Total <b id="p-total">R$ 0,00</b></span><span>Sinal (50%) <b id="p-sinal">R$ 0,00</b></span><span>Restante <b id="p-resto">R$ 0,00</b></span></div>
+        <div class="totais" style="margin-top:12px"><span>Total <b id="p-total">R$ 0,00</b></span><span>Sinal (50%) <b id="p-sinal">R$ 0,00</b></span><span>Restante <b id="p-resto">R$ 0,00</b></span><span id="p-custo-linha" hidden>Custo estimado <b id="p-custo"></b> · Lucro <b id="p-lucro"></b></span></div>
         <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:12px">
           <label class="marcar"><input type="checkbox" id="p-sinal-pago"> Sinal pago</label>
           <label class="marcar"><input type="checkbox" id="p-resto-pago"> Restante pago</label>
         </div>
       </div>
       <div class="acoes" id="p-acoes-zap"></div>
+      <div class="acoes" id="p-acoes-extra">
+        <button class="btn contorno peq" type="button" id="p-comprovante">Comprovante</button>
+        <button class="btn contorno peq" type="button" id="p-link-pag">Copiar link de pagamento</button>
+      </div>
     </div>
     <div class="dlg-rodape">
       <button class="btn perigo peq" type="button" id="p-excluir">Excluir</button>
@@ -405,9 +501,40 @@
   </form>
 </dialog>
 
+<!-- Editar sabor -->
+<dialog id="dlg-sabor" aria-labelledby="dlg-sabor-titulo">
+  <form id="form-sabor" method="dialog">
+    <div class="dlg-cabeca">
+      <h2 id="dlg-sabor-titulo">Sabor</h2>
+      <button class="btn discreto" type="button" data-fechar aria-label="Fechar">✕</button>
+    </div>
+    <div class="dlg-corpo">
+      <div class="foto-sabor"><img id="s-foto-ver" alt=""><div class="campo"><label for="s-foto">Trocar foto</label><input id="s-foto" type="file" accept="image/*"></div></div>
+      <div class="campos">
+        <div class="campo"><label for="s-nome">Nome</label><input id="s-nome" required maxlength="40"></div>
+        <div class="campo"><label for="s-cor">Cor no montador</label><input id="s-cor" type="color" value="#e9b8b5"></div>
+        <div class="campo largo"><label for="s-desc">Descrição no cardápio</label><textarea id="s-desc" maxlength="140"></textarea></div>
+      </div>
+      <label class="marcar"><input type="checkbox" id="s-ativo"> Mostrar no site</label>
+      <div>
+        <div class="grupo-titulo">Receita para 100 docinhos</div>
+        <p class="sub" style="margin-bottom:8px">Usada na lista de compras e no custo. Cadastre os ingredientes na aba Compras.</p>
+        <div class="itens" id="s-receita"></div>
+        <button class="btn discreto peq" type="button" id="s-add-ing">+ Ingrediente</button>
+      </div>
+    </div>
+    <div class="dlg-rodape">
+      <span></span>
+      <div class="acoes"><button class="btn discreto" type="button" data-fechar>Cancelar</button><button class="btn" type="submit" id="s-salvar">Salvar</button></div>
+    </div>
+  </form>
+</dialog>
+
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="../config-supabase.js"></script>
+<script src="../vendor/qrcode-generator-2.0.4.js"></script>
+<script src="../pix.js"></script>
 <script>
 (function () {
   const cfg = window.SWEET_GRACE_SUPABASE || {};
@@ -484,9 +611,29 @@
       },
       async excluirPedido(id) { ok(await sb.from("pedidos").delete().eq("id", id)); },
       async sabores() { return ok(await sb.from("sabores").select("*").order("ordem")); },
-      async salvarSabor(s) { ok(await sb.from("sabores").update({ disponivel: s.disponivel }).eq("id", s.id)); },
+      async salvarSabor(s) { const { id, ...dados } = s; ok(await sb.from("sabores").update(dados).eq("id", id)); },
+      async criarSabor(s) { ok(await sb.from("sabores").insert(s)); },
       async precos() { return ok(await sb.from("config").select("*").eq("id", 1).single()); },
       async salvarPrecos(c) { ok(await sb.from("config").update(c).eq("id", 1)); },
+      async ingredientes() { return ok(await sb.from("ingredientes").select("*").order("nome")); },
+      async salvarIngrediente(i) {
+        const { id, criado_em, ...dados } = i;
+        return id ? ok(await sb.from("ingredientes").update(dados).eq("id", id).select().single())
+                  : ok(await sb.from("ingredientes").insert(dados).select().single());
+      },
+      async excluirIngrediente(id) { ok(await sb.from("ingredientes").delete().eq("id", id)); },
+      async receitas() { return ok(await sb.from("receitas").select("*")); },
+      async salvarReceita(saborId, linhas) {
+        ok(await sb.from("receitas").delete().eq("sabor_id", saborId));
+        if (linhas.length) ok(await sb.from("receitas").insert(linhas.map(l => ({ sabor_id: saborId, ingrediente_id: l.ingrediente_id, qtd_por_100: l.qtd_por_100 }))));
+      },
+      async avisos() { return ok(await sb.from("avisos").select("*").eq("id", 1).single()); },
+      async salvarAvisos(a) { ok(await sb.from("avisos").update(a).eq("id", 1)); },
+      async enviarFoto(arquivo, saborId) {
+        const caminho = saborId + "-" + Date.now() + ".jpg";
+        ok(await sb.storage.from("fotos").upload(caminho, arquivo, { contentType: "image/jpeg", upsert: true }));
+        return sb.storage.from("fotos").getPublicUrl(caminho).data.publicUrl;
+      },
       async bloqueios() { return ok(await sb.from("dias_bloqueados").select("*").order("data")); },
       async bloquear(data, motivo) { ok(await sb.from("dias_bloqueados").upsert({ data, motivo })); },
       async desbloquear(data) { ok(await sb.from("dias_bloqueados").delete().eq("data", data)); },
@@ -503,13 +650,25 @@
   function bancoDemo() {
     const d = (n) => { const x = new Date(); x.setDate(x.getDate() + n); return isoLocal(x); };
     const sab = [
-      { id: "brigadeiro", nome: "Brigadeiro tradicional", disponivel: true, ordem: 1 },
-      { id: "beijinho", nome: "Beijinho de coco", disponivel: true, ordem: 2 },
-      { id: "bicho-de-pe", nome: "Bicho de pé", disponivel: true, ordem: 3 },
-      { id: "ninho", nome: "Brigadeiro de Ninho", disponivel: true, ordem: 4 },
-      { id: "cajuzinho", nome: "Cajuzinho", disponivel: false, ordem: 5 },
-      { id: "casadinho", nome: "Casadinho", disponivel: true, ordem: 6 }
+      { id: "brigadeiro", nome: "Brigadeiro tradicional", disponivel: true, ativo: true, ordem: 1, foto_url: "../assets/brigadeiro.jpg", descricao: "Chocolate meio amargo, ponto cremoso e granulado belga.", cor: "#5a3420" },
+      { id: "beijinho", nome: "Beijinho de coco", disponivel: true, ativo: true, ordem: 2, foto_url: "../assets/beijinho.jpg", cor: "#efe4d0" },
+      { id: "bicho-de-pe", nome: "Bicho de pé", disponivel: true, ativo: true, ordem: 3, foto_url: "../assets/bicho-de-pe.jpg", cor: "#e8909e" },
+      { id: "ninho", nome: "Brigadeiro de Ninho", disponivel: true, ativo: true, ordem: 4, foto_url: "../assets/ninho.jpg", cor: "#eadcc2" },
+      { id: "cajuzinho", nome: "Cajuzinho", disponivel: false, ativo: true, ordem: 5, foto_url: "../assets/cajuzinho.jpg", cor: "#b8763f" },
+      { id: "casadinho", nome: "Casadinho", disponivel: true, ativo: true, ordem: 6, foto_url: "../assets/casadinho.jpg" }
     ];
+    const ing = [
+      { id: "i1", nome: "Leite condensado", unidade: "lata", custo: 6.5 },
+      { id: "i2", nome: "Chocolate em pó", unidade: "g", custo: 0.05 },
+      { id: "i3", nome: "Granulado", unidade: "g", custo: 0.04 },
+      { id: "i4", nome: "Coco ralado", unidade: "g", custo: 0.06 },
+      { id: "i5", nome: "Forminhas", unidade: "un", custo: 0.08 }
+    ];
+    const rec = [
+      { sabor_id: "brigadeiro", ingrediente_id: "i1", qtd_por_100: 4 }, { sabor_id: "brigadeiro", ingrediente_id: "i2", qtd_por_100: 120 },
+      { sabor_id: "brigadeiro", ingrediente_id: "i3", qtd_por_100: 150 }, { sabor_id: "beijinho", ingrediente_id: "i1", qtd_por_100: 4 },
+      { sabor_id: "beijinho", ingrediente_id: "i4", qtd_por_100: 200 }
+    ].concat(sab.map(x => ({ sabor_id: x.id, ingrediente_id: "i5", qtd_por_100: 100 })));
     const it = (...pares) => pares.map(([id, qtd]) => ({ id, nome: sab.find(s => s.id === id).nome, qtd }));
     const ped = (o) => Object.assign({ id: crypto.randomUUID(), codigo: novoCodigo(), criado_em: new Date().toISOString(), origem: "site", cliente_telefone: "", frete: 0, entrega: "a_combinar", endereco: "", observacoes: "", anotacoes: "", sinal_pago: false, restante_pago: false }, o);
     const somar = (p) => { p.total_docinhos = p.itens.reduce((a, i) => a + i.qtd, 0); p.valor = valorDocinhos(p.total_docinhos, { preco_unidade: 2, preco_cento: 150 }); return p; };
@@ -520,10 +679,12 @@
         ped({ cliente_nome: "Cliente exemplo 3", itens: it(["brigadeiro", 100], ["bicho-de-pe", 50], ["casadinho", 50]), data_festa: d(5), status: "confirmado", sinal_pago: true, entrega: "entrega", frete: 15, endereco: "Marco, Belém" }),
         ped({ cliente_nome: "Cliente exemplo 4", itens: it(["beijinho", 30]), data_festa: d(1), status: "em_producao", sinal_pago: true, entrega: "retirada" }),
         ped({ cliente_nome: "Cliente exemplo 5", itens: it(["brigadeiro", 100]), data_festa: d(-2), status: "entregue", sinal_pago: true, restante_pago: true, origem: "manual" }),
-        ped({ cliente_nome: "Cliente exemplo 6", itens: it(["brigadeiro", 40], ["ninho", 60]), data_festa: d(-6), status: "entregue", sinal_pago: true, restante_pago: false })
+        ped({ cliente_nome: "Cliente exemplo 6", itens: it(["brigadeiro", 40], ["ninho", 60]), data_festa: d(-6), status: "entregue", sinal_pago: true, restante_pago: false }),
+        ped({ cliente_nome: "Cliente exemplo 2", cliente_telefone: "91900000000", itens: it(["brigadeiro", 100]), data_festa: d(-355), status: "entregue", sinal_pago: true, restante_pago: true })
       ].map(somar),
       sabores: sab,
-      precos: { id: 1, preco_unidade: 2, preco_cento: 150 },
+      precos: { id: 1, preco_unidade: 2, preco_cento: 150, pix_chave: "", pix_nome: "", pix_cidade: "BELEM", limite_dia: 300 },
+      ingredientes: ing, receitas: rec, avisos: { id: 1, ntfy_topico: "sweetgrace-exemplo123", ligado: true },
       bloqueios: [{ data: d(9), motivo: "Agenda cheia" }],
       depoimentos: [{ id: crypto.randomUUID(), criado_em: new Date().toISOString(), nome: "Exemplo", festa: "Aniversário", texto: "Este é só um exemplo de como um depoimento aparece aqui.", autorizado: true, publicado: false }]
     };
@@ -541,9 +702,18 @@
       async salvarPedido(p) { p = copia(p); if (!p.id) p.id = crypto.randomUUID(); const i = db.pedidos.findIndex(x => x.id === p.id); if (i >= 0) db.pedidos[i] = Object.assign(db.pedidos[i], p); else db.pedidos.push(Object.assign({ criado_em: new Date().toISOString() }, p)); return copia(p); },
       async excluirPedido(id) { db.pedidos = db.pedidos.filter(x => x.id !== id); },
       async sabores() { return copia(db.sabores); },
-      async salvarSabor(s) { db.sabores.find(x => x.id === s.id).disponivel = s.disponivel; },
+      async salvarSabor(s) { Object.assign(db.sabores.find(x => x.id === s.id), s); },
+      async criarSabor(s) { db.sabores.push(copia(s)); },
       async precos() { return copia(db.precos); },
       async salvarPrecos(c) { Object.assign(db.precos, c); },
+      async ingredientes() { return copia(db.ingredientes).sort((a, b) => a.nome.localeCompare(b.nome)); },
+      async salvarIngrediente(i) { i = copia(i); if (!i.id) { i.id = crypto.randomUUID(); db.ingredientes.push(i); } else Object.assign(db.ingredientes.find(x => x.id === i.id), i); return i; },
+      async excluirIngrediente(id) { db.ingredientes = db.ingredientes.filter(x => x.id !== id); db.receitas = db.receitas.filter(r => r.ingrediente_id !== id); },
+      async receitas() { return copia(db.receitas); },
+      async salvarReceita(saborId, linhas) { db.receitas = db.receitas.filter(r => r.sabor_id !== saborId).concat(linhas.map(l => ({ sabor_id: saborId, ingrediente_id: l.ingrediente_id, qtd_por_100: l.qtd_por_100 }))); },
+      async avisos() { return copia(db.avisos); },
+      async salvarAvisos(a) { Object.assign(db.avisos, a); },
+      async enviarFoto(arquivo) { return URL.createObjectURL(arquivo); },
       async bloqueios() { return copia(db.bloqueios).sort((a, b) => a.data < b.data ? -1 : 1); },
       async bloquear(data, motivo) { db.bloqueios = db.bloqueios.filter(b => b.data !== data).concat({ data, motivo }); },
       async desbloquear(data) { db.bloqueios = db.bloqueios.filter(b => b.data !== data); },
@@ -554,19 +724,49 @@
   }
 
   // ---------- estado ----------
-  const estado = { pedidos: [], sabores: [], precos: { preco_unidade: 2, preco_cento: 150 }, bloqueios: [], depoimentos: [], filtro: "ativos", busca: "", aba: "pedidos", mes: new Date() };
+  const estado = { pedidos: [], sabores: [], precos: { preco_unidade: 2, preco_cento: 150 }, config: {}, bloqueios: [], depoimentos: [], ingredientes: [], receitas: [], avisos: null, faltaAtualizar: false, filtro: "ativos", busca: "", aba: "pedidos", mes: new Date() };
   let banco;
 
+  let idsNovos = null;
   async function carregar() {
-    const [pedidos, sabores, precos, bloqueios, depoimentos] = await Promise.all([banco.pedidos(), banco.sabores(), banco.precos(), banco.bloqueios(), banco.depoimentos()]);
-    Object.assign(estado, { pedidos, sabores, precos: { preco_unidade: Number(precos.preco_unidade), preco_cento: Number(precos.preco_cento) }, bloqueios, depoimentos });
+    const extra = (p) => p.catch(() => { estado.faltaAtualizar = true; return null; });
+    estado.faltaAtualizar = false;
+    const [pedidos, sabores, precos, bloqueios, depoimentos, ingredientes, receitas, avisos] = await Promise.all([
+      banco.pedidos(), banco.sabores(), banco.precos(), banco.bloqueios(), banco.depoimentos(),
+      extra(banco.ingredientes()), extra(banco.receitas()), extra(banco.avisos())]);
+    Object.assign(estado, {
+      pedidos, bloqueios, depoimentos,
+      sabores: sabores.map(x => Object.assign({ ativo: true }, x)),
+      config: precos,
+      precos: { preco_unidade: Number(precos.preco_unidade), preco_cento: Number(precos.preco_cento) },
+      ingredientes: (ingredientes || []).map(i => Object.assign(i, { custo: Number(i.custo) })),
+      receitas: (receitas || []).map(r => Object.assign(r, { qtd_por_100: Number(r.qtd_por_100) })),
+      avisos
+    });
+    avisarPedidosNovos();
     desenhar();
+  }
+
+  // Pedido novo chegou com o painel aberto: aviso na tela e no título da aba.
+  function avisarPedidosNovos() {
+    const agora = new Set(estado.pedidos.filter(p => p.status === "novo").map(p => p.id));
+    if (idsNovos) {
+      const chegaram = [...agora].filter(id => !idsNovos.has(id));
+      if (chegaram.length) {
+        const txt = chegaram.length === 1 ? "Chegou um pedido novo!" : "Chegaram " + chegaram.length + " pedidos novos!";
+        aviso(txt);
+        if ("Notification" in window && Notification.permission === "granted") { try { new Notification("Sweet Grace", { body: txt, icon: "../assets/apple-touch-icon.png" }); } catch {} }
+      }
+    }
+    idsNovos = agora;
+    document.title = (agora.size ? "(" + agora.size + ") " : "") + "Painel · Sweet Grace";
   }
 
   function desenhar() {
     const novos = estado.pedidos.filter(p => p.status === "novo").length;
     const b = $("#bolinha-novos"); b.hidden = !novos; b.textContent = novos;
-    ({ pedidos: desenharPedidos, agenda: desenharAgenda, pagamentos: desenharPagamentos, cardapio: desenharCardapio, resumo: desenharResumo, depoimentos: desenharDepoimentos })[estado.aba]();
+    $("#aviso-atualizar").hidden = !estado.faltaAtualizar;
+    ({ pedidos: desenharPedidos, agenda: desenharAgenda, compras: desenharCompras, pagamentos: desenharPagamentos, clientes: desenharClientes, cardapio: desenharCardapio, resumo: desenharResumo, depoimentos: desenharDepoimentos, ajustes: desenharAjustes })[estado.aba]();
   }
 
   async function tentar(fn, sucesso) {
@@ -651,11 +851,14 @@
     $("#p-sinal-pago").checked = editando.sinal_pago;
     $("#p-resto-pago").checked = editando.restante_pago;
     $("#p-excluir").hidden = !p;
+    const alerta = /^Atenção/.test(editando.anotacoes || "") ? editando.anotacoes.split("\n")[0] : "";
+    $("#p-alerta").hidden = !alerta; $("#p-alerta").textContent = alerta;
+    $("#p-link-pag").hidden = !p;
 
     const qtds = Object.fromEntries((editando.itens || []).map(i => [i.id, i.qtd]));
     const conhecidos = new Set(estado.sabores.map(s => s.id));
     const extras = (editando.itens || []).filter(i => !conhecidos.has(i.id)).map(i => ({ id: i.id, nome: i.nome, disponivel: false }));
-    $("#p-itens").replaceChildren(...estado.sabores.concat(extras).map(s =>
+    $("#p-itens").replaceChildren(...estado.sabores.filter(s => s.ativo || qtds[s.id]).concat(extras).map(s =>
       el("label", { class: "item" + (s.disponivel ? "" : " esgotado") },
         el("span", null, s.nome),
         el("input", { type: "number", min: "0", step: "10", inputMode: "numeric", value: qtds[s.id] || "", placeholder: "0", "data-id": s.id, "data-nome": s.nome, oninput: recalcularValor }))));
@@ -678,6 +881,9 @@
     $("#p-total").textContent = brl(totalPedido(p));
     $("#p-sinal").textContent = brl(sinalDe(p));
     $("#p-resto").textContent = brl(totalPedido(p) - sinalDe(p));
+    const custo = custoItens(lerItens());
+    $("#p-custo-linha").hidden = !custo;
+    if (custo) { $("#p-custo").textContent = brl(custo); $("#p-lucro").textContent = brl(Number(p.valor || 0) - custo); }
   }
   ["#p-valor", "#p-frete"].forEach(s => $(s).addEventListener("input", atualizarTotais));
   $("#p-entrega").addEventListener("change", (e) => $("#p-endereco-campo").hidden = e.target.value !== "entrega");
@@ -692,8 +898,12 @@
     const oi = "Olá" + (nome ? ", " + nome : "") + "! Aqui é da Sweet Grace. ";
     const p = { valor: $("#p-valor").value, frete: $("#p-frete").value };
     const botoes = [el("a", { class: "btn contorno peq", href: zap(tel, oi), target: "_blank", rel: "noopener" }, "Abrir conversa")];
-    if (!$("#p-sinal-pago").checked) botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
-      href: zap(tel, oi + "Seu pedido #" + editando.codigo + " ficou em " + brl(totalPedido(p)) + ". Para reservar a data, o sinal de 50% é " + brl(sinalDe(p)) + " via Pix. Posso te mandar a chave?") }, "Cobrar sinal"));
+    const chave = estado.config.pix_chave ? " Se preferir, a chave Pix é " + estado.config.pix_chave + " (" + estado.config.pix_nome + ")." : "";
+    const link = editando.id ? " É só pagar pelo Pix neste link: " + linkPagamento(editando.codigo) + chave : chave || " Posso te mandar a chave Pix?";
+    if (!$("#p-sinal-pago").checked && !$("#p-resto-pago").checked) botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
+      href: zap(tel, oi + "Seu pedido #" + editando.codigo + " ficou em " + brl(totalPedido(p)) + ". Para reservar a data, o sinal de 50% é " + brl(sinalDe(p)) + "." + link) }, "Cobrar sinal"));
+    else if (!$("#p-resto-pago").checked) botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
+      href: zap(tel, oi + "Falta pagar " + brl(totalPedido(p) - sinalDe(p)) + " do pedido #" + editando.codigo + "." + link) }, "Cobrar restante"));
     if ($("#p-status").value === "entregue") botoes.push(el("a", { class: "btn contorno peq", target: "_blank", rel: "noopener",
       href: zap(tel, oi + "Esperamos que a festa tenha sido linda! Se puder, conta pra gente o que achou dos docinhos: " + linkDepoimento(editando.codigo)) }, "Pedir depoimento"));
     alvo.replaceChildren(...botoes);
@@ -753,7 +963,7 @@
         el("div", { class: "dia-cabeca" },
           el("h3", null, dataCurta(dia), el("small", null, atrasado ? "passou, falta marcar como entregue" : quando(dia))),
           el("div", { class: "acoes" },
-            total ? el("span", { class: "selo" }, num(total) + " docinhos") : null,
+            total ? el("span", { class: "selo" + (estado.config.limite_dia && total >= estado.config.limite_dia ? " lotado" : "") }, num(total) + (estado.config.limite_dia ? " de " + num(estado.config.limite_dia) : "") + " docinhos" + (estado.config.limite_dia && total >= estado.config.limite_dia ? " · lotado" : "")) : null,
             b ? el("button", { class: "btn contorno peq", type: "button", onclick: () => tentar(async () => { await banco.desbloquear(dia); await carregar(); }, "Dia liberado") }, "Liberar dia")
               : atrasado ? null : el("button", { class: "btn discreto peq", type: "button", onclick: () => tentar(async () => { await banco.bloquear(dia, "Agenda cheia"); await carregar(); }, "Dia bloqueado no site") }, "Bloquear dia"))),
         b ? el("p", { class: "sub" }, "Bloqueado no site" + (b.motivo ? ": " + b.motivo : "")) : null,
@@ -802,11 +1012,16 @@
   }
 
   // ---------- cardápio ----------
+  const fotoDe = (s) => s.foto_url || "../assets/" + s.id + ".jpg";
   function desenharCardapio() {
     $("#lista-sabores").replaceChildren(...estado.sabores.map(s => {
       const id = "sab-" + s.id;
-      return el("div", { class: "linha" },
-        el("label", { class: "info", htmlFor: id }, el("b", null, s.nome), el("small", null, s.disponivel ? "Disponível" : "Esgotado no site")),
+      const custo = custoItens([{ id: s.id, qtd: 100 }]);
+      return el("div", { class: "linha sabor-linha" },
+        el("img", { class: "miniatura", src: fotoDe(s), alt: "", onerror: (e) => e.target.style.visibility = "hidden" }),
+        el("label", { class: "info", htmlFor: id }, el("b", null, s.nome),
+          el("small", null, (!s.ativo ? "Fora do site" : s.disponivel ? "Disponível" : "Esgotado no site") + (custo ? " · custo do cento " + brl(custo) : ""))),
+        el("button", { class: "btn discreto peq", type: "button", onclick: () => abrirSabor(s) }, "Editar"),
         el("span", { class: "chave" },
           el("input", { type: "checkbox", id, checked: s.disponivel, role: "switch", "aria-label": s.nome + " disponível", onchange: (e) => tentar(async () => { await banco.salvarSabor({ id: s.id, disponivel: e.target.checked }); await carregar(); }, e.target.checked ? s.nome + " voltou ao site" : s.nome + " marcado como esgotado") }),
           el("span")));
@@ -830,11 +1045,16 @@
     const doMes = estado.pedidos.filter(p => p.status !== "cancelado" && (p.data_festa || "").startsWith(chave));
     const fat = doMes.reduce((a, p) => a + totalPedido(p), 0);
     const doces = doMes.reduce((a, p) => a + (p.total_docinhos || 0), 0);
+    const custoMes = doMes.reduce((a, p) => a + custoItens(p.itens || []), 0);
     $("#numeros-mes").replaceChildren(
       el("div", { class: "numero" }, el("span", null, "Faturamento"), el("strong", null, brl(fat))),
       el("div", { class: "numero" }, el("span", null, "Pedidos"), el("strong", null, num(doMes.length))),
       el("div", { class: "numero" }, el("span", null, "Docinhos"), el("strong", null, num(doces))),
-      el("div", { class: "numero" }, el("span", null, "Valor médio por pedido"), el("strong", null, brl(doMes.length ? fat / doMes.length : 0))));
+      el("div", { class: "numero" }, el("span", null, "Valor médio por pedido"), el("strong", null, brl(doMes.length ? fat / doMes.length : 0))),
+      ...(custoMes ? [
+        el("div", { class: "numero" }, el("span", null, "Custo dos ingredientes"), el("strong", null, brl(custoMes))),
+        el("div", { class: "numero" }, el("span", null, "Lucro estimado"), el("strong", null, brl(fat - custoMes)))] : []));
+    $("#resumo-custo-dica").hidden = Boolean(custoMes);
     const soma = {};
     doMes.forEach(p => (p.itens || []).forEach(i => soma[i.nome] = (soma[i.nome] || 0) + i.qtd));
     const lista = Object.entries(soma).sort((a, b) => b[1] - a[1]);
@@ -873,6 +1093,276 @@
     e.preventDefault();
     const d = { nome: $("#d-nome").value.trim(), festa: $("#d-festa").value.trim() || null, texto: $("#d-texto").value.trim(), autorizado: $("#d-autorizado").checked, publicado: false };
     tentar(async () => { await banco.salvarDepoimento(d); dlgDepo.close(); await carregar(); }, "Depoimento salvo. Publique quando quiser.");
+  });
+
+  // ---------- custos ----------
+  // Custo dos ingredientes de uma lista de itens, pelas receitas (quantidade para 100 docinhos).
+  function custoItens(itens) {
+    let total = 0;
+    itens.forEach(i => estado.receitas.filter(r => r.sabor_id === i.id).forEach(r => {
+      const ing = estado.ingredientes.find(x => x.id === r.ingrediente_id);
+      if (ing) total += i.qtd / 100 * r.qtd_por_100 * ing.custo;
+    }));
+    return Math.round(total * 100) / 100;
+  }
+  const linkPagamento = (codigo) => new URL("../pagar.html?pedido=" + codigo, location.href).href;
+  const qtdBonita = (q) => Number(q.toFixed(q < 10 ? 2 : 0)).toLocaleString("pt-BR");
+
+  // ---------- compras ----------
+  $("#compras-de").value = hojeIso();
+  $("#compras-ate").value = isoLocal(new Date(Date.now() + 7 * 86400000));
+  ["#compras-de", "#compras-ate"].forEach(x => $(x).addEventListener("change", desenharCompras));
+  let textoCompras = "";
+  function desenharCompras() {
+    const de = $("#compras-de").value, ate = $("#compras-ate").value;
+    const peds = estado.pedidos.filter(p => p.data_festa && p.data_festa >= de && p.data_festa <= ate && !ENCERRADOS.includes(p.status));
+    const soma = {};
+    const semReceita = new Set();
+    peds.forEach(p => (p.itens || []).forEach(i => {
+      const rs = estado.receitas.filter(r => r.sabor_id === i.id);
+      if (!rs.length) semReceita.add(i.nome);
+      rs.forEach(r => soma[r.ingrediente_id] = (soma[r.ingrediente_id] || 0) + i.qtd / 100 * r.qtd_por_100);
+    }));
+    const linhas = Object.entries(soma).map(([id, q]) => ({ ing: estado.ingredientes.find(x => x.id === id), q })).filter(x => x.ing).sort((a, b) => a.ing.nome.localeCompare(b.ing.nome));
+    const custo = linhas.reduce((a, x) => a + x.q * x.ing.custo, 0);
+    const docinhos = peds.reduce((a, p) => a + (p.total_docinhos || 0), 0);
+    $("#compras-titulo").textContent = "Comprar para " + peds.length + (peds.length === 1 ? " pedido" : " pedidos") + " (" + num(docinhos) + " docinhos)";
+    const itens = linhas.map(x => el("div", { class: "linha" },
+      el("div", { class: "info" }, el("b", null, qtdBonita(x.q) + " " + x.ing.unidade), " de " + x.ing.nome),
+      x.ing.custo ? el("span", { class: "sub" }, brl(x.q * x.ing.custo)) : null));
+    if (custo) itens.push(el("div", { class: "linha" }, el("div", { class: "info" }, el("b", null, "Custo estimado")), el("b", null, brl(custo))));
+    if (semReceita.size) itens.push(el("p", { class: "sub" }, "Sem receita cadastrada: " + [...semReceita].join(", ") + ". Cadastre na aba Cardápio."));
+    $("#lista-compras").replaceChildren(...(itens.length ? itens : [el("p", { class: "sub" }, "Nenhum pedido em andamento neste período.")]));
+    textoCompras = "Compras Sweet Grace (" + dataCurta(de) + " a " + dataCurta(ate) + ")\n" + linhas.map(x => "• " + qtdBonita(x.q) + " " + x.ing.unidade + " de " + x.ing.nome).join("\n");
+    $("#lista-ingredientes").replaceChildren(...(estado.ingredientes.length ? estado.ingredientes.map(i => el("div", { class: "linha" },
+      el("div", { class: "info" }, el("b", null, i.nome), el("small", null, brl(i.custo) + " por " + i.unidade)),
+      el("div", { class: "acoes" },
+        el("button", { class: "btn discreto peq", type: "button", onclick: () => {
+          const v = prompt("Novo custo de " + i.nome + " por " + i.unidade + " (R$):", String(i.custo).replace(".", ","));
+          if (v == null) return;
+          const custoNovo = Number(v.replace(",", "."));
+          if (!(custoNovo >= 0)) return aviso("Valor inválido");
+          tentar(async () => { await banco.salvarIngrediente({ id: i.id, custo: custoNovo }); await carregar(); }, "Custo atualizado");
+        } }, "Mudar custo"),
+        el("button", { class: "btn perigo peq", type: "button", onclick: () => { if (confirm("Excluir " + i.nome + "? Ele sai de todas as receitas.")) tentar(async () => { await banco.excluirIngrediente(i.id); await carregar(); }, "Ingrediente excluído"); } }, "Excluir"))))
+      : [el("p", { class: "sub" }, "Nenhum ingrediente cadastrado.")]));
+  }
+  $("#compras-copiar").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(textoCompras); aviso("Lista copiada"); } catch { aviso("Não deu para copiar"); }
+  });
+  $("#form-ingrediente").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const i = { nome: $("#ing-nome").value.trim(), unidade: $("#ing-unidade").value.trim(), custo: Number($("#ing-custo").value || 0) };
+    tentar(async () => { await banco.salvarIngrediente(i); e.target.reset(); $("#ing-custo").value = 0; await carregar(); }, "Ingrediente adicionado");
+  });
+
+  // ---------- clientes ----------
+  $("#busca-clientes").addEventListener("input", desenharClientes);
+  function desenharClientes() {
+    const grupos = {};
+    estado.pedidos.filter(p => p.status !== "cancelado" && (p.cliente_telefone || p.cliente_nome)).forEach(p => {
+      const chave = soDigitos(p.cliente_telefone).slice(-9) || (p.cliente_nome || "").trim().toLowerCase();
+      const g = grupos[chave] ||= { nome: p.cliente_nome, tel: p.cliente_telefone, pedidos: 0, total: 0, ultima: "" };
+      g.pedidos++; g.total += totalPedido(p);
+      if ((p.data_festa || "") > g.ultima) { g.ultima = p.data_festa || ""; if (p.cliente_nome) g.nome = p.cliente_nome; }
+      if (!g.tel && p.cliente_telefone) g.tel = p.cliente_telefone;
+    });
+    const busca = $("#busca-clientes").value.trim().toLowerCase();
+    const lista = Object.values(grupos).filter(g => !busca || (g.nome || "").toLowerCase().includes(busca) || (g.tel || "").includes(busca)).sort((a, b) => b.total - a.total);
+    $("#lista-clientes").replaceChildren(...(lista.length ? lista.map(g => el("div", { class: "linha" },
+      el("div", { class: "info" }, el("b", null, g.nome || g.tel), el("small", null, g.pedidos + (g.pedidos === 1 ? " pedido" : " pedidos") + " · " + brl(g.total) + (g.ultima ? " · última festa " + dataCurta(g.ultima) : ""))),
+      g.tel ? el("a", { class: "btn contorno peq", href: zap(g.tel, "Olá, " + (g.nome || "").split(" ")[0] + "! Aqui é da Sweet Grace. "), target: "_blank", rel: "noopener" }, "WhatsApp") : null))
+      : [el("p", { class: "sub" }, "Nenhum cliente ainda.")]));
+
+    // Festas de um ano atrás, nos próximos 30 dias.
+    const ini = new Date(); ini.setFullYear(ini.getFullYear() - 1);
+    const fim = new Date(ini); fim.setDate(fim.getDate() + 30);
+    const lembretes = estado.pedidos.filter(p => p.status !== "cancelado" && p.data_festa && p.data_festa >= isoLocal(ini) && p.data_festa <= isoLocal(fim));
+    $("#caixa-lembretes").hidden = !lembretes.length;
+    $("#lista-lembretes").replaceChildren(...lembretes.map(p => {
+      const nome = (p.cliente_nome || "").split(" ")[0];
+      const msg = "Olá" + (nome ? ", " + nome : "") + "! Aqui é da Sweet Grace. Faz quase um ano da festa em que você levou os nossos docinhos. Vai comemorar de novo? Estamos com a agenda aberta!";
+      return el("div", { class: "linha" },
+        el("div", { class: "info" }, el("b", null, p.cliente_nome || "Sem nome"), el("small", null, "Festa em " + paraData(p.data_festa).toLocaleDateString("pt-BR") + " · " + num(p.total_docinhos) + " docinhos")),
+        p.cliente_telefone ? el("a", { class: "btn contorno peq", href: zap(p.cliente_telefone, msg), target: "_blank", rel: "noopener" }, "Mandar mensagem") : el("small", { class: "sub" }, "sem telefone"));
+    }));
+  }
+
+  // ---------- editar sabor ----------
+  const dlgSabor = $("#dlg-sabor");
+  dlgSabor.querySelectorAll("[data-fechar]").forEach(b => b.addEventListener("click", () => dlgSabor.close()));
+  let saborEditando = null, fotoNova = null;
+  function linhaReceita(r) {
+    const opcoes = estado.ingredientes.map(i => el("option", { value: i.id, selected: r && r.ingrediente_id === i.id }, i.nome + " (" + i.unidade + ")"));
+    const linha = el("div", { class: "receita-linha" },
+      el("select", { "aria-label": "Ingrediente" }, opcoes),
+      el("input", { type: "number", min: "0", step: "any", value: r ? r.qtd_por_100 : "", placeholder: "Qtd.", "aria-label": "Quantidade para 100 docinhos" }),
+      el("button", { class: "btn discreto peq", type: "button", "aria-label": "Tirar ingrediente", onclick: () => linha.remove() }, "✕"));
+    return linha;
+  }
+  function abrirSabor(s) {
+    saborEditando = s; fotoNova = null;
+    $("#dlg-sabor-titulo").textContent = s ? s.nome : "Novo sabor";
+    $("#s-nome").value = s ? s.nome : "";
+    $("#s-desc").value = s ? s.descricao || "" : "";
+    $("#s-cor").value = /^#[0-9a-f]{6}$/i.test(s && s.cor || "") ? s.cor : "#e9b8b5";
+    $("#s-ativo").checked = s ? s.ativo : true;
+    $("#s-foto").value = "";
+    const img = $("#s-foto-ver"); img.style.visibility = ""; img.onerror = () => img.style.visibility = "hidden";
+    img.src = s ? fotoDe(s) : "../assets/logo.jpeg";
+    const rs = s ? estado.receitas.filter(r => r.sabor_id === s.id) : [];
+    $("#s-receita").replaceChildren(...rs.map(linhaReceita));
+    dlgSabor.showModal();
+  }
+  $("#btn-novo-sabor").addEventListener("click", () => abrirSabor(null));
+  $("#s-add-ing").addEventListener("click", () => {
+    if (!estado.ingredientes.length) return aviso("Cadastre os ingredientes na aba Compras primeiro");
+    $("#s-receita").append(linhaReceita(null));
+  });
+  // Diminui a foto antes de enviar (lado maior com 900 px, JPEG).
+  function reduzirFoto(arquivo) {
+    return new Promise((ok, falha) => {
+      const img = new Image();
+      img.onload = () => {
+        const escala = Math.min(1, 900 / Math.max(img.width, img.height));
+        const c = document.createElement("canvas");
+        c.width = Math.round(img.width * escala); c.height = Math.round(img.height * escala);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(b => b ? ok(b) : falha(new Error("foto")), "image/jpeg", 0.85);
+        URL.revokeObjectURL(img.src);
+      };
+      img.onerror = () => falha(new Error("Não deu para abrir a foto"));
+      img.src = URL.createObjectURL(arquivo);
+    });
+  }
+  $("#s-foto").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { fotoNova = await reduzirFoto(f); const img = $("#s-foto-ver"); img.style.visibility = ""; img.src = URL.createObjectURL(fotoNova); }
+    catch (err) { aviso(err.message); }
+  });
+  const slug = (t) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30);
+  $("#form-sabor").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nome = $("#s-nome").value.trim(); if (!nome) return;
+    const receita = [...document.querySelectorAll("#s-receita .receita-linha")].map(l => ({ ingrediente_id: l.querySelector("select").value, qtd_por_100: Number(l.querySelector("input").value) })).filter(r => r.ingrediente_id && r.qtd_por_100 > 0);
+    const unicos = [...new Map(receita.map(r => [r.ingrediente_id, r])).values()];
+    const botao = $("#s-salvar"); botao.disabled = true;
+    tentar(async () => {
+      let id = saborEditando && saborEditando.id;
+      if (!id) {
+        id = slug(nome) || "sabor";
+        while (estado.sabores.some(x => x.id === id)) id += "-2";
+      }
+      const dados = { nome, descricao: $("#s-desc").value.trim() || null, cor: $("#s-cor").value, ativo: $("#s-ativo").checked };
+      if (fotoNova) dados.foto_url = await banco.enviarFoto(fotoNova, id);
+      if (saborEditando) await banco.salvarSabor(Object.assign({ id }, dados));
+      else await banco.criarSabor(Object.assign({ id, disponivel: true, ordem: estado.sabores.length + 1 }, dados));
+      if (!estado.faltaAtualizar) await banco.salvarReceita(id, unicos);
+      dlgSabor.close(); await carregar();
+    }, "Sabor salvo. O site já mostra a mudança.").finally(() => botao.disabled = false);
+  });
+
+  // ---------- ajustes ----------
+  function desenharAjustes() {
+    const c = estado.config;
+    if (!$("#form-pix").contains(document.activeElement) || document.activeElement.tagName === "BUTTON") {
+      const chave = c.pix_chave || "";
+      $("#pix-tipo").value = /^\+55/.test(chave) ? "celular" : /@/.test(chave) ? "email" : /^\d{11}$/.test(chave) ? "cpf" : /^\d{14}$/.test(chave) ? "cnpj" : chave ? "aleatoria" : "celular";
+      $("#pix-chave").value = chave;
+      $("#pix-nome").value = c.pix_nome || "";
+      $("#pix-cidade").value = c.pix_cidade || "";
+    }
+    const exemplo = estado.pedidos.find(p => !p.restante_pago && p.status !== "cancelado");
+    $("#pix-teste").hidden = !(c.pix_chave && exemplo);
+    if (exemplo) $("#pix-teste").href = linkPagamento(exemplo.codigo);
+    if (document.activeElement !== $("#limite-dia")) $("#limite-dia").value = c.limite_dia || "";
+    $("#caixa-avisos").hidden = !estado.avisos;
+    if (estado.avisos) { $("#ntfy-topico").value = estado.avisos.ntfy_topico; $("#avisos-ligado").checked = estado.avisos.ligado; }
+    $("#avisos-navegador").hidden = !("Notification" in window) || Notification.permission === "granted";
+  }
+  $("#form-pix").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const tipo = $("#pix-tipo").value;
+    const chave = PixBR.normalizarChave(tipo, $("#pix-chave").value);
+    if (!chave) return aviso("Digite a chave Pix");
+    if (tipo === "cpf" && chave.length !== 11) return aviso("O CPF precisa ter 11 números");
+    if (tipo === "cnpj" && chave.length !== 14) return aviso("O CNPJ precisa ter 14 números");
+    if (tipo === "celular" && !/^\+55\d{10,11}$/.test(chave)) return aviso("Confira o celular com DDD");
+    const nome = $("#pix-nome").value.trim(); if (!nome) return aviso("Digite o nome que aparece no banco");
+    $("#pix-chave").blur();
+    tentar(async () => { await banco.salvarPrecos({ pix_chave: chave, pix_nome: nome, pix_cidade: $("#pix-cidade").value.trim() || "BELEM" }); await carregar(); }, "Pix salvo");
+  });
+  $("#form-limite").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = parseInt($("#limite-dia").value, 10);
+    $("#limite-dia").blur();
+    tentar(async () => { await banco.salvarPrecos({ limite_dia: v > 0 ? v : null }); await carregar(); }, v > 0 ? "Limite salvo" : "Sem limite por dia");
+  });
+  $("#copiar-topico").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("#ntfy-topico").value); aviso("Código copiado"); } catch { $("#ntfy-topico").select(); }
+  });
+  $("#avisos-ligado").addEventListener("change", (e) => tentar(async () => { await banco.salvarAvisos({ ligado: e.target.checked }); await carregar(); }, e.target.checked ? "Avisos ligados" : "Avisos desligados"));
+  $("#testar-aviso").addEventListener("click", () => tentar(async () => {
+    const r = await fetch("https://ntfy.sh", { method: "POST", body: JSON.stringify({ topic: estado.avisos.ntfy_topico, title: "Teste da Sweet Grace", message: "Os avisos de pedido novo estão funcionando!", tags: ["cake"] }) });
+    if (!r.ok) throw new Error("o aviso não saiu");
+  }, "Aviso enviado. Confira o celular."));
+  $("#avisos-navegador").addEventListener("click", async () => {
+    const r = await Notification.requestPermission();
+    aviso(r === "granted" ? "Pronto! Com o painel aberto, você recebe os avisos aqui." : "O navegador não deixou mandar avisos");
+    desenharAjustes();
+  });
+
+  // ---------- comprovante ----------
+  // Monta uma imagem com o resumo do pedido para mandar à cliente.
+  async function comprovante() {
+    const itens = lerItens();
+    const p = { valor: Number($("#p-valor").value || 0), frete: Number($("#p-frete").value || 0) };
+    const sinalPago = $("#p-sinal-pago").checked, restoPago = $("#p-resto-pago").checked;
+    const W = 1080, linhasItens = Math.max(itens.length, 1);
+    const H = 1000 + linhasItens * 64 + (p.frete ? 60 : 0);
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    await document.fonts.ready.catch(() => {});
+    g.fillStyle = "#FBEFE1"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#FFFBF5"; g.strokeStyle = "#E4D3BC"; g.lineWidth = 3;
+    g.beginPath(); g.roundRect(60, 60, W - 120, H - 120, 40); g.fill(); g.stroke();
+    const logo = await new Promise(ok => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = "../assets/logo.jpeg"; });
+    if (logo) { g.save(); g.beginPath(); g.arc(W / 2, 200, 90, 0, Math.PI * 2); g.clip(); g.drawImage(logo, W / 2 - 90, 110, 180, 180); g.restore(); }
+    const texto = (t, x, y, fonte, cor, alinhar) => { g.font = fonte; g.fillStyle = cor; g.textAlign = alinhar || "left"; g.fillText(t, x, y); };
+    const serif = '"Cormorant Garamond", Georgia, serif', sans = '"Jost", "Segoe UI", sans-serif';
+    texto("Pedido #" + editando.codigo, W / 2, 360, "500 64px " + serif, "#4B3526", "center");
+    const nome = $("#p-nome").value.trim(), data = $("#p-data").value;
+    texto([nome, data ? "Festa " + paraData(data).toLocaleDateString("pt-BR") : ""].filter(Boolean).join(" · "), W / 2, 420, "400 34px " + sans, "#7A6252", "center");
+    let y = 510;
+    g.strokeStyle = "#E4D3BC"; g.lineWidth = 2; g.beginPath(); g.moveTo(130, y - 40); g.lineTo(W - 130, y - 40); g.stroke();
+    (itens.length ? itens : [{ nome: "Docinhos", qtd: 0 }]).forEach(i => {
+      texto(i.nome, 130, y, "400 36px " + sans, "#4B3526");
+      texto(num(i.qtd), W - 130, y, "500 36px " + sans, "#4B3526", "right");
+      y += 64;
+    });
+    const linha = (rot, val, forte) => { texto(rot, 130, y, (forte ? "500 " : "400 ") + "36px " + sans, "#4B3526"); texto(val, W - 130, y, (forte ? "500 " : "400 ") + "36px " + sans, forte ? "#4B3526" : "#7A6252", "right"); y += 60; };
+    g.beginPath(); g.moveTo(130, y - 30); g.lineTo(W - 130, y - 30); g.stroke(); y += 20;
+    linha("Docinhos (" + num(itens.reduce((a, i) => a + i.qtd, 0)) + ")", brl(p.valor));
+    if (p.frete) linha("Frete", brl(p.frete));
+    linha("Total", brl(totalPedido(p)), true);
+    linha("Sinal (50%)", sinalPago || restoPago ? "pago" : brl(sinalDe(p)));
+    linha("Restante", restoPago ? "pago" : brl(totalPedido(p) - sinalDe(p)));
+    texto(restoPago ? "Pedido quitado. Obrigada!" : "Obrigada pela encomenda!", W / 2, H - 170, "italic 400 44px " + serif, "#B0843A", "center");
+    texto("@doceriasweetgrace · (91) 98561-4644", W / 2, H - 110, "400 28px " + sans, "#7A6252", "center");
+    const blob = await new Promise(ok => c.toBlob(ok, "image/png"));
+    const arquivo = new File([blob], "pedido-" + editando.codigo + ".png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      try { await navigator.share({ files: [arquivo], title: "Pedido #" + editando.codigo }); return; } catch (e) { if (e.name === "AbortError") return; }
+    }
+    const a = el("a", { href: URL.createObjectURL(blob), download: arquivo.name });
+    document.body.append(a); a.click(); a.remove();
+    aviso("Comprovante baixado");
+  }
+  $("#p-comprovante").addEventListener("click", () => tentar(comprovante));
+  $("#p-link-pag").addEventListener("click", async () => {
+    const link = linkPagamento(editando.codigo);
+    try { await navigator.clipboard.writeText(link); aviso(estado.config.pix_chave ? "Link copiado" : "Link copiado. Cadastre o Pix em Ajustes para ele funcionar."); }
+    catch { prompt("Copie o link:", link); }
   });
 
   // ---------- entrar e sair ----------
@@ -941,11 +1431,11 @@
   });
   $("#btn-sair").addEventListener("click", async () => { await banco.sair(); mostrarEntrar(); });
 
-  // Atualiza sozinho quando ela volta para o painel e a cada 2 minutos.
+  // Atualiza sozinho quando ela volta para o painel e a cada minuto.
   let ultima = Date.now();
   const atualizarSeLogado = () => { if (!$("#tela-painel").hidden && !dlg.open && Date.now() - ultima > 30000) { ultima = Date.now(); carregar().catch(() => {}); } };
   document.addEventListener("visibilitychange", () => { if (!document.hidden) atualizarSeLogado(); });
-  setInterval(atualizarSeLogado, 120000);
+  setInterval(atualizarSeLogado, 60000);
 
   async function iniciar() {
     if (DEMO) {

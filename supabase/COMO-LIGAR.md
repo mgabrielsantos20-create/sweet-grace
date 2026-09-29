@@ -14,6 +14,10 @@ Enquanto não estiver ligado, o site funciona como antes e o painel mostra só a
 3. Na última linha, troque `email-da-confeiteira@exemplo.com` pelo e-mail da confeiteira.
 4. Clique em **Run**.
 
+### Atualização 2
+Depois do `banco.sql`, rode também `supabase/atualizacao-2.sql` do mesmo jeito (SQL Editor > New query > Run).
+Ela liga: Pix, limite de docinhos por dia, ingredientes e custos, fotos e sabores novos, e o aviso de pedido novo no celular.
+
 ## 3. Criar o login dela
 1. **Authentication** > **Sign In / Providers**: desligue **Allow new users to sign up**. Assim ninguém cria conta sozinho.
 2. **Authentication** > **Users** > **Add user** > **Create new user**: o mesmo e-mail do passo 2, uma senha, e marque **Auto Confirm User**.

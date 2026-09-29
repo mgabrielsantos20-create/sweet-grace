@@ -721,6 +721,12 @@
   const hoje = new Date(); hoje.setDate(hoje.getDate() + ANTECEDENCIA);
   const dataMin = hoje.getFullYear() + "-" + String(hoje.getMonth() + 1).padStart(2, "0") + "-" + String(hoje.getDate()).padStart(2, "0");
   campoData.min = dataMin;
+  campoData.addEventListener("change", () => {
+    if ((window.DIAS_BLOQUEADOS || []).includes(campoData.value)) {
+      nota.textContent = "Essa data já está com a agenda cheia. Escolha outro dia ou fale com a gente no WhatsApp.";
+      nota.classList.add("alerta");
+    } else atualizar();
+  });
 
   const SABORES = [
     { id: "brigadeiro", nome: "Brigadeiro tradicional", cor: "#5a3420" },
@@ -734,7 +740,9 @@
   const qtd = Object.fromEntries(SABORES.map(s => [s.id, 0]));
   const linhas = document.getElementById("linhas");
 
-  SABORES.forEach(s => {
+  // Cria a linha de um sabor no montador. loja.js usa para sabores novos do painel.
+  function adicionarSabor(s) {
+    if (!(s.id in qtd)) qtd[s.id] = 0;
     const el = document.createElement("div");
     el.className = "linha";
     el.innerHTML =
@@ -748,7 +756,8 @@
     linhas.appendChild(el);
     el.querySelector("#menos-" + s.id).addEventListener("click", () => mudar(s.id, -1));
     el.querySelector("#mais-" + s.id).addEventListener("click", () => mudar(s.id, 1));
-  });
+  }
+  SABORES.forEach(adicionarSabor);
 
   function mudar(id, dir) {
     let v = qtd[id];

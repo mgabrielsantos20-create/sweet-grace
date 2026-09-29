@@ -21,25 +21,62 @@
 
   const brl = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-  // Sabores esgotados: selo no cardápio e fora do montador de pedido.
-  ler("sabores?select=id,disponivel").then(lista => {
-    lista.filter(s => !s.disponivel).forEach(s => {
-      const img = document.querySelector('.doce img[src$="/' + s.id + '.jpg"], .doce img[src="assets/' + s.id + '.jpg"]');
-      const card = img && img.closest(".doce");
-      if (card) {
+  // Sabores do painel: esgotados, escondidos, fotos, textos e sabores novos.
+  const doces = document.querySelector(".doces");
+  const cartaoDe = (id) => {
+    const img = document.querySelector('.doce img[src="assets/' + id + '.jpg"]') || document.querySelector('.doce[data-sabor="' + id + '"] img');
+    return img && img.closest(".doce");
+  };
+  ler("sabores?select=*&order=ordem").then(lista => {
+    lista.forEach(s => {
+      let card = cartaoDe(s.id);
+      // Sabor criado no painel: copia um cartão do cardápio e cria a linha no montador.
+      if (!card && s.ativo !== false && doces) {
+        const modelo = doces.querySelector(".doce");
+        card = modelo.cloneNode(true);
+        card.dataset.sabor = s.id;
+        card.querySelector(".tag")?.remove();
+        const img = card.querySelector("img");
+        img.src = s.foto_url || "assets/logo.jpeg";
+        img.alt = s.nome;
+        img.removeAttribute("style");
+        const foto = card.querySelector(".doce-foto");
+        foto.className = "doce-foto fundo-rosa";
+        card.querySelector("h3").textContent = s.nome;
+        card.querySelector(".doce-corpo p").textContent = s.descricao || "";
+        doces.appendChild(card);
+      }
+      if (typeof SABORES !== "undefined" && !SABORES.some(x => x.id === s.id) && s.ativo !== false) {
+        const novo = { id: s.id, nome: s.nome, cor: s.cor || "#e9b8b5" };
+        SABORES.push(novo);
+        adicionarSabor(novo);
+      }
+      if (!card) return;
+      const mais = document.getElementById("mais-" + s.id), menos = document.getElementById("menos-" + s.id);
+      const linha = mais && mais.closest(".linha");
+      if (s.ativo === false) {
+        card.style.display = "none";
+        if (linha) linha.style.display = "none";
+        return;
+      }
+      if (s.foto_url) card.querySelector("img").src = s.foto_url;
+      if (s.nome) { card.querySelector("h3").textContent = s.nome; card.querySelector("img").alt = s.nome; }
+      if (s.descricao) card.querySelector(".doce-corpo p").textContent = s.descricao;
+      if (linha && s.nome) linha.querySelector("label").textContent = s.nome;
+      const sab = typeof SABORES !== "undefined" && SABORES.find(x => x.id === s.id);
+      if (sab) { sab.nome = s.nome; if (s.cor && linha) { sab.cor = s.cor; linha.querySelector(".ponto").style.background = s.cor; } }
+      if (!s.disponivel) {
         card.classList.add("esgotado");
         const foto = card.querySelector(".doce-foto");
         foto.querySelector(".tag")?.remove();
         const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = "Esgotado no momento";
         foto.prepend(tag);
-      }
-      const menos = document.getElementById("menos-" + s.id), mais = document.getElementById("mais-" + s.id);
-      if (mais) {
-        if (typeof qtd !== "undefined" && qtd[s.id]) { qtd[s.id] = 0; document.getElementById("qtd-" + s.id).textContent = "0"; atualizar(); }
-        mais.disabled = menos.disabled = true;
-        const linha = mais.closest(".linha");
-        linha.classList.add("esgotado");
-        linha.querySelector("label").textContent += " (esgotado)";
+        if (mais) {
+          if (qtd[s.id]) { qtd[s.id] = 0; document.getElementById("qtd-" + s.id).textContent = "0"; atualizar(); }
+          mais.disabled = menos.disabled = true;
+          linha.classList.add("esgotado");
+          linha.querySelector("label").textContent += " (esgotado)";
+        }
       }
     });
   }).catch(() => {});
@@ -72,10 +109,11 @@
     atualizar();
   }).catch(() => {});
 
-  // Dias sem vaga.
-  ler("dias_bloqueados?select=data").then(lista => {
-    window.DIAS_BLOQUEADOS = lista.map(d => d.data);
-  }).catch(() => {});
+  // Dias sem vaga: bloqueados no painel ou que já chegaram no limite de docinhos.
+  fetch(cfg.url + "/rest/v1/rpc/dias_lotados", { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos), body: "{}" })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(lista => { window.DIAS_BLOQUEADOS = lista.map(d => typeof d === "string" ? d : d.dias_lotados); })
+    .catch(() => {});
 
   // Depoimentos publicados no painel.
   ler("depoimentos?select=nome,festa,texto&publicado=eq.true&order=criado_em.desc&limit=6").then(lista => {
