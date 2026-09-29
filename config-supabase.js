@@ -3,6 +3,6 @@
 // A "anon public key" pode ficar aqui: ela é pública por natureza e o banco
 // só deixa visitantes lerem o cardápio. NUNCA coloque aqui a "service_role key".
 window.SWEET_GRACE_SUPABASE = {
-  url: "",
-  chave: ""
+  url: "https://trlfspcbboqafosfdmoq.supabase.co",
+  chave: "sb_publishable_boN8Ssyncz85x1XwjzH2kQ_EcVoHMir"
 };
