@@ -394,7 +394,7 @@
         <div class="grupo-titulo">Limite por dia</div>
         <p class="sub" style="margin-bottom:10px">Quantos docinhos dá para fazer por dia. Quando a soma dos pedidos chega nesse número, o site não deixa escolher o dia. Deixe vazio para não ter limite.</p>
         <div class="campos">
-          <div class="campo"><label for="limite-dia">Docinhos por dia</label><input id="limite-dia" type="number" min="10" step="10" placeholder="Sem limite"></div>
+          <div class="campo"><label for="limite-dia">Docinhos por dia</label><input id="limite-dia" type="number" min="25" step="1" placeholder="Sem limite"></div>
           <div class="campo" style="align-self:end"><button class="btn" type="submit">Salvar limite</button></div>
         </div>
       </form>
@@ -654,7 +654,7 @@
       { id: "beijinho", nome: "Beijinho de coco", disponivel: true, ativo: true, ordem: 2, foto_url: "../assets/beijinho.jpg", cor: "#efe4d0" },
       { id: "bicho-de-pe", nome: "Bicho de pé", disponivel: true, ativo: true, ordem: 3, foto_url: "../assets/bicho-de-pe.jpg", cor: "#e8909e" },
       { id: "ninho", nome: "Brigadeiro de Ninho", disponivel: true, ativo: true, ordem: 4, foto_url: "../assets/ninho.jpg", cor: "#eadcc2" },
-      { id: "cajuzinho", nome: "Cajuzinho", disponivel: false, ativo: true, ordem: 5, foto_url: "../assets/cajuzinho.jpg", cor: "#b8763f" },
+      { id: "churros", nome: "Churros", disponivel: false, ativo: true, ordem: 5, foto_url: "../assets/logo.jpeg", cor: "#c8894a" },
       { id: "casadinho", nome: "Casadinho", disponivel: true, ativo: true, ordem: 6, foto_url: "../assets/casadinho.jpg" }
     ];
     const ing = [
@@ -861,7 +861,7 @@
     $("#p-itens").replaceChildren(...estado.sabores.filter(s => s.ativo || qtds[s.id]).concat(extras).map(s =>
       el("label", { class: "item" + (s.disponivel ? "" : " esgotado") },
         el("span", null, s.nome),
-        el("input", { type: "number", min: "0", step: "10", inputMode: "numeric", value: qtds[s.id] || "", placeholder: "0", "data-id": s.id, "data-nome": s.nome, oninput: recalcularValor }))));
+        el("input", { type: "number", min: "0", step: "1", inputMode: "numeric", value: qtds[s.id] || "", placeholder: "0", "data-id": s.id, "data-nome": s.nome, oninput: recalcularValor }))));
     atualizarTotais();
     $("#p-endereco-campo").hidden = editando.entrega !== "entrega";
     desenharAcoesZap();

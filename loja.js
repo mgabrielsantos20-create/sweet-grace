@@ -59,7 +59,7 @@
         if (linha) linha.style.display = "none";
         return;
       }
-      if (s.foto_url) card.querySelector("img").src = s.foto_url;
+      if (s.foto_url) { const img = card.querySelector("img"); img.src = s.foto_url; img.removeAttribute("style"); }
       if (s.nome) { card.querySelector("h3").textContent = s.nome; card.querySelector("img").alt = s.nome; }
       if (s.descricao) card.querySelector(".doce-corpo p").textContent = s.descricao;
       if (linha && s.nome) linha.querySelector("label").textContent = s.nome;

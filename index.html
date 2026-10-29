@@ -42,8 +42,8 @@
   "openingHoursSpecification": [{
     "@type": "OpeningHoursSpecification",
     "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    "opens": "09:00",
-    "closes": "18:00"
+    "opens": "07:00",
+    "closes": "17:00"
   }],
   "sameAs": ["https://instagram.com/doceriasweetgrace"]
 }
@@ -238,6 +238,12 @@
     border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; width: 100%;
   }
   .campo textarea { resize: vertical; min-height: 70px; }
+  .pagamento { display: flex; gap: 8px; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
+  .pagamento legend { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--cacau-suave); padding: 0; margin-bottom: 6px; }
+  .pagamento label { position: relative; flex: 1 1 140px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 12px; background: var(--creme); cursor: pointer; font-size: 15px; text-align: center; }
+  .pagamento input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .pagamento label:has(input:checked) { border-color: var(--ouro); background: var(--papel); box-shadow: inset 0 0 0 1px var(--ouro); color: var(--cacau); }
+  .pagamento label:has(input:focus-visible) { outline: 2px solid var(--ouro); outline-offset: 2px; }
   .resumo { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding-top: 6px; }
   .resumo .total { font: 500 30px/1 var(--display); font-variant-numeric: tabular-nums; }
   .resumo .total .valor { font: 400 15px/1.4 var(--texto); color: var(--ouro-escuro); margin-top: 6px; font-variant-numeric: tabular-nums; }
@@ -423,7 +429,7 @@
         </div>
         <div class="selos">
           <span><i style="background:var(--rosa)"></i>Chocolate nobre</span>
-          <span><i style="background:var(--salvia)"></i>Sem conservantes</span>
+          <span><i style="background:var(--salvia)"></i>Feito artesanalmente</span>
           <span><i style="background:var(--lilas)"></i>Entrega em Belém e Ananindeua</span>
         </div>
       </div>
@@ -436,7 +442,7 @@
         <span class="rotulo">Cardápio</span>
         <h2>Os nossos <em>docinhos</em></h2>
         <div class="divisor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.3 5.3 3.2 1.6-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
-        <p class="sub">A partir de 10 docinhos, em forminhas que combinam com a sua mesa. Dá para misturar sabores no mesmo pedido.</p>
+        <p class="sub">A partir de 25 docinhos, em forminhas que combinam com a sua mesa. Dá para misturar sabores, com no mínimo 25 de cada.</p>
       </div>
 
       <div class="doces">
@@ -472,11 +478,11 @@
             <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
           </div>
         </article>
-        <article class="doce">
-          <div class="doce-foto fundo-ouro"><img src="assets/cajuzinho.jpg" alt="Cajuzinho com amendoim em forminha dourada" width="469" height="533" loading="lazy"></div>
+        <article class="doce" data-sabor="churros">
+          <div class="doce-foto fundo-ouro" data-sabor-foto="churros"><img src="assets/logo.jpeg" alt="Brigadeiro de churros" width="469" height="533" loading="lazy" style="object-fit: contain; padding: 18%; background: var(--creme)"></div>
           <div class="doce-corpo">
-            <h3>Cajuzinho</h3>
-            <p>Amendoim torrado com chocolate, no formato de caju.</p>
+            <h3>Churros</h3>
+            <p>Doce de leite com canela e açúcar, com gostinho de churros.</p>
             <div class="preco"><strong>R$ 150,00 <small>o cento</small></strong><span>R$ 2,00 a unidade</span></div>
           </div>
         </article>
@@ -489,7 +495,7 @@
           </div>
         </article>
       </div>
-      <p class="aviso-preco">Todos os sabores têm o mesmo preço. Pedido mínimo de 10 docinhos.</p>
+      <p class="aviso-preco">Todos os sabores têm o mesmo preço. Pedido mínimo de 25 docinhos, e 25 de cada sabor. Os docinhos levam corante alimentício.</p>
       <div class="economia"><strong>No cento, cada docinho sai por R$ 1,50.</strong> Você economiza R$ 50,00 em relação ao preço da unidade.</div>
 
       <div class="kits" id="kits">
@@ -501,10 +507,10 @@
         <div class="kits-lista">
           <article class="kit">
             <h3>Mesa pequena</h3>
-            <p class="kit-qtd">50 docinhos · até 3 sabores</p>
+            <p class="kit-qtd">50 docinhos · até 2 sabores</p>
             <p class="kit-uso">Para aniversários em casa e lembrancinhas.</p>
             <p class="kit-preco">R$ 100,00</p>
-            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 3 sabores, R$ 100,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 2 sabores, R$ 100,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
           </article>
           <article class="kit destaque">
             <span class="kit-selo">Melhor preço por docinho</span>
@@ -533,7 +539,7 @@
         <h2>Monte a sua <em>encomenda</em></h2>
         <p>Escolha os sabores e as quantidades aqui ao lado. A gente recebe tudo pelo WhatsApp e confirma com você.</p>
         <ol class="passos">
-          <li><div><strong>Escolha os sabores</strong><span>De 10 em 10 unidades, misturando como quiser.</span></div></li>
+          <li><div><strong>Escolha os sabores</strong><span>De 25 em 25 unidades, misturando como quiser.</span></div></li>
           <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido e a data da festa.</span></div></li>
           <li><div><strong>Confirme com o sinal</strong><span>Reservamos a sua data com 50% de entrada via Pix.</span></div></li>
           <li><div><strong>Retire ou receba</strong><span>Retirada na Anísio Teixeira, 2 (Augusto Montenegro) ou entrega em Belém e Ananindeua, com frete a consultar.</span></div></li>
@@ -559,6 +565,11 @@
           <label for="obs">Observações</label>
           <textarea id="obs" name="obs" placeholder="Cor das forminhas, tema da festa, retirada ou entrega (bairro)..."></textarea>
         </div>
+        <fieldset class="pagamento">
+          <legend>Forma de pagamento</legend>
+          <label><input type="radio" name="pagamento" value="Pix" checked> Pix</label>
+          <label><input type="radio" name="pagamento" value="Cartão"> Cartão de crédito ou débito</label>
+        </fieldset>
         <div class="resumo">
           <div class="total"><span id="total">0</span><small>docinhos</small><div class="valor" id="valor">R$ 0,00</div></div>
           <button class="btn" type="submit">
@@ -577,10 +588,11 @@
       <img class="foto-sobre" src="assets/cozinha.jpg" alt="Mãos da confeiteira enrolando brigadeiros na cozinha, com bandeja de docinhos em forminhas coloridas" width="900" height="1125" loading="lazy">
       <div class="sobre-texto">
         <span class="rotulo">Sobre a Sweet Grace</span>
-        <h2>Feito com <em>tempo</em> e carinho</h2>
-        <p>A Sweet Grace nasceu na cozinha de casa, entre panelas de brigadeiro mexidas até o ponto certo e festas de família que sempre pediam mais uma bandeja. Cada docinho é enrolado à mão, com chocolate nobre, leite condensado de verdade e nada de conservantes.</p>
-        <p>Fazemos poucos pedidos por semana, justamente para que cada um saia caprichado, com a forminha certa e o acabamento que a sua mesa merece.</p>
-        <blockquote>Doce bom é doce feito sem pressa.</blockquote>
+        <h2>Seja bem-vinda à nossa <em>doce história</em> 💕</h2>
+        <p>A Sweet Grace nasceu na cozinha de casa, entre brigadeiros, festas em família e o desejo de transformar o simples em momentos mais doces. 🍫🤍</p>
+        <p>Cada doce é feito artesanalmente, com carinho e atenção aos detalhes — da nossa cozinha para a sua mesa. ✨</p>
+        <p>E esse é só o começo. Que bom ter você aqui!</p>
+        <blockquote>Simples e gostoso. Do jeitinho Sweet.</blockquote>
         <dl class="fatos">
           <div><dt>100%</dt><dd>feito à mão</dd></div>
           <div><dt>6</dt><dd>sabores clássicos</dd></div>
@@ -614,7 +626,7 @@
         </details>
         <details>
           <summary>Posso misturar sabores no mesmo cento?</summary>
-          <p>Pode, sim. O pedido mínimo é de 10 docinhos e você combina os sabores como quiser, de 10 em 10.</p>
+          <p>Pode, sim. O pedido mínimo é de 25 docinhos, e cada sabor também sai a partir de 25 unidades. Você combina como quiser, de 25 em 25.</p>
         </details>
         <details>
           <summary>Vocês entregam? Onde retiro?</summary>
@@ -623,6 +635,10 @@
         <details>
           <summary>Quanto tempo os docinhos duram?</summary>
           <p>Até 3 dias em temperatura ambiente, longe do sol, ou até 5 dias na geladeira. Tire da geladeira meia hora antes de servir.</p>
+        </details>
+        <details>
+          <summary>Os docinhos têm corante?</summary>
+          <p>Sim, os docinhos levam corante alimentício. Se alguém da festa tiver restrição, fale com a gente pelo WhatsApp antes de encomendar.</p>
         </details>
         <details>
           <summary>Quais formas de pagamento vocês aceitam?</summary>
@@ -645,7 +661,7 @@
       <div class="canais">
         <span>WhatsApp <b>(91) 98561-4644</b></span>
         <span>Instagram <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener"><b>@doceriasweetgrace</b></a></span>
-        <span>Atendimento <b>seg. a sáb., 9h às 18h</b></span>
+        <span>Atendimento <b>seg. a sáb., 7h às 17h</b></span>
         <span>Retirada <a href="https://www.google.com/maps/search/?api=1&amp;query=An%C3%ADsio+Teixeira+2+Augusto+Montenegro+Bel%C3%A9m+PA" target="_blank" rel="noopener"><b>Anísio Teixeira, 2 · Augusto Montenegro</b></a></span>
         <span>Entrega <b>Belém e Ananindeua</b></span>
       </div>
@@ -733,10 +749,10 @@
     { id: "beijinho", nome: "Beijinho de coco", cor: "#efe4d0" },
     { id: "bicho-de-pe", nome: "Bicho de pé", cor: "#e8909e" },
     { id: "ninho", nome: "Brigadeiro de Ninho", cor: "#eadcc2" },
-    { id: "cajuzinho", nome: "Cajuzinho", cor: "#b8763f" },
+    { id: "churros", nome: "Churros", cor: "#c8894a" },
     { id: "casadinho", nome: "Casadinho", cor: "linear-gradient(90deg,#4a2a1a 50%,#efe4d0 50%)" }
   ];
-  const PASSO = 10;
+  const PASSO = 25;
   const qtd = Object.fromEntries(SABORES.map(s => [s.id, 0]));
   const linhas = document.getElementById("linhas");
 
@@ -810,16 +826,18 @@
     }
     medir("envio_pedido", { docinhos: total });
     const obs = document.getElementById("obs").value.trim();
+    const pagamento = (document.querySelector('input[name="pagamento"]:checked') || {}).value || "Pix";
     const nome = document.getElementById("nome-cliente").value.trim();
     const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const codigo = Array.from(crypto.getRandomValues(new Uint8Array(6)), b => letras[b % letras.length]).join("");
-    if (window.salvarPedido) salvarPedido({ codigo, nome, data, obs, itens: SABORES.filter(s => qtd[s.id]).map(s => ({ id: s.id, qtd: qtd[s.id] })) });
+    if (window.salvarPedido) salvarPedido({ codigo, nome, data, obs: ["Pagamento: " + pagamento, obs].filter(Boolean).join("\n"), itens: SABORES.filter(s => qtd[s.id]).map(s => ({ id: s.id, qtd: qtd[s.id] })) });
     let msg = "Olá, Sweet Grace! " + (nome ? "Sou " + nome + " e g" : "G") + "ostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
     if (obs) msg += "\nObservações: " + obs;
+    msg += "\nPagamento: " + (pagamento === "Cartão" ? "cartão de crédito ou débito" : "Pix");
     msg += "\nCódigo do pedido: " + codigo;
     // Com o Pix cadastrado no painel, mostra o QR Code antes de ir para o WhatsApp.
-    if (window.abrirPagamento && abrirPagamento({ msg, codigo, valor: valor(total) })) return;
+    if (pagamento === "Pix" && window.abrirPagamento && abrirPagamento({ msg, codigo, valor: valor(total) })) return;
     const a = document.createElement("a");
     a.href = zapLink(msg); a.target = "_blank"; a.rel = "noopener";
     document.body.appendChild(a); a.click(); a.remove();
