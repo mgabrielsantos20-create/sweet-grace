@@ -1,0 +1,18 @@
+# O Supabase grátis pausa o banco depois de uns dias sem uso.
+# Esta tarefa lê o cardápio a cada 3 dias para o banco continuar ligado.
+name: Manter o banco ativo
+
+on:
+  schedule:
+    - cron: "17 12 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ler o cardápio no Supabase
+        run: |
+          URL="https://trlfspcbboqafosfdmoq.supabase.co"
+          CHAVE="sb_publishable_boN8Ssyncz85x1XwjzH2kQ_EcVoHMir"
+          curl -fsS "$URL/rest/v1/sabores?select=id&limit=1" -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
