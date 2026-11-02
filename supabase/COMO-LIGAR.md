@@ -30,3 +30,10 @@ Ela liga: Pix, limite de docinhos por dia, ingredientes e custos, fotos e sabore
 ## Segurança, em uma frase
 Visitantes só conseguem ler o cardápio, os preços, os dias bloqueados e os depoimentos publicados, e só criam pedidos e depoimentos pelas funções que conferem os dados.
 Pedidos só aparecem para quem entrar com um e-mail cadastrado na tabela `equipe`.
+
+## Mercado Pago (pagamento no site)
+A função `supabase/functions/mercadopago` cria o checkout do pedido e marca o pedido como pago quando o Mercado Pago avisa.
+1. A dona entra em https://www.mercadopago.com.br/developers/panel/app, cria uma aplicação (Checkout Pro) e copia o **Access Token de produção** (começa com `APP_USR-`).
+2. No Supabase: **Edge Functions** > **Secrets** > adicione `MP_ACCESS_TOKEN` com esse valor.
+3. Pronto: o botão "Pagar com Mercado Pago" aparece no site e o painel (Ajustes) mostra "Ligado".
+Nunca coloque esse token no código do site: ele fica só no Supabase.

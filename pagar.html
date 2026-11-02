@@ -34,6 +34,12 @@
   .linhas { display: grid; gap: 4px; font-size: 15px; text-align: left; border-top: 1px solid var(--linha); padding-top: 12px; }
   .linhas div { display: flex; justify-content: space-between; gap: 10px; }
   .pago { color: var(--ok); font-weight: 500; }
+  .mp-btn { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; padding: 15px 20px; background: #009EE3; color: #fff; font: 500 15px/1.2 "Jost", sans-serif; cursor: pointer; }
+  .mp-btn:hover { background: #007EB5; }
+  .mp-btn:disabled { opacity: .7; cursor: wait; }
+  .ou { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cacau-suave); }
+  .ou::before, .ou::after { content: ""; flex: 1; border-top: 1px solid var(--linha); }
+  .erro { color: #A4453A; font-size: 14px; }
   .passos { text-align: left; font-size: 14px; color: var(--cacau-suave); margin: 0; padding-left: 20px; }
 </style>
 </head>
@@ -51,6 +57,13 @@
       <p id="rotulo-valor">Valor do sinal</p>
       <div class="valor" id="valor"></div>
     </div>
+    <div id="mp-area" hidden style="display:grid;gap:8px">
+      <button class="mp-btn" type="button" id="mp-pagar">Pagar com Mercado Pago</button>
+      <p style="font-size:13px">Pix, cartão de crédito ou débito. O pedido é confirmado assim que o pagamento cair.</p>
+      <p class="erro" id="mp-erro" role="alert" hidden></p>
+    </div>
+    <p class="ou" id="ou" hidden>ou pague com o Pix direto</p>
+    <div id="pix-area" style="display:grid;gap:16px">
     <div class="qr" id="qr" role="img" aria-label="QR Code do Pix"></div>
     <div class="copia">
       <p>Ou use o Pix copia e cola:</p>
@@ -64,11 +77,13 @@
       <li>Mande o comprovante pelo WhatsApp.</li>
     </ol>
     <a class="btn contorno" id="zap" target="_blank" rel="noopener">Enviar comprovante</a>
+    </div>
     <div class="linhas" id="linhas"></div>
   </div>
   <div id="mensagem" hidden style="display:grid;gap:16px">
     <h1 id="msg-titulo"></h1>
     <p id="msg-texto"></p>
+    <a class="btn" id="msg-zap" target="_blank" rel="noopener" hidden>Enviar o pedido no WhatsApp</a>
     <a class="btn contorno" href="./">Ver o site</a>
   </div>
 </main>
@@ -85,22 +100,63 @@
   const aviso = (titulo, texto) => { $("carregando").hidden = true; $("conteudo").hidden = true; $("msg-titulo").textContent = titulo; $("msg-texto").textContent = texto; $("mensagem").hidden = false; };
 
   if (!codigo || !cfg.url) return aviso("Link incompleto", "Peça um novo link de pagamento pelo WhatsApp.");
+
+  // Volta do Mercado Pago: mostra o resultado e oferece mandar o pedido no WhatsApp.
+  const retorno = new URLSearchParams(location.search).get("mp");
+  if (retorno) {
+    let msg = "";
+    try { msg = sessionStorage.getItem("sg-msg-" + codigo) || ""; } catch {}
+    const textos = {
+      ok: ["Pagamento aprovado!", "Recebemos o seu pagamento do pedido #" + codigo + ". Agora é só mandar o pedido no WhatsApp para a gente combinar os detalhes.", "Paguei pelo Mercado Pago (pagamento aprovado)."],
+      pendente: ["Pagamento em análise", "O Mercado Pago ainda está confirmando o pagamento do pedido #" + codigo + ". Assim que cair, o pedido é confirmado. Mande o pedido no WhatsApp enquanto isso.", "Fiz o pagamento pelo Mercado Pago e está em análise."],
+      falhou: ["O pagamento não foi concluído", "Nada foi cobrado. Você pode tentar de novo ou combinar o pagamento pelo WhatsApp.", "Tentei pagar pelo Mercado Pago e não deu certo."]
+    }[retorno] || null;
+    if (textos) {
+      aviso(textos[0], textos[1]);
+      const z = $("msg-zap");
+      z.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent((msg || "Olá, Sweet Grace! Pedido #" + codigo + ".") + "\n" + textos[2]);
+      z.hidden = false;
+      if (retorno === "falhou") { const t = document.createElement("a"); t.className = "btn contorno"; t.href = location.pathname + "?pedido=" + codigo; t.textContent = "Tentar de novo"; z.after(t); }
+      return;
+    }
+  }
+
   const cab = { apikey: cfg.chave, Authorization: "Bearer " + cfg.chave, "Content-Type": "application/json" };
-  let pedido, conf;
+  const MP_URL = cfg.url + "/functions/v1/mercadopago";
+  let pedido, conf, mpAtivo = false;
   try {
-    const [r1, r2] = await Promise.all([
+    const [r1, r2, r3] = await Promise.all([
       fetch(cfg.url + "/rest/v1/rpc/dados_pagamento", { method: "POST", headers: cab, body: JSON.stringify({ p_codigo: codigo }) }),
-      fetch(cfg.url + "/rest/v1/config?select=pix_chave,pix_nome,pix_cidade&id=eq.1", { headers: cab })
+      fetch(cfg.url + "/rest/v1/config?select=pix_chave,pix_nome,pix_cidade&id=eq.1", { headers: cab }),
+      fetch(MP_URL, { headers: cab }).catch(() => null)
     ]);
     if (!r1.ok || !r2.ok) throw new Error();
     pedido = await r1.json();
     conf = (await r2.json())[0] || {};
+    mpAtivo = Boolean(r3 && r3.ok && (await r3.json()).ativo);
   } catch { return aviso("Não foi possível carregar", "Confira a internet e abra o link de novo."); }
 
   if (!pedido) return aviso("Pedido não encontrado", "Confira o link ou fale com a gente pelo WhatsApp.");
   if (pedido.cancelado) return aviso("Pedido cancelado", "Este pedido foi cancelado. Qualquer dúvida, fale com a gente pelo WhatsApp.");
   if (pedido.restante_pago) return aviso("Pedido pago", "Este pedido já está todo pago. Obrigada!");
-  if (!conf.pix_chave) return aviso("Pagamento pelo WhatsApp", "Fale com a gente pelo WhatsApp para receber a chave Pix.");
+  if (!conf.pix_chave && !mpAtivo) return aviso("Pagamento pelo WhatsApp", "Fale com a gente pelo WhatsApp para receber a chave Pix.");
+  $("mp-area").hidden = !mpAtivo;
+  $("pix-area").hidden = !conf.pix_chave;
+  $("ou").hidden = !(mpAtivo && conf.pix_chave);
+  let escolhido = "sinal";
+  $("mp-pagar").addEventListener("click", async () => {
+    const b = $("mp-pagar"); b.disabled = true; b.textContent = "Abrindo o Mercado Pago...";
+    try {
+      const r = await fetch(MP_URL, { method: "POST", headers: cab, body: JSON.stringify({ codigo, tipo: escolhido }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.url) throw new Error();
+      location.href = d.url;
+    } catch {
+      b.disabled = false; b.textContent = "Pagar com Mercado Pago";
+      $("mp-erro").textContent = "Não foi possível abrir o Mercado Pago agora. Tente de novo em instantes.";
+      $("mp-erro").hidden = false;
+    }
+  });
 
   const total = Number(pedido.total), sinal = Number(pedido.sinal);
   const restante = Math.round((total - sinal) * 100) / 100;
@@ -112,11 +168,14 @@
 
   function mostrar(tipo) {
     const o = opcoes[tipo];
-    const codigoPix = PixBR.copiaECola({ chave: conf.pix_chave, nome: conf.pix_nome, cidade: conf.pix_cidade, valor: o.valor, txid: codigo });
+    escolhido = tipo;
     $("rotulo-valor").textContent = o.rotulo;
     $("valor").textContent = brl(o.valor);
-    $("qr").innerHTML = PixBR.qrSvg(codigoPix);
-    $("copia").value = codigoPix;
+    if (conf.pix_chave) {
+      const codigoPix = PixBR.copiaECola({ chave: conf.pix_chave, nome: conf.pix_nome, cidade: conf.pix_cidade, valor: o.valor, txid: codigo });
+      $("qr").innerHTML = PixBR.qrSvg(codigoPix);
+      $("copia").value = codigoPix;
+    }
     $("zap").href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Olá, Sweet Grace! Fiz o Pix de " + brl(o.valor) + " do pedido #" + codigo + ". Segue o comprovante:");
     document.querySelectorAll(".opcao").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tipo === tipo)));
   }

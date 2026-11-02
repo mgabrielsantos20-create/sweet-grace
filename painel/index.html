@@ -459,6 +459,11 @@
         </div>
         <div class="acoes" style="margin-top:12px"><button class="btn" type="submit">Salvar Pix</button><a class="btn discreto" id="pix-teste" target="_blank" rel="noopener" hidden>Ver página de pagamento</a></div>
       </form>
+      <div class="caixa" id="caixa-mp">
+        <div class="grupo-titulo">Mercado Pago</div>
+        <p id="mp-status" class="sub">Verificando...</p>
+        <p class="sub" style="margin-top:8px">Quando está ligado, a cliente paga o sinal ou o total no site, com Pix ou cartão, e o pedido fica marcado como pago aqui sozinho. Você recebe na sua conta do Mercado Pago, com as taxas dela.</p>
+      </div>
       <form class="caixa" id="form-limite">
         <div class="grupo-titulo">Limite por dia</div>
         <p class="sub" style="margin-bottom:10px">Quantos docinhos dá para fazer por dia. Quando a soma dos pedidos chega nesse número, o site não deixa escolher o dia. Deixe vazio para não ter limite.</p>
@@ -1468,6 +1473,19 @@
     $("#caixa-avisos").hidden = !estado.avisos;
     if (estado.avisos) { $("#ntfy-topico").value = estado.avisos.ntfy_topico; $("#avisos-ligado").checked = estado.avisos.ligado; }
     $("#avisos-navegador").hidden = !("Notification" in window) || Notification.permission === "granted";
+    verMercadoPago();
+  }
+  let mpVisto = false;
+  async function verMercadoPago() {
+    if (mpVisto) return;
+    mpVisto = true;
+    const st = $("#mp-status");
+    if (DEMO || !configurado) { st.textContent = "No modo demonstração não dá para ver."; return; }
+    try {
+      const d = await fetch(cfg.url + "/functions/v1/mercadopago", { headers: { apikey: cfg.chave, Authorization: "Bearer " + cfg.chave } }).then(r => r.json());
+      st.replaceChildren(d.ativo ? el("b", { style: "color:var(--ok)" }, "Ligado. ") : el("b", null, "Desligado. "),
+        d.ativo ? "O botão do Mercado Pago aparece no site." : "Falta colocar o Access Token da sua conta no Supabase.");
+    } catch { mpVisto = false; st.textContent = "Não deu para verificar agora."; }
   }
   $("#form-pix").addEventListener("submit", (e) => {
     e.preventDefault();
