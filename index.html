@@ -13,7 +13,7 @@
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Sweet Grace">
 <meta property="og:title" content="Sweet Grace | Docinhos artesanais para festas em Belém">
-<meta property="og:description" content="Brigadeiro, beijinho, bicho de pé e mais, feitos à mão. R$ 150,00 o cento. Retirada na Augusto Montenegro ou entrega em Belém e Ananindeua.">
+<meta property="og:description" content="Brigadeiro, beijinho, bicho de pé e mais, feitos à mão. R$ 150,00 o cento. Belém - PA, com entrega em Belém e Ananindeua.">
 <meta property="og:url" content="https://mgabrielsantos20-create.github.io/sweet-grace/">
 <meta property="og:image" content="https://mgabrielsantos20-create.github.io/sweet-grace/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -33,7 +33,6 @@
   "priceRange": "R$ 2,00 a unidade · R$ 150,00 o cento",
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Anísio Teixeira, 2 - Augusto Montenegro",
     "addressLocality": "Belém",
     "addressRegion": "PA",
     "addressCountry": "BR"
@@ -334,8 +333,16 @@
   footer { background: var(--cacau); color: #A8927F; border-top: 1px solid rgba(250,241,230,.12); }
   footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; padding-block: 22px; font-size: 13px; }
   footer .links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
-  footer .area { color: #A8927F; text-decoration: none; }
-  footer .area:hover { color: #D8C8B6; text-decoration: underline; }
+  footer .area { display: inline-flex; align-items: center; gap: 6px; color: var(--papel); text-decoration: none; border: 1px solid rgba(250,241,230,.35); border-radius: 999px; padding: 6px 14px 6px 10px; }
+  footer .area svg { width: 15px; height: 15px; fill: currentColor; }
+  footer .area:hover { background: rgba(250,241,230,.1); }
+  .topo-acoes { display: flex; align-items: center; gap: 10px; }
+  .entrar-painel { display: inline-flex; align-items: center; gap: 7px; color: var(--cacau-suave); text-decoration: none; font-size: 13px; letter-spacing: .04em; padding: 8px 12px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--linha); background: var(--papel); }
+  .entrar-painel svg { width: 17px; height: 17px; fill: var(--ouro-escuro); flex: none; }
+  .entrar-painel:hover { color: var(--cacau); box-shadow: inset 0 0 0 1px var(--ouro); }
+  .recado { margin: 0; background: var(--cacau); color: var(--papel); text-align: center; font-size: 14px; padding: 9px 16px; }
+  .sobre-paragrafos { display: contents; }
+  @media (max-width: 560px) { .entrar-painel span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } .entrar-painel { padding: 9px; } }
   .doce.esgotado img { filter: grayscale(.6); opacity: .75; }
   .linha.esgotado { opacity: .5; }
   .qtd button:disabled { cursor: not-allowed; }
@@ -400,6 +407,8 @@
 </head>
 <body>
 
+<p class="recado" data-texto="recado" hidden></p>
+
 <header class="topo">
   <div class="wrap">
     <a class="marca" href="#inicio">Sweet Grace</a>
@@ -409,7 +418,10 @@
       <a href="#sobre">Sobre</a>
       <a href="#duvidas">Dúvidas</a>
     </nav>
-    <a class="btn pequeno" href="#pedido">Encomendar</a>
+    <div class="topo-acoes">
+      <a class="entrar-painel" href="painel/" title="Área da confeiteira"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4.4 0-8 2.3-8 5.2V21h16v-1.8c0-2.9-3.6-5.2-8-5.2z"/></svg><span>Área da confeiteira</span></a>
+      <a class="btn pequeno" href="#pedido">Encomendar</a>
+    </div>
   </div>
 </header>
 
@@ -420,9 +432,9 @@
         <img src="assets/logo.jpeg" alt="Sweet Grace, doceria artesanal" width="1254" height="1254">
       </div>
       <div class="hero-texto">
-        <span class="rotulo">Doceria artesanal · Belém</span>
-        <h1>Docinhos feitos à mão, <em>um a um</em>, para a sua festa.</h1>
-        <p class="lead">Brigadeiro, beijinho, bicho de pé e outros clássicos enrolados na hora, com ingredientes de verdade e aquele capricho de doce de vó. Retirada na Augusto Montenegro ou entrega em Belém e Ananindeua.</p>
+        <span class="rotulo">Doceria artesanal · Belém - PA</span>
+        <h1 data-texto="hero_titulo">Docinhos feitos à mão, <em>um a um</em>, para a sua festa.</h1>
+        <p class="lead" data-texto="hero_texto">Brigadeiro, beijinho, bicho de pé e outros clássicos enrolados na hora, com ingredientes de verdade e aquele capricho de doce de vó. Em Belém - PA, com entrega em Belém e Ananindeua.</p>
         <div class="hero-acoes">
           <a class="btn" href="#pedido">Montar meu pedido</a>
           <a class="btn contorno" href="#doces">Ver os doces</a>
@@ -495,7 +507,7 @@
           </div>
         </article>
       </div>
-      <p class="aviso-preco">Todos os sabores têm o mesmo preço. Pedido mínimo de 25 docinhos, e 25 de cada sabor. Os docinhos levam corante alimentício.</p>
+      <p class="aviso-preco" data-texto="aviso_cardapio">Todos os sabores têm o mesmo preço. Pedido mínimo de 25 docinhos, e 25 de cada sabor. Os docinhos levam corante alimentício.</p>
       <div class="economia"><strong>No cento, cada docinho sai por R$ 1,50.</strong> Você economiza R$ 50,00 em relação ao preço da unidade.</div>
 
       <div class="kits" id="kits">
@@ -542,7 +554,7 @@
           <li><div><strong>Escolha os sabores</strong><span>De 25 em 25 unidades, misturando como quiser.</span></div></li>
           <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido e a data da festa.</span></div></li>
           <li><div><strong>Confirme com o sinal</strong><span>Reservamos a sua data com 50% de entrada via Pix.</span></div></li>
-          <li><div><strong>Retire ou receba</strong><span>Retirada na Anísio Teixeira, 2 (Augusto Montenegro) ou entrega em Belém e Ananindeua, com frete a consultar.</span></div></li>
+          <li><div><strong>Retire ou receba</strong><span>Entrega em Belém e Ananindeua com frete a consultar, ou retirada combinada pelo WhatsApp.</span></div></li>
         </ol>
       </div>
 
@@ -588,11 +600,13 @@
       <img class="foto-sobre" src="assets/cozinha.jpg" alt="Mãos da confeiteira enrolando brigadeiros na cozinha, com bandeja de docinhos em forminhas coloridas" width="900" height="1125" loading="lazy">
       <div class="sobre-texto">
         <span class="rotulo">Sobre a Sweet Grace</span>
-        <h2>Seja bem-vinda à nossa <em>doce história</em> 💕</h2>
+        <h2 data-texto="sobre_titulo">Seja bem-vinda à nossa <em>doce história</em> 💕</h2>
+        <div class="sobre-paragrafos" data-texto="sobre_texto" data-tipo="paragrafos">
         <p>A Sweet Grace nasceu na cozinha de casa, entre brigadeiros, festas em família e o desejo de transformar o simples em momentos mais doces. 🍫🤍</p>
         <p>Cada doce é feito artesanalmente, com carinho e atenção aos detalhes — da nossa cozinha para a sua mesa. ✨</p>
         <p>E esse é só o começo. Que bom ter você aqui!</p>
-        <blockquote>Simples e gostoso. Do jeitinho Sweet.</blockquote>
+        </div>
+        <blockquote data-texto="sobre_frase">Simples e gostoso. Do jeitinho Sweet.</blockquote>
         <dl class="fatos">
           <div><dt>100%</dt><dd>feito à mão</dd></div>
           <div><dt>6</dt><dd>sabores clássicos</dd></div>
@@ -630,7 +644,7 @@
         </details>
         <details>
           <summary>Vocês entregam? Onde retiro?</summary>
-          <p>Entregamos em qualquer bairro de Belém e Ananindeua, com frete a consultar pelo WhatsApp. Se preferir, é só retirar com horário marcado na Anísio Teixeira, 2, na Augusto Montenegro (<a href="https://www.google.com/maps/search/?api=1&amp;query=An%C3%ADsio+Teixeira+2+Augusto+Montenegro+Bel%C3%A9m+PA" target="_blank" rel="noopener">ver no mapa</a>).</p>
+          <p>Entregamos em qualquer bairro de Belém e Ananindeua, com frete a consultar pelo WhatsApp. Se preferir retirar, combinamos o local e o horário pelo WhatsApp.</p>
         </details>
         <details>
           <summary>Quanto tempo os docinhos duram?</summary>
@@ -653,7 +667,7 @@
       <span class="rotulo">Encomendas</span>
       <h2>Vamos adoçar a sua <em>festa</em>?</h2>
       <div class="divisor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.7 1.3 5.3 3.2 1.6-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg></div>
-      <p>Chame no WhatsApp para tirar dúvidas, pedir orçamento ou reservar a sua data.</p>
+      <p data-texto="contato_texto">Chame no WhatsApp para tirar dúvidas, pedir orçamento ou reservar a sua data.</p>
       <a class="btn" id="zap-contato" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.3-.6-2.2-1.2-3-2.6-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
         Falar no WhatsApp
@@ -661,9 +675,9 @@
       <div class="canais">
         <span>WhatsApp <b>(91) 98561-4644</b></span>
         <span>Instagram <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener"><b>@doceriasweetgrace</b></a></span>
-        <span>Atendimento <b>seg. a sáb., 7h às 17h</b></span>
-        <span>Retirada <a href="https://www.google.com/maps/search/?api=1&amp;query=An%C3%ADsio+Teixeira+2+Augusto+Montenegro+Bel%C3%A9m+PA" target="_blank" rel="noopener"><b>Anísio Teixeira, 2 · Augusto Montenegro</b></a></span>
-        <span>Entrega <b>Belém e Ananindeua</b></span>
+        <span>Atendimento <b data-texto="horario">seg. a sáb., 7h às 17h</b></span>
+        <span>Localização <b>Belém - PA</b></span>
+        <span>Entrega <b data-texto="entrega">Belém e Ananindeua</b></span>
       </div>
     </div>
   </section>
@@ -674,7 +688,7 @@
     <span>© 2026 Sweet Grace · Doceria artesanal em Belém, PA</span>
     <span class="links">
       <a href="https://instagram.com/doceriasweetgrace" target="_blank" rel="noopener">@doceriasweetgrace</a>
-      <a class="area" href="painel/">Área da confeiteira</a>
+      <a class="area" href="painel/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4.4 0-8 2.3-8 5.2V21h16v-1.8c0-2.9-3.6-5.2-8-5.2z"/></svg>Área da confeiteira</a>
     </span>
   </div>
 </footer>

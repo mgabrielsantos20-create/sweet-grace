@@ -131,6 +131,22 @@
     document.getElementById("depoimentos").hidden = false;
   }).catch(() => {});
 
+  // Textos editados no painel (aba Editar site). Texto vazio mantém o original,
+  // menos o recado do topo, que some quando fica vazio.
+  const escapar = (t) => t.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const comDestaque = (t) => escapar(t).replace(/\*([^*\n]+)\*/g, "<em>$1</em>");
+  ler("textos?select=chave,valor").then(lista => {
+    lista.forEach(({ chave, valor }) => {
+      const t = (valor || "").trim();
+      document.querySelectorAll('[data-texto="' + chave + '"]').forEach(alvo => {
+        if (chave === "recado") { alvo.textContent = t; alvo.hidden = !t; return; }
+        if (!t) return;
+        if (alvo.dataset.tipo === "paragrafos") alvo.innerHTML = t.split(/\n\s*\n/).map(p => "<p>" + comDestaque(p.trim()).replace(/\n/g, "<br>") + "</p>").join("");
+        else alvo.innerHTML = comDestaque(t);
+      });
+    });
+  }).catch(() => {});
+
   // Pagamento na hora: depois de montar o pedido, mostra o Pix do sinal (ou do total)
   // com QR Code e copia e cola, e depois leva o pedido e o comprovante para o WhatsApp.
   window.abrirPagamento = function ({ msg, codigo, valor }) {

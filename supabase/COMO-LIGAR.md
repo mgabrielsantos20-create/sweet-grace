@@ -15,7 +15,7 @@ Enquanto não estiver ligado, o site funciona como antes e o painel mostra só a
 4. Clique em **Run**.
 
 ### Atualização 2
-Depois do `banco.sql`, rode também `supabase/atualizacao-2.sql` e `supabase/atualizacao-3.sql` do mesmo jeito (SQL Editor > New query > Run).
+Depois do `banco.sql`, rode também `supabase/atualizacao-2.sql`, `supabase/atualizacao-3.sql` e `supabase/atualizacao-4.sql` do mesmo jeito (SQL Editor > New query > Run).
 Ela liga: Pix, limite de docinhos por dia, ingredientes e custos, fotos e sabores novos, e o aviso de pedido novo no celular.
 
 ## 3. Criar o login dela

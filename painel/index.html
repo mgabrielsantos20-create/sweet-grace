@@ -158,11 +158,38 @@
   .totais b { color: var(--cacau); font-weight: 500; }
 
   /* Entrar */
-  .entrar { min-height: 100dvh; display: grid; place-items: center; padding: 20px 16px; }
-  .entrar .caixa { width: min(380px, 100%); display: grid; gap: 14px; padding: 26px 22px; text-align: center; }
-  .entrar img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin: 0 auto; }
-  .entrar h1 { font-size: 30px; }
-  .entrar .campo { text-align: left; }
+  .entrar { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); background: var(--papel); }
+  .entrar-foto { position: relative; margin: 0; overflow: hidden; background: var(--cacau); }
+  .entrar-foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .entrar-foto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(75,53,38,0) 40%, rgba(75,53,38,.82) 100%); }
+  .entrar-foto figcaption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 32px 36px; color: var(--papel); display: grid; gap: 8px; }
+  .entrar-foto .marca-foto { font: 400 15px/1 var(--caps); letter-spacing: .24em; text-transform: uppercase; color: #F1DDB5; }
+  .entrar-foto p { margin: 0; font: italic 400 26px/1.25 var(--display); max-width: 22ch; }
+  .entrar-lado { display: grid; grid-template-rows: auto 1fr; padding: 20px clamp(20px, 6vw, 72px) 32px; }
+  .entrar-voltar { justify-self: start; color: var(--cacau-suave); font-size: 14px; text-decoration: none; padding: 8px 0; }
+  .entrar-voltar:hover { color: var(--ouro-escuro); }
+  .entrar form { align-self: center; width: min(380px, 100%); justify-self: center; display: grid; gap: 16px; padding: 24px 0; }
+  .entrar .logo-entrar { width: 72px; height: 72px; object-fit: cover; border-radius: 50%; box-shadow: 0 0 0 1px var(--linha); }
+  .entrar h1 { font-size: 40px; }
+  .entrar .sub { margin: -6px 0 4px; font-size: 15px; }
+  .entrar .campo label { font-size: 14px; color: var(--cacau); }
+  .entrar .campo input { padding: 13px 14px; border-radius: 12px; font-size: 16px; background: #fff; }
+  .entrar .campo input:focus { border-color: var(--ouro); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ouro) 22%, transparent); }
+  .senha-caixa { position: relative; }
+  .senha-caixa input { padding-right: 76px !important; }
+  .ver-senha { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: none; color: var(--ouro-escuro); font-size: 13px; padding: 8px 10px; cursor: pointer; border-radius: 8px; }
+  .entrar .btn[type="submit"] { padding: 14px 18px; font-size: 15px; }
+  .entrar .linha-links { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+  .entrar .linha-links .btn { padding: 6px 0; }
+  .caps-aviso { font-size: 13px; color: var(--alerta); margin-top: 2px; }
+  @media (max-width: 760px) {
+    .entrar { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .entrar-foto { height: 190px; }
+    .entrar-foto figcaption { padding: 18px 20px; }
+    .entrar-foto p { font-size: 20px; }
+    .entrar-lado { padding-top: 8px; }
+    .entrar h1 { font-size: 34px; }
+  }
   .erro { color: var(--alerta); font-size: 14px; }
   .aviso-demo { background: var(--lilas); color: var(--cacau); font-size: 13px; text-align: center; padding: 8px 16px; }
   .toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--cacau); color: var(--papel); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; max-width: calc(100vw - 32px); }
@@ -177,6 +204,19 @@
   .miniatura { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--creme-2); flex: none; }
   .lotado { color: var(--alerta); }
   .alerta-nota { background: #F6E1DC; color: var(--alerta); border-radius: 10px; padding: 8px 12px; font-size: 14px; }
+  .aba.destaque { box-shadow: inset 0 0 0 1px var(--ouro); color: var(--ouro-escuro); }
+  .aba.destaque[aria-selected="true"] { box-shadow: none; color: var(--papel); }
+  .texto-campo { display: grid; gap: 6px; padding: 14px 0; border-top: 1px solid var(--linha); }
+  .texto-campo:first-of-type { border-top: 0; padding-top: 4px; }
+  .texto-campo .rotulo-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .texto-campo label { font-weight: 500; font-size: 15px; }
+  .texto-campo textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; resize: vertical; line-height: 1.45; }
+  .texto-campo textarea:focus { border-color: var(--ouro); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ouro) 22%, transparent); }
+  .texto-campo.mudou textarea { border-color: var(--ouro); background: #FFFDF8; }
+  .texto-campo .dica { font-size: 13px; color: var(--cacau-suave); }
+  .salvar-fixo { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--cacau); color: var(--papel); border-radius: 16px; padding: 10px 10px 10px 18px; box-shadow: 0 10px 30px rgba(75,53,38,.25); }
+  .salvar-fixo .sub { color: #E8D9C6; }
+  .numero.alerta strong { color: var(--alerta); }
   .depo-texto { font: italic 400 19px/1.35 var(--display); }
 </style>
 </head>
@@ -186,35 +226,48 @@
 
 <!-- Tela de entrada -->
 <section class="entrar" id="tela-entrar" hidden>
-  <form class="caixa" id="form-entrar">
-    <img src="../assets/logo.jpeg" alt="Sweet Grace">
-    <h1>Área da confeiteira</h1>
-    <p class="sub" id="entrar-sub">Entre com o seu e-mail e senha.</p>
-    <div class="campo"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required></div>
-    <div class="campo"><label for="senha">Senha</label><input id="senha" type="password" autocomplete="current-password" required></div>
-    <p class="erro" id="entrar-erro" role="alert" hidden></p>
-    <button class="btn" type="submit" id="btn-entrar">Entrar</button>
-    <button class="btn discreto" type="button" id="btn-esqueci">Esqueci a senha</button>
-    <a class="btn discreto" href="../">Voltar para o site</a>
-  </form>
-  <form class="caixa" id="form-esqueci" hidden>
-    <img src="../assets/logo.jpeg" alt="Sweet Grace">
-    <h1>Trocar a senha</h1>
-    <p class="sub" id="esqueci-sub">Digite o seu e-mail. Vamos mandar um link para você criar uma senha nova.</p>
-    <div class="campo"><label for="esqueci-email">E-mail</label><input id="esqueci-email" type="email" autocomplete="username" required></div>
-    <p class="erro" id="esqueci-erro" role="alert" hidden></p>
-    <button class="btn" type="submit" id="btn-enviar-link">Enviar link</button>
-    <button class="btn discreto" type="button" id="btn-voltar-entrar">Voltar</button>
-  </form>
-  <form class="caixa" id="form-nova-senha" hidden>
-    <img src="../assets/logo.jpeg" alt="Sweet Grace">
-    <h1>Nova senha</h1>
-    <p class="sub">Escolha uma senha com pelo menos 8 caracteres.</p>
-    <div class="campo"><label for="nova-senha">Nova senha</label><input id="nova-senha" type="password" autocomplete="new-password" minlength="8" required></div>
-    <div class="campo"><label for="nova-senha-2">Repita a senha</label><input id="nova-senha-2" type="password" autocomplete="new-password" minlength="8" required></div>
-    <p class="erro" id="nova-erro" role="alert" hidden></p>
-    <button class="btn" type="submit" id="btn-salvar-senha">Salvar senha</button>
-  </form>
+  <figure class="entrar-foto">
+    <img src="../assets/cozinha.jpg" alt="">
+    <figcaption>
+      <span class="marca-foto">Sweet Grace</span>
+      <p>Pedidos, agenda, preços e textos do site num lugar só.</p>
+    </figcaption>
+  </figure>
+  <div class="entrar-lado">
+    <a class="entrar-voltar" href="../">‹ Voltar para o site</a>
+    <form id="form-entrar" novalidate>
+      <img class="logo-entrar" src="../assets/logo.jpeg" alt="Sweet Grace">
+      <h1>Área da confeiteira</h1>
+      <p class="sub" id="entrar-sub">Entre com o e-mail e a senha do painel.</p>
+      <div class="campo"><label for="email">E-mail</label><input id="email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" required></div>
+      <div class="campo"><label for="senha">Senha</label>
+        <div class="senha-caixa"><input id="senha" type="password" autocomplete="current-password" required><button class="ver-senha" type="button" data-ver="senha" aria-pressed="false">Mostrar</button></div>
+        <p class="caps-aviso" id="caps-aviso" hidden>O Caps Lock está ligado.</p>
+      </div>
+      <p class="erro" id="entrar-erro" role="alert" hidden></p>
+      <button class="btn" type="submit" id="btn-entrar">Entrar no painel</button>
+      <div class="linha-links"><button class="btn discreto" type="button" id="btn-esqueci">Esqueci a senha</button></div>
+    </form>
+    <form id="form-esqueci" hidden>
+      <img class="logo-entrar" src="../assets/logo.jpeg" alt="Sweet Grace">
+      <h1>Trocar a senha</h1>
+      <p class="sub" id="esqueci-sub">Digite o seu e-mail. Vamos mandar um link para você criar uma senha nova.</p>
+      <div class="campo"><label for="esqueci-email">E-mail</label><input id="esqueci-email" type="email" inputmode="email" autocomplete="username" autocapitalize="off" required></div>
+      <p class="erro" id="esqueci-erro" role="alert" hidden></p>
+      <button class="btn" type="submit" id="btn-enviar-link">Enviar link</button>
+      <div class="linha-links"><button class="btn discreto" type="button" id="btn-voltar-entrar">‹ Voltar para entrar</button></div>
+    </form>
+    <form id="form-nova-senha" hidden>
+      <img class="logo-entrar" src="../assets/logo.jpeg" alt="Sweet Grace">
+      <h1>Nova senha</h1>
+      <p class="sub">Escolha uma senha com pelo menos 8 caracteres.</p>
+      <div class="campo"><label for="nova-senha">Nova senha</label>
+        <div class="senha-caixa"><input id="nova-senha" type="password" autocomplete="new-password" minlength="8" required><button class="ver-senha" type="button" data-ver="nova-senha" aria-pressed="false">Mostrar</button></div></div>
+      <div class="campo"><label for="nova-senha-2">Repita a senha</label><input id="nova-senha-2" type="password" autocomplete="new-password" minlength="8" required></div>
+      <p class="erro" id="nova-erro" role="alert" hidden></p>
+      <button class="btn" type="submit" id="btn-salvar-senha">Salvar senha</button>
+    </form>
+  </div>
 </section>
 
 <!-- Painel -->
@@ -223,7 +276,7 @@
     <div class="wrap">
       <div class="topo-linha">
         <div class="marca">Sweet Grace<small>Painel da confeiteira</small></div>
-        <button class="btn discreto peq" id="btn-sair" type="button">Sair</button>
+        <div class="acoes"><a class="btn discreto peq" href="../" target="_blank" rel="noopener">Ver o site</a><button class="btn contorno peq" id="btn-sair" type="button">Sair</button></div>
       </div>
       <nav class="abas" role="tablist" aria-label="Seções do painel">
         <button class="aba" role="tab" data-aba="pedidos" aria-selected="true">Pedidos<span class="bolinha" id="bolinha-novos" hidden></span></button>
@@ -232,6 +285,7 @@
         <button class="aba" role="tab" data-aba="pagamentos" aria-selected="false">Pagamentos</button>
         <button class="aba" role="tab" data-aba="clientes" aria-selected="false">Clientes</button>
         <button class="aba" role="tab" data-aba="cardapio" aria-selected="false">Cardápio</button>
+        <button class="aba destaque" role="tab" data-aba="site" aria-selected="false">Editar site</button>
         <button class="aba" role="tab" data-aba="resumo" aria-selected="false">Resumo</button>
         <button class="aba" role="tab" data-aba="depoimentos" aria-selected="false">Depoimentos</button>
         <button class="aba" role="tab" data-aba="ajustes" aria-selected="false">Ajustes</button>
@@ -240,13 +294,14 @@
   </header>
 
   <main class="wrap">
-    <p class="caixa sub" id="aviso-atualizar" hidden style="margin-bottom:14px">Falta rodar a atualização 2 do banco (arquivo supabase/atualizacao-2.sql). Compras, custos, fotos e avisos só funcionam depois dela.</p>
+    <p class="caixa sub" id="aviso-atualizar" hidden style="margin-bottom:14px">Falta rodar uma atualização do banco (arquivos em supabase/). Algumas partes do painel só funcionam depois dela.</p>
     <!-- Pedidos -->
     <section class="painel-sec" data-sec="pedidos">
       <div class="sec-cabeca">
         <h2>Pedidos</h2>
         <button class="btn" type="button" id="btn-novo">+ Novo pedido</button>
       </div>
+      <div class="numeros" id="numeros-pedidos"></div>
       <input class="busca" id="busca" type="search" placeholder="Buscar por nome, código ou telefone">
       <div class="chips" id="filtros">
         <button class="chip" data-filtro="ativos" aria-pressed="true">Em andamento</button>
@@ -332,14 +387,28 @@
         <div id="lista-sabores"></div>
         <button class="btn contorno" type="button" id="btn-novo-sabor" style="margin-top:12px">+ Novo sabor</button>
       </div>
+      <p class="sub">Para mudar os preços, use a aba <button class="btn discreto peq" type="button" data-ir="site" style="padding:2px 4px;text-decoration:underline">Editar site</button>.</p>
+    </section>
+
+    <!-- Editar site -->
+    <section class="painel-sec" data-sec="site" hidden>
+      <div class="sec-cabeca">
+        <h2>Editar site</h2>
+        <a class="btn contorno peq" href="../" target="_blank" rel="noopener">Ver o site</a>
+      </div>
+      <p class="sub">O que você salvar aqui muda no site na hora. Os sabores, fotos e descrições ficam na aba Cardápio.</p>
       <form class="caixa" id="form-precos">
-        <div class="grupo-titulo">Preços</div>
+        <div class="grupo-titulo">Preço dos docinhos</div>
         <div class="campos">
-          <div class="campo"><label for="preco-unidade">Unidade (R$)</label><input id="preco-unidade" type="number" step="0.01" min="0.01" required></div>
-          <div class="campo"><label for="preco-cento">Cento (R$)</label><input id="preco-cento" type="number" step="0.01" min="1" required></div>
+          <div class="campo"><label for="preco-unidade">Unidade (R$)</label><input id="preco-unidade" type="number" inputmode="decimal" step="0.01" min="0.01" required></div>
+          <div class="campo"><label for="preco-cento">Cento (R$)</label><input id="preco-cento" type="number" inputmode="decimal" step="0.01" min="1" required></div>
         </div>
-        <p class="sub" style="margin-top:10px">Os preços do cardápio, dos kits e do montador de pedido mudam juntos no site.</p>
+        <p class="sub" id="precos-previa" style="margin-top:10px"></p>
         <div style="margin-top:12px"><button class="btn" type="submit">Salvar preços</button></div>
+      </form>
+      <form class="painel-sec" id="form-textos">
+        <div id="grupos-textos" class="painel-sec"></div>
+        <div class="salvar-fixo"><span class="sub" id="textos-estado">Nenhuma mudança.</span><button class="btn" type="submit" id="btn-salvar-textos" disabled>Salvar textos</button></div>
       </form>
     </section>
 
@@ -643,7 +712,10 @@
         return id ? ok(await sb.from("depoimentos").update(dados).eq("id", id).select().single())
                   : ok(await sb.from("depoimentos").insert(dados).select().single());
       },
-      async excluirDepoimento(id) { ok(await sb.from("depoimentos").delete().eq("id", id)); }
+      async excluirDepoimento(id) { ok(await sb.from("depoimentos").delete().eq("id", id)); },
+      async textos() { return ok(await sb.from("textos").select("chave,valor")); },
+      async salvarTextos(linhas) { ok(await sb.from("textos").upsert(linhas.map(l => ({ chave: l.chave, valor: l.valor, atualizado_em: new Date().toISOString() })))); },
+      async apagarTexto(chave) { ok(await sb.from("textos").delete().eq("chave", chave)); }
     };
   }
 
@@ -686,6 +758,7 @@
       precos: { id: 1, preco_unidade: 2, preco_cento: 150, pix_chave: "", pix_nome: "", pix_cidade: "BELEM", limite_dia: 300 },
       ingredientes: ing, receitas: rec, avisos: { id: 1, ntfy_topico: "sweetgrace-exemplo123", ligado: true },
       bloqueios: [{ data: d(9), motivo: "Agenda cheia" }],
+      textos: { recado: "Agenda de dezembro aberta! Reserve a sua data." },
       depoimentos: [{ id: crypto.randomUUID(), criado_em: new Date().toISOString(), nome: "Exemplo", festa: "Aniversário", texto: "Este é só um exemplo de como um depoimento aparece aqui.", autorizado: true, publicado: false }]
     };
     const copia = (x) => JSON.parse(JSON.stringify(x));
@@ -719,21 +792,24 @@
       async desbloquear(data) { db.bloqueios = db.bloqueios.filter(b => b.data !== data); },
       async depoimentos() { return copia(db.depoimentos); },
       async salvarDepoimento(x) { x = copia(x); if (!x.id) { x.id = crypto.randomUUID(); x.criado_em = new Date().toISOString(); db.depoimentos.unshift(x); } else Object.assign(db.depoimentos.find(y => y.id === x.id), x); return x; },
-      async excluirDepoimento(id) { db.depoimentos = db.depoimentos.filter(x => x.id !== id); }
+      async excluirDepoimento(id) { db.depoimentos = db.depoimentos.filter(x => x.id !== id); },
+      async textos() { return Object.entries(db.textos).map(([chave, valor]) => ({ chave, valor })); },
+      async salvarTextos(linhas) { linhas.forEach(l => db.textos[l.chave] = l.valor); },
+      async apagarTexto(chave) { delete db.textos[chave]; }
     };
   }
 
   // ---------- estado ----------
-  const estado = { pedidos: [], sabores: [], precos: { preco_unidade: 2, preco_cento: 150 }, config: {}, bloqueios: [], depoimentos: [], ingredientes: [], receitas: [], avisos: null, faltaAtualizar: false, filtro: "ativos", busca: "", aba: "pedidos", mes: new Date() };
+  const estado = { pedidos: [], sabores: [], precos: { preco_unidade: 2, preco_cento: 150 }, config: {}, bloqueios: [], depoimentos: [], ingredientes: [], receitas: [], avisos: null, textos: {}, faltaAtualizar: false, filtro: "ativos", busca: "", aba: "pedidos", mes: new Date() };
   let banco;
 
   let idsNovos = null;
   async function carregar() {
     const extra = (p) => p.catch(() => { estado.faltaAtualizar = true; return null; });
     estado.faltaAtualizar = false;
-    const [pedidos, sabores, precos, bloqueios, depoimentos, ingredientes, receitas, avisos] = await Promise.all([
+    const [pedidos, sabores, precos, bloqueios, depoimentos, ingredientes, receitas, avisos, textos] = await Promise.all([
       banco.pedidos(), banco.sabores(), banco.precos(), banco.bloqueios(), banco.depoimentos(),
-      extra(banco.ingredientes()), extra(banco.receitas()), extra(banco.avisos())]);
+      extra(banco.ingredientes()), extra(banco.receitas()), extra(banco.avisos()), extra(banco.textos())]);
     Object.assign(estado, {
       pedidos, bloqueios, depoimentos,
       sabores: sabores.map(x => Object.assign({ ativo: true }, x)),
@@ -741,7 +817,8 @@
       precos: { preco_unidade: Number(precos.preco_unidade), preco_cento: Number(precos.preco_cento) },
       ingredientes: (ingredientes || []).map(i => Object.assign(i, { custo: Number(i.custo) })),
       receitas: (receitas || []).map(r => Object.assign(r, { qtd_por_100: Number(r.qtd_por_100) })),
-      avisos
+      avisos,
+      textos: Object.fromEntries((textos || []).map(t => [t.chave, t.valor]))
     });
     avisarPedidosNovos();
     desenhar();
@@ -766,7 +843,7 @@
     const novos = estado.pedidos.filter(p => p.status === "novo").length;
     const b = $("#bolinha-novos"); b.hidden = !novos; b.textContent = novos;
     $("#aviso-atualizar").hidden = !estado.faltaAtualizar;
-    ({ pedidos: desenharPedidos, agenda: desenharAgenda, compras: desenharCompras, pagamentos: desenharPagamentos, clientes: desenharClientes, cardapio: desenharCardapio, resumo: desenharResumo, depoimentos: desenharDepoimentos, ajustes: desenharAjustes })[estado.aba]();
+    ({ pedidos: desenharPedidos, agenda: desenharAgenda, compras: desenharCompras, pagamentos: desenharPagamentos, clientes: desenharClientes, cardapio: desenharCardapio, resumo: desenharResumo, depoimentos: desenharDepoimentos, ajustes: desenharAjustes, site: desenharSite })[estado.aba]();
   }
 
   async function tentar(fn, sucesso) {
@@ -775,6 +852,7 @@
   }
 
   // ---------- abas ----------
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-ir]"); if (b) document.querySelector('.aba[data-aba="' + b.dataset.ir + '"]').click(); });
   document.querySelectorAll(".aba").forEach(a => a.addEventListener("click", () => {
     estado.aba = a.dataset.aba;
     document.querySelectorAll(".aba").forEach(x => x.setAttribute("aria-selected", String(x === a)));
@@ -818,6 +896,18 @@
       const x = a.data_festa || "9999", y = b.data_festa || "9999";
       return recentePrimeiro ? (x < y ? 1 : -1) : (x < y ? -1 : 1);
     });
+    const hoje = hojeIso();
+    const ativos = estado.pedidos.filter(p => !ENCERRADOS.includes(p.status));
+    const semana = ativos.filter(p => p.data_festa && p.data_festa >= hoje && diasAte(p.data_festa) <= 7);
+    const aReceber = estado.pedidos.filter(p => p.status !== "cancelado" && !p.restante_pago)
+      .reduce((a, p) => a + totalPedido(p) - (p.sinal_pago ? sinalDe(p) : 0), 0);
+    const novos = estado.pedidos.filter(p => p.status === "novo").length;
+    const numero = (rot, val, classe) => el("div", { class: "numero" + (classe ? " " + classe : "") }, el("span", null, rot), el("strong", null, val));
+    $("#numeros-pedidos").replaceChildren(
+      numero("Pedidos novos", num(novos), novos ? "alerta" : ""),
+      numero("Festas nos próximos 7 dias", num(semana.length)),
+      numero("Docinhos para os próximos 7 dias", num(semana.reduce((a, p) => a + Number(p.total_docinhos || 0), 0))),
+      numero("A receber", brl(aReceber)));
     const alvo = $("#lista-pedidos");
     alvo.replaceChildren(...(lista.length ? lista.map(cartaoPedido) : [el("div", { class: "vazio caixa" }, "Nenhum pedido aqui.")]));
   }
@@ -1026,14 +1116,113 @@
           el("input", { type: "checkbox", id, checked: s.disponivel, role: "switch", "aria-label": s.nome + " disponível", onchange: (e) => tentar(async () => { await banco.salvarSabor({ id: s.id, disponivel: e.target.checked }); await carregar(); }, e.target.checked ? s.nome + " voltou ao site" : s.nome + " marcado como esgotado") }),
           el("span")));
     }));
+  }
+
+  // ---------- editar site ----------
+  // Cada texto tem um lugar no site (data-texto no index.html). Sem nada salvo, vale o texto original.
+  const TEXTOS = [
+    { grupo: "Topo do site", campos: [
+      { chave: "recado", rot: "Recado no topo", dica: "Aparece numa faixa no alto do site. Ex.: Agenda de dezembro aberta! Deixe vazio para não mostrar nada.", linhas: 2 },
+      { chave: "hero_titulo", rot: "Título principal", dica: "O que ficar entre *asteriscos* aparece em itálico.", linhas: 2 },
+      { chave: "hero_texto", rot: "Texto de apresentação", linhas: 4 }] },
+    { grupo: "Cardápio", campos: [
+      { chave: "aviso_cardapio", rot: "Aviso embaixo dos doces", dica: "Pedido mínimo, corante e outros avisos importantes.", linhas: 3 }] },
+    { grupo: "Sobre a Sweet Grace", campos: [
+      { chave: "sobre_titulo", rot: "Título", dica: "O que ficar entre *asteriscos* aparece em itálico.", linhas: 2 },
+      { chave: "sobre_texto", rot: "Texto", dica: "Deixe uma linha em branco entre um parágrafo e outro.", linhas: 8 },
+      { chave: "sobre_frase", rot: "Frase de destaque", linhas: 2 }] },
+    { grupo: "Contato", campos: [
+      { chave: "contato_texto", rot: "Convite para chamar no WhatsApp", linhas: 2 },
+      { chave: "horario", rot: "Horário de atendimento", linhas: 1 },
+      { chave: "entrega", rot: "Onde entregamos", linhas: 1 }] }
+  ];
+  const CAMPOS = TEXTOS.flatMap(g => g.campos);
+  let padroes = null;
+  // Lê os textos originais direto do site, para mostrar e para o botão "Voltar ao original".
+  async function lerPadroes() {
+    if (padroes) return padroes;
+    padroes = {};
+    try {
+      const html = await fetch("../index.html", { cache: "no-cache" }).then(r => r.text());
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const limpar = (t) => t.replace(/\s+/g, " ").trim();
+      CAMPOS.forEach(c => {
+        const alvo = doc.querySelector('[data-texto="' + c.chave + '"]');
+        if (!alvo) return;
+        if (alvo.dataset.tipo === "paragrafos") padroes[c.chave] = [...alvo.querySelectorAll("p")].map(x => limpar(x.textContent)).join("\n\n");
+        else { alvo.querySelectorAll("em").forEach(x => x.replaceWith("*" + x.textContent + "*")); padroes[c.chave] = limpar(alvo.textContent); }
+      });
+    } catch (e) { console.error(e); }
+    return padroes;
+  }
+  const valorAtual = (chave) => chave in estado.textos ? estado.textos[chave] : (padroes?.[chave] || "");
+
+  async function desenharSite() {
     if (document.activeElement?.id !== "preco-unidade" && document.activeElement?.id !== "preco-cento") {
       $("#preco-unidade").value = estado.precos.preco_unidade.toFixed(2);
       $("#preco-cento").value = estado.precos.preco_cento.toFixed(2);
     }
+    previaPrecos();
+    await lerPadroes();
+    // Não apaga o que ela está escrevendo quando o painel se atualiza sozinho.
+    if (mudancas().length || ($("#form-textos").contains(document.activeElement) && document.activeElement.tagName === "TEXTAREA")) return;
+    $("#grupos-textos").replaceChildren(...TEXTOS.map(g => el("div", { class: "caixa" },
+      el("div", { class: "grupo-titulo" }, g.grupo),
+      ...g.campos.map(c => {
+        const id = "txt-" + c.chave;
+        const original = padroes[c.chave] || "";
+        const campo = el("textarea", { id, rows: c.linhas || 2, maxLength: 2000, oninput: marcarMudancas });
+        campo.value = valorAtual(c.chave);
+        campo.dataset.chave = c.chave;
+        campo.dataset.salvo = campo.value;
+        const editado = c.chave in estado.textos && estado.textos[c.chave] !== original;
+        return el("div", { class: "texto-campo" },
+          el("div", { class: "rotulo-linha" },
+            el("label", { htmlFor: id }, c.rot),
+            editado ? el("button", { class: "btn discreto peq", type: "button", onclick: () => voltarOriginal(c) }, "Voltar ao original") : null),
+          campo,
+          c.dica ? el("span", { class: "dica" }, c.dica) : null);
+      }))));
+    marcarMudancas();
   }
+  function mudancas() {
+    return [...document.querySelectorAll("#grupos-textos textarea")].filter(t => t.value.trim() !== t.dataset.salvo.trim());
+  }
+  function marcarMudancas() {
+    const lista = mudancas();
+    document.querySelectorAll("#grupos-textos .texto-campo").forEach(c => c.classList.toggle("mudou", lista.includes(c.querySelector("textarea"))));
+    $("#btn-salvar-textos").disabled = !lista.length;
+    $("#textos-estado").textContent = !lista.length ? "Nenhuma mudança." : lista.length === 1 ? "1 texto mudou." : lista.length + " textos mudaram.";
+  }
+  function voltarOriginal(c) {
+    if (!confirm("Voltar \"" + c.rot + "\" para o texto original do site?")) return;
+    tentar(async () => { await banco.apagarTexto(c.chave); await carregar(); }, "Texto original de volta no site");
+  }
+  $("#form-textos").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const linhas = mudancas().map(t => ({ chave: t.dataset.chave, valor: t.value.trim() }));
+    if (!linhas.length) return;
+    const vazio = linhas.find(l => !l.valor && l.chave !== "recado");
+    if (vazio) return aviso("Escreva algo em \"" + CAMPOS.find(c => c.chave === vazio.chave).rot + "\" ou use Voltar ao original");
+    document.activeElement?.blur();
+    tentar(async () => {
+      await banco.salvarTextos(linhas);
+      document.querySelectorAll("#grupos-textos textarea").forEach(t => { const l = linhas.find(x => x.chave === t.dataset.chave); if (l) t.dataset.salvo = l.valor; });
+      await carregar();
+    }, linhas.length === 1 ? "Texto salvo no site" : "Textos salvos no site");
+  });
+  window.addEventListener("beforeunload", (e) => { if (estado.aba === "site" && mudancas().length) { e.preventDefault(); e.returnValue = ""; } });
+
+  function previaPrecos() {
+    const pr = { preco_unidade: Number($("#preco-unidade").value) || 0, preco_cento: Number($("#preco-cento").value) || 0 };
+    $("#precos-previa").textContent = "Assim fica no site: 25 docinhos por " + brl(valorDocinhos(25, pr)) + ", 50 por " + brl(valorDocinhos(50, pr)) + ", o cento por " + brl(valorDocinhos(100, pr)) + " e 200 por " + brl(valorDocinhos(200, pr)) + ". Vale para o cardápio, os kits e o montador de pedido.";
+  }
+  ["#preco-unidade", "#preco-cento"].forEach(s => $(s).addEventListener("input", previaPrecos));
   $("#form-precos").addEventListener("submit", (e) => {
     e.preventDefault();
     const c = { preco_unidade: Number($("#preco-unidade").value), preco_cento: Number($("#preco-cento").value) };
+    if (!(c.preco_unidade > 0) || !(c.preco_cento > 0)) return aviso("Digite os dois preços");
+    document.activeElement?.blur();
     tentar(async () => { await banco.salvarPrecos(c); await carregar(); }, "Preços atualizados no site");
   });
 
@@ -1419,16 +1608,28 @@
 
   $("#form-entrar").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const botao = $("#btn-entrar"); botao.disabled = true;
+    const email = $("#email").value.trim(), senha = $("#senha").value;
+    if (!email || !senha) return mostrarEntrar("Digite o e-mail e a senha.");
+    const botao = $("#btn-entrar"); botao.disabled = true; botao.textContent = "Entrando...";
     try {
-      await banco.entrar($("#email").value.trim(), $("#senha").value);
+      await banco.entrar(email, senha);
+      try { localStorage.setItem("sg-email", email); } catch {}
       if (!(await banco.souEquipe())) { await banco.sair(); mostrarEntrar("Este e-mail não tem acesso ao painel."); return; }
       $("#senha").value = "";
       await mostrarPainel();
     } catch (err) {
       mostrarEntrar(/invalid/i.test(err.message || "") ? "E-mail ou senha incorretos." : "Não foi possível entrar. Confira a internet e tente de novo.");
-    } finally { botao.disabled = false; }
+    } finally { botao.disabled = false; botao.textContent = "Entrar no painel"; }
   });
+  document.querySelectorAll(".ver-senha").forEach(b => b.addEventListener("click", () => {
+    const campo = $("#" + b.dataset.ver), ver = campo.type === "password";
+    campo.type = ver ? "text" : "password";
+    b.textContent = ver ? "Esconder" : "Mostrar";
+    b.setAttribute("aria-pressed", String(ver));
+    campo.focus();
+  }));
+  $("#senha").addEventListener("keyup", (e) => { if (e.getModifierState) $("#caps-aviso").hidden = !e.getModifierState("CapsLock"); });
+  try { $("#email").value = localStorage.getItem("sg-email") || ""; } catch {}
   $("#btn-sair").addEventListener("click", async () => { await banco.sair(); mostrarEntrar(); });
 
   // Atualiza sozinho quando ela volta para o painel e a cada minuto.
@@ -1448,7 +1649,7 @@
     if (!configurado) {
       mostrarEntrar();
       $("#form-entrar").replaceChildren(
-        el("img", { src: "../assets/logo.jpeg", alt: "Sweet Grace" }),
+        el("img", { class: "logo-entrar", src: "../assets/logo.jpeg", alt: "Sweet Grace" }),
         el("h1", null, "Área da confeiteira"),
         el("p", { class: "sub" }, "O painel ainda não foi ligado ao banco de dados."),
         el("a", { class: "btn contorno", href: "?demo" }, "Ver demonstração"),

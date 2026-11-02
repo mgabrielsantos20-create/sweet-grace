@@ -4,7 +4,7 @@ name: Manter o banco ativo
 
 on:
   schedule:
-    - cron: "17 12 */3 * *"
+    - cron: "17 12 * * *"
   workflow_dispatch:
 
 jobs:
