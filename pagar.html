@@ -150,7 +150,7 @@
     const lista = novo("ul", { className: "checklist" });
     itens.forEach(i => lista.append(novo("li", null, novo("span", { className: "ok", ariaHidden: "true" }, "✓"), i.qtd + " " + i.nome)));
     const comp = novo("div", { className: "comprovante" },
-      novo("div", { className: "comp-topo" }, novo("b", null, "Pedido #" + codigo), novo("span", null, new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }))),
+      novo("div", { className: "comp-topo" }, novo("b", null, "Pedido #" + codigo + (local && local.kit ? " · " + local.kit : "")), novo("span", null, new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }))),
       lista);
     const linhas = novo("div", { className: "linhas" });
     const linha = (a, b, cls) => linhas.append(novo("div", { className: cls || "" }, novo("span", null, a), novo("b", null, b)));
@@ -164,6 +164,7 @@
 
     let msg = "Olá, Sweet Grace! Fiz meu pedido pelo site 💕\nPedido #" + codigo;
     if (local && local.nome) msg += "\nNome: " + local.nome;
+    if (local && local.kit) msg += "\n" + local.kit;
     msg += "\n\n" + itens.map(i => "✅ " + i.qtd + " " + i.nome).join("\n");
     msg += "\n\nTotal: " + docinhos + " docinhos · " + brlS(total);
     if (dataFesta) msg += "\nData da festa: " + dataFesta.split("-").reverse().join("/");

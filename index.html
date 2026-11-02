@@ -237,6 +237,12 @@
     border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; width: 100%;
   }
   .campo textarea { resize: vertical; min-height: 70px; }
+  .kit-ativo { display: grid; gap: 8px; background: var(--creme); border: 1px solid var(--ouro); border-radius: 14px; padding: 12px 14px; margin-bottom: 6px; }
+  .kit-ativo p { margin: 0; display: grid; gap: 2px; font-size: 14px; color: var(--cacau-suave); }
+  .kit-ativo b { font-weight: 500; color: var(--cacau); font-size: 16px; }
+  .kit-barra { height: 8px; border-radius: 4px; background: var(--linha); overflow: hidden; }
+  .kit-barra i { display: block; height: 100%; width: 0; background: var(--ouro); border-radius: 4px; transition: width .2s; }
+  .kit-sair { justify-self: start; background: none; border: 0; padding: 0; font: inherit; font-size: 13px; color: var(--cacau-suave); text-decoration: underline; cursor: pointer; }
   .pagamento-info { margin: 0; font-size: 14px; color: var(--cacau-suave); text-align: center; }
   .pagamento { display: flex; gap: 8px; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
   .pagamento legend { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--cacau-suave); padding: 0; margin-bottom: 6px; }
@@ -515,7 +521,7 @@
         <div class="cabeca cabeca-kits">
           <span class="rotulo">Kits prontos</span>
           <h2>Não sabe quantos <em>pedir</em>?</h2>
-          <p class="sub">Escolha um kit pelo tamanho da festa e diga os sabores pelo WhatsApp.</p>
+          <p class="sub">Escolha um kit pelo tamanho da festa, monte os sabores e reserve pagando o sinal aqui no site.</p>
         </div>
         <div class="kits-lista">
           <article class="kit">
@@ -523,7 +529,7 @@
             <p class="kit-qtd">50 docinhos · até 2 sabores</p>
             <p class="kit-uso">Para aniversários em casa e lembrancinhas.</p>
             <p class="kit-preco">R$ 100,00</p>
-            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 2 sabores, R$ 100,00)" href="#pedido">Montar este kit</a>
+            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 2 sabores, R$ 100,00)" data-nome="Mesa pequena" data-qtd="50" data-sabores="2" href="#pedido">Escolher sabores e pagar</a>
           </article>
           <article class="kit destaque">
             <span class="kit-selo">Melhor preço por docinho</span>
@@ -531,14 +537,14 @@
             <p class="kit-qtd">100 docinhos · até 4 sabores</p>
             <p class="kit-uso">Para festas de 30 a 50 convidados.</p>
             <p class="kit-preco">R$ 150,00</p>
-            <a class="btn kit-btn" data-kit="Aniversário (100 docinhos, até 4 sabores, R$ 150,00)" href="#pedido">Montar este kit</a>
+            <a class="btn kit-btn" data-kit="Aniversário (100 docinhos, até 4 sabores, R$ 150,00)" data-nome="Aniversário" data-qtd="100" data-sabores="4" href="#pedido">Escolher sabores e pagar</a>
           </article>
           <article class="kit">
             <h3>Festa grande</h3>
             <p class="kit-qtd">200 docinhos · até 6 sabores</p>
             <p class="kit-uso">Para chás, batizados e festas maiores.</p>
             <p class="kit-preco">R$ 300,00</p>
-            <a class="btn contorno kit-btn" data-kit="Festa grande (200 docinhos, até 6 sabores, R$ 300,00)" href="#pedido">Montar este kit</a>
+            <a class="btn contorno kit-btn" data-kit="Festa grande (200 docinhos, até 6 sabores, R$ 300,00)" data-nome="Festa grande" data-qtd="200" data-sabores="6" href="#pedido">Escolher sabores e pagar</a>
           </article>
         </div>
       </div>
@@ -563,6 +569,11 @@
         <div class="caixa-topo">
           <h3>Seu pedido</h3>
           <span class="rotulo">unidades</span>
+        </div>
+        <div class="kit-ativo" id="kit-ativo" hidden>
+          <p><b id="kit-ativo-nome"></b><span id="kit-ativo-texto"></span></p>
+          <div class="kit-barra" aria-hidden="true"><i id="kit-ativo-barra"></i></div>
+          <button type="button" class="kit-sair" id="kit-sair">Sair do kit e montar do meu jeito</button>
         </div>
         <div class="linhas" id="linhas"></div>
         <div class="campo">
@@ -705,9 +716,7 @@
   document.querySelectorAll(".kit-btn").forEach(b => {
     b.addEventListener("click", () => {
       medir("clique_kit", { kit: b.dataset.kit });
-      const nota = document.getElementById("nota");
-      nota.textContent = "Kit " + b.dataset.kit + ". Escolha os sabores abaixo, de 25 em 25.";
-      nota.classList.remove("alerta");
+      escolherKit({ nome: b.dataset.nome, qtd: Number(b.dataset.qtd), sabores: Number(b.dataset.sabores) });
     });
   });
   document.getElementById("zap-contato").addEventListener("click", () => medir("clique_whatsapp", { local: "contato" }));
@@ -790,8 +799,23 @@
   }
   SABORES.forEach(adicionarSabor);
 
+  // Kit escolhido: o montador vira o kit (quantidade fechada e limite de sabores).
+  let kit = null;
+  function escolherKit(k) {
+    kit = k;
+    Object.keys(qtd).forEach(id => { qtd[id] = 0; const o = document.getElementById("qtd-" + id); if (o) o.textContent = "0"; });
+    document.getElementById("kit-ativo").hidden = !kit;
+    atualizar();
+  }
+  document.getElementById("kit-sair").addEventListener("click", () => escolherKit(null));
+  const somaQtd = () => Object.values(qtd).reduce((a, b) => a + b, 0);
+
   function mudar(id, dir) {
     let v = qtd[id];
+    if (kit && dir > 0) {
+      if (somaQtd() >= kit.qtd) { atualizar(); nota.textContent = "O kit já está completo. Tire de um sabor para pôr em outro."; nota.classList.add("alerta"); return; }
+      if (!v && Object.values(qtd).filter(Boolean).length >= kit.sabores) { atualizar(); nota.textContent = "Este kit é de até " + kit.sabores + " sabores."; nota.classList.add("alerta"); return; }
+    }
     v = Math.max(0, v + dir * PASSO);
     qtd[id] = v;
     document.getElementById("qtd-" + id).textContent = v;
@@ -810,9 +834,17 @@
     document.getElementById("valor").textContent = "Estimativa: " + brl(valor(total));
     nota.classList.remove("alerta");
     nota.textContent = total ? "No próximo passo você vê o valor do sinal antes de pagar." : "Escolha pelo menos um sabor para enviar.";
+    if (kit) {
+      const nSab = Object.values(qtd).filter(Boolean).length;
+      document.getElementById("kit-ativo-nome").textContent = "Kit " + kit.nome + " · " + brl(valor(kit.qtd));
+      document.getElementById("kit-ativo-texto").textContent = total + " de " + kit.qtd + " docinhos · " + nSab + " de até " + kit.sabores + " sabores";
+      document.getElementById("kit-ativo-barra").style.width = Math.min(100, total / kit.qtd * 100) + "%";
+      if (total && total < kit.qtd) nota.textContent = "Faltam " + (kit.qtd - total) + " docinhos para completar o kit.";
+      else if (total === kit.qtd) nota.textContent = "Kit completo! Agora é só preencher os dados e reservar.";
+    }
     const resto = total % 100, falta = 100 - resto;
     const dica = document.getElementById("dica-cento");
-    dica.hidden = resto < 50;
+    dica.hidden = Boolean(kit) || resto < 50;
     if (!dica.hidden) dica.textContent = "Faltam " + falta + " docinhos para fechar mais um cento, com cada um a " + brl(PRECOS.cento / 100) + ".";
     return total;
   }
@@ -822,6 +854,11 @@
     const total = atualizar();
     if (!total) {
       nota.textContent = "Adicione pelo menos um sabor antes de enviar.";
+      nota.classList.add("alerta");
+      return;
+    }
+    if (kit && total !== kit.qtd) {
+      nota.textContent = "O kit " + kit.nome + " tem " + kit.qtd + " docinhos. Faltam " + (kit.qtd - total) + ".";
       nota.classList.add("alerta");
       return;
     }
@@ -845,10 +882,11 @@
     const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const codigo = Array.from(crypto.getRandomValues(new Uint8Array(6)), b => letras[b % letras.length]).join("");
     const escolhidos = SABORES.filter(s => qtd[s.id]);
-    const salvamento = window.salvarPedido ? salvarPedido({ codigo, nome, data, obs, itens: escolhidos.map(s => ({ id: s.id, qtd: qtd[s.id] })) }) : null;
+    const nomeKit = kit ? "Kit " + kit.nome : "";
+    const salvamento = window.salvarPedido ? salvarPedido({ codigo, nome, data, obs: [nomeKit, obs].filter(Boolean).join("\n"), itens: escolhidos.map(s => ({ id: s.id, qtd: qtd[s.id] })) }) : null;
     // Resumo do pedido para a tela depois do pagamento e para a mensagem do WhatsApp.
-    const pedido = { codigo, nome, data, obs, total, valor: valor(total), itens: escolhidos.map(s => ({ nome: s.nome, qtd: qtd[s.id] })) };
-    let msg = "Olá, Sweet Grace! " + (nome ? "Sou " + nome + " e g" : "G") + "ostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
+    const pedido = { codigo, nome, data, obs, kit: nomeKit, total, valor: valor(total), itens: escolhidos.map(s => ({ nome: s.nome, qtd: qtd[s.id] })) };
+    let msg = "Olá, Sweet Grace! " + (nome ? "Sou " + nome + " e g" : "G") + "ostaria de encomendar" + (kit ? " o " + nomeKit : "") + ":\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
     if (obs) msg += "\nObservações: " + obs;
     msg += "\nCódigo do pedido: " + codigo;
