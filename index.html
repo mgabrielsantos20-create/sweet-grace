@@ -237,6 +237,7 @@
     border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; width: 100%;
   }
   .campo textarea { resize: vertical; min-height: 70px; }
+  .pagamento-info { margin: 0; font-size: 14px; color: var(--cacau-suave); text-align: center; }
   .pagamento { display: flex; gap: 8px; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
   .pagamento legend { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--cacau-suave); padding: 0; margin-bottom: 6px; }
   .pagamento label { position: relative; flex: 1 1 140px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 14px; border: 1px solid var(--linha); border-radius: 12px; background: var(--creme); cursor: pointer; font-size: 15px; text-align: center; }
@@ -522,7 +523,7 @@
             <p class="kit-qtd">50 docinhos · até 2 sabores</p>
             <p class="kit-uso">Para aniversários em casa e lembrancinhas.</p>
             <p class="kit-preco">R$ 100,00</p>
-            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 2 sabores, R$ 100,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+            <a class="btn contorno kit-btn" data-kit="Mesa pequena (50 docinhos, até 2 sabores, R$ 100,00)" href="#pedido">Montar este kit</a>
           </article>
           <article class="kit destaque">
             <span class="kit-selo">Melhor preço por docinho</span>
@@ -530,14 +531,14 @@
             <p class="kit-qtd">100 docinhos · até 4 sabores</p>
             <p class="kit-uso">Para festas de 30 a 50 convidados.</p>
             <p class="kit-preco">R$ 150,00</p>
-            <a class="btn kit-btn" data-kit="Aniversário (100 docinhos, até 4 sabores, R$ 150,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+            <a class="btn kit-btn" data-kit="Aniversário (100 docinhos, até 4 sabores, R$ 150,00)" href="#pedido">Montar este kit</a>
           </article>
           <article class="kit">
             <h3>Festa grande</h3>
             <p class="kit-qtd">200 docinhos · até 6 sabores</p>
             <p class="kit-uso">Para chás, batizados e festas maiores.</p>
             <p class="kit-preco">R$ 300,00</p>
-            <a class="btn contorno kit-btn" data-kit="Festa grande (200 docinhos, até 6 sabores, R$ 300,00)" href="#" target="_blank" rel="noopener">Quero este kit</a>
+            <a class="btn contorno kit-btn" data-kit="Festa grande (200 docinhos, até 6 sabores, R$ 300,00)" href="#pedido">Montar este kit</a>
           </article>
         </div>
       </div>
@@ -552,8 +553,8 @@
         <p>Escolha os sabores e as quantidades aqui ao lado. A gente recebe tudo pelo WhatsApp e confirma com você.</p>
         <ol class="passos">
           <li><div><strong>Escolha os sabores</strong><span>De 25 em 25 unidades, misturando como quiser.</span></div></li>
-          <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido e a data da festa.</span></div></li>
-          <li><div><strong>Confirme com o sinal</strong><span>Reservamos a sua data com 50% de entrada via Pix.</span></div></li>
+          <li><div><strong>Pague o sinal no site</strong><span>50% do valor pelo Pix ou cartão, para reservar a sua data.</span></div></li>
+          <li><div><strong>Envie pelo WhatsApp</strong><span>A mensagem já vai pronta com o pedido. É só anexar o comprovante.</span></div></li>
           <li><div><strong>Retire ou receba</strong><span>Entrega em Belém e Ananindeua com frete a consultar, ou retirada combinada pelo WhatsApp.</span></div></li>
         </ol>
       </div>
@@ -577,16 +578,12 @@
           <label for="obs">Observações</label>
           <textarea id="obs" name="obs" placeholder="Cor das forminhas, tema da festa, retirada ou entrega (bairro)..."></textarea>
         </div>
-        <fieldset class="pagamento">
-          <legend>Forma de pagamento</legend>
-          <label><input type="radio" name="pagamento" value="Pix" checked> Pix</label>
-          <label><input type="radio" name="pagamento" value="Cartão"> Cartão de crédito ou débito</label>
-        </fieldset>
+        <p class="pagamento-info">Você paga 50% agora, pelo Pix ou cartão, e o restante na entrega.</p>
         <div class="resumo">
           <div class="total"><span id="total">0</span><small>docinhos</small><div class="valor" id="valor">R$ 0,00</div></div>
           <button class="btn" type="submit">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1-1.3-.6-2.2-1.2-3-2.6-.2-.4.2-.4.6-1.2.1-.2 0-.3 0-.4l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
-            Enviar pelo WhatsApp
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 4v8h16V9H4zm0-2h16V7H4v0zm2 6h5v2H6v-2z"/></svg>
+            Reservar e pagar o sinal
           </button>
         </div>
         <p class="nota dica-cento" id="dica-cento" hidden></p>
@@ -656,7 +653,7 @@
         </details>
         <details>
           <summary>Quais formas de pagamento vocês aceitam?</summary>
-          <p>Pix, transferência e cartão. Pedimos 50% de sinal para reservar a data e o restante na retirada ou entrega.</p>
+          <p>Pix ou cartão de crédito e débito, direto aqui no site pelo Mercado Pago. Você paga 50% de sinal para reservar a data e o restante na entrega ou retirada.</p>
         </details>
       </div>
     </div>
@@ -706,8 +703,12 @@
   document.getElementById("zap-contato").href = zapLink(saudacao);
   document.getElementById("zap-flutuante").href = zapLink(saudacao);
   document.querySelectorAll(".kit-btn").forEach(b => {
-    b.href = zapLink("Olá, Sweet Grace! Quero o kit " + b.dataset.kit + ". Sabores: ");
-    b.addEventListener("click", () => medir("clique_kit", { kit: b.dataset.kit }));
+    b.addEventListener("click", () => {
+      medir("clique_kit", { kit: b.dataset.kit });
+      const nota = document.getElementById("nota");
+      nota.textContent = "Kit " + b.dataset.kit + ". Escolha os sabores abaixo, de 25 em 25.";
+      nota.classList.remove("alerta");
+    });
   });
   document.getElementById("zap-contato").addEventListener("click", () => medir("clique_whatsapp", { local: "contato" }));
   document.getElementById("zap-flutuante").addEventListener("click", () => medir("clique_whatsapp", { local: "botao_flutuante" }));
@@ -808,7 +809,7 @@
     document.getElementById("total").textContent = total.toLocaleString("pt-BR");
     document.getElementById("valor").textContent = "Estimativa: " + brl(valor(total));
     nota.classList.remove("alerta");
-    nota.textContent = total ? "Você vai revisar a mensagem no WhatsApp antes de enviar." : "Escolha pelo menos um sabor para enviar.";
+    nota.textContent = total ? "No próximo passo você vê o valor do sinal antes de pagar." : "Escolha pelo menos um sabor para enviar.";
     const resto = total % 100, falta = 100 - resto;
     const dica = document.getElementById("dica-cento");
     dica.hidden = resto < 50;
@@ -840,18 +841,19 @@
     }
     medir("envio_pedido", { docinhos: total });
     const obs = document.getElementById("obs").value.trim();
-    const pagamento = (document.querySelector('input[name="pagamento"]:checked') || {}).value || "Pix";
     const nome = document.getElementById("nome-cliente").value.trim();
     const letras = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const codigo = Array.from(crypto.getRandomValues(new Uint8Array(6)), b => letras[b % letras.length]).join("");
-    if (window.salvarPedido) salvarPedido({ codigo, nome, data, obs: ["Pagamento: " + pagamento, obs].filter(Boolean).join("\n"), itens: SABORES.filter(s => qtd[s.id]).map(s => ({ id: s.id, qtd: qtd[s.id] })) });
+    const escolhidos = SABORES.filter(s => qtd[s.id]);
+    const salvamento = window.salvarPedido ? salvarPedido({ codigo, nome, data, obs, itens: escolhidos.map(s => ({ id: s.id, qtd: qtd[s.id] })) }) : null;
+    // Resumo do pedido para a tela depois do pagamento e para a mensagem do WhatsApp.
+    const pedido = { codigo, nome, data, obs, total, valor: valor(total), itens: escolhidos.map(s => ({ nome: s.nome, qtd: qtd[s.id] })) };
     let msg = "Olá, Sweet Grace! " + (nome ? "Sou " + nome + " e g" : "G") + "ostaria de encomendar:\n" + itens + "\nTotal: " + total + " docinhos (estimativa " + brl(valor(total)) + ")";
     if (data) msg += "\nData da festa: " + data.split("-").reverse().join("/");
     if (obs) msg += "\nObservações: " + obs;
-    msg += "\nPagamento: " + (pagamento === "Cartão" ? "cartão de crédito ou débito" : "Pix");
     msg += "\nCódigo do pedido: " + codigo;
-    // Com o Pix cadastrado no painel, mostra o QR Code antes de ir para o WhatsApp.
-    if (window.abrirPagamento && abrirPagamento({ msg, codigo, valor: valor(total), forma: pagamento })) return;
+    // Primeiro o pagamento do sinal no site; o WhatsApp vem depois, com o comprovante.
+    if (window.abrirPagamento && abrirPagamento({ msg, codigo, valor: valor(total), pedido, salvamento })) return;
     const a = document.createElement("a");
     a.href = zapLink(msg); a.target = "_blank"; a.rel = "noopener";
     document.body.appendChild(a); a.click(); a.remove();

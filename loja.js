@@ -10,7 +10,7 @@
   // Grava o pedido no painel. O WhatsApp abre de qualquer jeito, mesmo se isso falhar.
   window.salvarPedido = function (pedido) {
     try {
-      fetch(cfg.url + "/rest/v1/rpc/criar_pedido", {
+      return fetch(cfg.url + "/rest/v1/rpc/criar_pedido", {
         method: "POST",
         keepalive: true,
         headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos),
@@ -105,7 +105,6 @@
       k.querySelector(".kit-preco").textContent = v;
       const b = k.querySelector(".kit-btn");
       b.dataset.kit = b.dataset.kit.replace(/R\$\s?[\d.,]+/, v);
-      b.href = zapLink("Olá, Sweet Grace! Quero o kit " + b.dataset.kit + ". Sabores: ");
     });
     atualizar();
   }).catch(() => {});
@@ -115,9 +114,11 @@
   fetch(MP_URL, { headers: cabecalhos }).then(r => r.ok ? r.json() : null).then(d => { window.MP_ATIVO = Boolean(d && d.ativo); }).catch(() => {});
   // Cria o checkout do Mercado Pago e leva a cliente para lá. Guarda a mensagem do pedido
   // para a página de volta (pagar.html) mandar no WhatsApp com o pagamento aprovado.
-  window.pagarMercadoPago = async function (codigo, tipo, msg) {
-    try { if (msg) sessionStorage.setItem("sg-msg-" + codigo, msg); } catch {}
-    const r = await fetch(MP_URL, { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos), body: JSON.stringify({ codigo, tipo }) });
+  // Cria o checkout do sinal no Mercado Pago e leva a cliente para lá. O resumo do pedido
+  // fica guardado para a tela de volta (pagar.html) montar a mensagem do WhatsApp.
+  window.pagarMercadoPago = async function (codigo, pedido) {
+    try { if (pedido) sessionStorage.setItem("sg-pedido-" + codigo, JSON.stringify(pedido)); } catch {}
+    const r = await fetch(MP_URL, { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, cabecalhos), body: JSON.stringify({ codigo, tipo: "sinal" }) });
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.url) throw new Error(d.erro || "mercado pago");
     location.href = d.url;
@@ -160,11 +161,12 @@
     });
   }).catch(() => {});
 
-  // Pagamento na hora: depois de montar o pedido, mostra o Pix do sinal (ou do total)
-  // com QR Code e copia e cola, e depois leva o pedido e o comprovante para o WhatsApp.
-  window.abrirPagamento = function ({ msg, codigo, valor, forma }) {
-    const temPix = forma !== "Cartão" && Boolean(window.PIX_CONFIG && window.PixBR && typeof qrcode !== "undefined");
+  // Pagamento na hora: depois de montar o pedido, cobra o sinal de 50% antes do WhatsApp.
+  // Com o Mercado Pago ligado, a cliente paga lá (Pix ou cartão) e volta para pagar.html,
+  // que manda o pedido no WhatsApp. Sem ele, mostra o QR Code do Pix da dona.
+  window.abrirPagamento = function ({ msg, codigo, valor, pedido, salvamento }) {
     const temMp = Boolean(window.MP_ATIVO);
+    const temPix = !temMp && Boolean(window.PIX_CONFIG && window.PixBR && typeof qrcode !== "undefined");
     if (!valor || (!temPix && !temMp)) return false;
     let dlg = document.getElementById("dlg-pix");
     if (!dlg) {
@@ -172,25 +174,23 @@
       css.textContent = `
         #dlg-pix { border: 0; padding: 0; border-radius: 22px; width: min(440px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); background: var(--papel); color: var(--cacau); box-shadow: 0 24px 70px rgba(75,53,38,.35); }
         #dlg-pix::backdrop { background: rgba(75,53,38,.4); }
+        #dlg-pix [hidden] { display: none !important; }
         #dlg-pix .pix-corpo { padding: 22px 20px 20px; display: grid; gap: 14px; text-align: center; }
         #dlg-pix h3 { font-size: 30px; }
         #dlg-pix .pix-sub { font-size: 15px; color: var(--cacau-suave); }
-        #dlg-pix .pix-opcoes { display: flex; gap: 6px; justify-content: center; }
-        #dlg-pix .pix-opcao { border: 1px solid var(--linha); background: var(--papel); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; color: var(--cacau-suave); cursor: pointer; }
-        #dlg-pix .pix-opcao[aria-pressed="true"] { border-color: var(--ouro); background: var(--creme-2); color: var(--cacau); }
-        #dlg-pix .pix-valor { font: 500 40px/1 var(--display); }
+        #dlg-pix .pix-conta { display: grid; gap: 6px; text-align: left; font-size: 15px; background: var(--creme); border-radius: 14px; padding: 14px 16px; }
+        #dlg-pix .pix-conta div { display: flex; justify-content: space-between; gap: 10px; }
+        #dlg-pix .pix-conta .agora { font-weight: 500; color: var(--cacau); font-size: 17px; border-top: 1px dashed var(--linha); padding-top: 8px; margin-top: 2px; }
+        #dlg-pix .pix-conta span { color: var(--cacau-suave); }
         #dlg-pix .pix-qr { width: min(230px, 70vw); margin: 0 auto; background: #fff; border-radius: 12px; padding: 4px; }
         #dlg-pix .pix-qr svg { display: block; width: 100%; height: auto; }
         #dlg-pix textarea { width: 100%; height: 60px; resize: none; font: 12px/1.4 ui-monospace, monospace; padding: 8px 10px; border: 1px solid var(--linha); border-radius: 10px; background: #fff; color: var(--cacau); }
         #dlg-pix .pix-acoes { display: grid; gap: 8px; }
-        #dlg-pix .pix-fechar { position: absolute; right: 10px; top: 10px; border: 0; background: none; font-size: 22px; color: var(--cacau-suave); cursor: pointer; padding: 6px 10px; }
-        #dlg-pix [hidden] { display: none !important; }
-        #dlg-pix .mp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 999px; padding: 15px 20px; background: #009EE3; color: #fff; font: 500 15px/1.2 var(--texto); cursor: pointer; }
+        #dlg-pix .mp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 999px; padding: 16px 20px; background: #009EE3; color: #fff; font: 500 16px/1.2 var(--texto); cursor: pointer; }
         #dlg-pix .mp-btn:hover { background: #007EB5; }
         #dlg-pix .mp-btn:disabled { opacity: .7; cursor: wait; }
-        #dlg-pix .ou { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cacau-suave); }
-        #dlg-pix .ou::before, #dlg-pix .ou::after { content: ""; flex: 1; border-top: 1px solid var(--linha); }
         #dlg-pix .pix-erro { color: #A4453A; font-size: 14px; }
+        #dlg-pix .pix-fechar { position: absolute; right: 10px; top: 10px; border: 0; background: none; font-size: 22px; color: var(--cacau-suave); cursor: pointer; padding: 6px 10px; }
         #dlg-pix .pix-link { background: none; border: 0; color: var(--cacau-suave); text-decoration: underline; font: inherit; font-size: 14px; cursor: pointer; }`;
       document.head.appendChild(css);
       dlg = document.createElement("dialog");
@@ -200,28 +200,25 @@
         <button class="pix-fechar" type="button" aria-label="Fechar">✕</button>
         <div class="pix-corpo">
           <h3 id="pix-titulo">Reserve a sua data</h3>
-          <p class="pix-sub">Pague o sinal pelo Pix e depois envie o pedido com o comprovante pelo WhatsApp.</p>
-          <div class="pix-opcoes" role="group" aria-label="O que pagar">
-            <button class="pix-opcao" type="button" data-tipo="sinal">Sinal (50%)</button>
-            <button class="pix-opcao" type="button" data-tipo="total">Valor total</button>
+          <p class="pix-sub" id="pix-sub"></p>
+          <div class="pix-conta">
+            <div><span>Total do pedido</span><b id="pix-total"></b></div>
+            <div><span>Na entrega</span><b id="pix-resto"></b></div>
+            <div class="agora"><span>Sinal agora (50%)</span><b id="pix-sinal"></b></div>
           </div>
-          <div><p class="pix-sub" id="pix-rotulo"></p><div class="pix-valor" id="pix-valor"></div></div>
           <div class="pix-acoes" id="mp-area">
-            <button class="mp-btn" type="button" id="mp-pagar">Pagar com Mercado Pago</button>
-            <p class="pix-sub" style="font-size:13px" id="mp-sub">Pix, cartão de crédito ou débito. O pedido é confirmado assim que o pagamento cair.</p>
+            <button class="mp-btn" type="button" id="mp-pagar">Pagar o sinal</button>
+            <p class="pix-sub" style="font-size:13px">Pix, cartão de crédito ou débito, pelo Mercado Pago. Depois do pagamento, você volta para cá e envia o pedido no WhatsApp.</p>
             <p class="pix-erro" id="mp-erro" role="alert" hidden></p>
           </div>
-          <p class="ou" id="pix-ou">ou pague com o Pix direto</p>
           <div class="pix-acoes" id="pix-area">
             <div class="pix-qr" id="pix-qr" role="img" aria-label="QR Code do Pix"></div>
             <textarea id="pix-copia" readonly aria-label="Pix copia e cola"></textarea>
             <button class="btn contorno" type="button" id="pix-copiar">Copiar código Pix</button>
-            <button class="btn" type="button" id="pix-enviar">Já paguei, enviar comprovante</button>
+            <button class="btn" type="button" id="pix-enviar">Já paguei, enviar pelo WhatsApp</button>
           </div>
-          <div class="pix-acoes">
-            <button class="pix-link" type="button" id="pix-depois">Prefiro combinar o pagamento pelo WhatsApp</button>
-          </div>
-          <p class="pix-sub" style="font-size:13px">Valor dos docinhos. Se tiver entrega, o frete é combinado no WhatsApp.</p>
+          <button class="pix-link" type="button" id="pix-depois" hidden>Combinar o pagamento pelo WhatsApp</button>
+          <p class="pix-sub" style="font-size:13px">Se tiver entrega, o frete é combinado no WhatsApp.</p>
         </div>`;
       document.body.appendChild(dlg);
       dlg.querySelector(".pix-fechar").addEventListener("click", () => dlg.close());
@@ -229,59 +226,53 @@
     }
     const $d = (id) => dlg.querySelector("#" + id);
     const brlPix = (v) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    const sinal = Math.round(valor * 50) / 100;
-    const opcoes = { sinal: { valor: sinal, rotulo: "Sinal de 50% para reservar a data" }, total: { valor, rotulo: "Valor total dos docinhos" } };
-    let escolhido = "sinal";
-    const mostrar = (tipo) => {
-      escolhido = tipo;
-      const o = opcoes[tipo];
-      $d("pix-rotulo").textContent = o.rotulo;
-      $d("pix-valor").textContent = brlPix(o.valor);
-      if (temPix) {
-        const codigoPix = PixBR.copiaECola(Object.assign({ valor: o.valor, txid: codigo }, window.PIX_CONFIG));
-        $d("pix-qr").innerHTML = PixBR.qrSvg(codigoPix);
-        $d("pix-copia").value = codigoPix;
-      }
-      dlg.querySelectorAll(".pix-opcao").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tipo === tipo)));
-    };
+    const sinal = Math.round(valor * 50) / 100, resto = Math.round((valor - sinal) * 100) / 100;
+    $d("pix-total").textContent = brlPix(valor);
+    $d("pix-resto").textContent = brlPix(resto);
+    $d("pix-sinal").textContent = brlPix(sinal);
+    $d("mp-area").hidden = !temMp;
+    $d("pix-area").hidden = !temPix;
+    $d("pix-depois").hidden = true;
+    $d("mp-erro").hidden = true;
+    $d("pix-sub").textContent = temMp
+      ? "Pague 50% agora para garantir a data. O restante você paga na entrega."
+      : "Pague 50% pelo Pix para garantir a data e depois envie o pedido com o comprovante no WhatsApp.";
     const irZap = (texto) => {
       const a = document.createElement("a");
       a.href = zapLink(texto); a.target = "_blank"; a.rel = "noopener";
       document.body.appendChild(a); a.click(); a.remove();
       dlg.close();
     };
-    dlg.querySelectorAll(".pix-opcao").forEach(b => b.onclick = () => mostrar(b.dataset.tipo));
-    $d("pix-copiar").onclick = async () => {
-      try { await navigator.clipboard.writeText($d("pix-copia").value); } catch { $d("pix-copia").select(); document.execCommand("copy"); }
-      $d("pix-copiar").textContent = "Código copiado!";
-      setTimeout(() => $d("pix-copiar").textContent = "Copiar código Pix", 2500);
-    };
-    $d("pix-enviar").onclick = () => {
-      if (typeof medir === "function") medir("pix_pago", { tipo: escolhido });
-      irZap(msg + "\nPaguei " + (escolhido === "sinal" ? "o sinal" : "o total") + " de " + brlPix(opcoes[escolhido].valor) + " pelo Pix. Vou mandar o comprovante aqui.");
-    };
     $d("pix-depois").onclick = () => irZap(msg);
-    $d("mp-area").hidden = !temMp;
-    $d("pix-area").hidden = !temPix;
-    $d("pix-ou").hidden = !(temMp && temPix);
-    $d("mp-erro").hidden = true;
-    $d("pix-titulo").textContent = "Reserve a sua data";
-    dlg.querySelector(".pix-sub").textContent = temMp
-      ? "Pague o sinal (ou o total) agora. Depois do pagamento, você volta para o site e envia o pedido pelo WhatsApp."
-      : "Pague o sinal pelo Pix e depois envie o pedido com o comprovante pelo WhatsApp.";
+    if (temPix) {
+      const codigoPix = PixBR.copiaECola(Object.assign({ valor: sinal, txid: codigo }, window.PIX_CONFIG));
+      $d("pix-qr").innerHTML = PixBR.qrSvg(codigoPix);
+      $d("pix-copia").value = codigoPix;
+      $d("pix-copiar").onclick = async () => {
+        try { await navigator.clipboard.writeText($d("pix-copia").value); } catch { $d("pix-copia").select(); document.execCommand("copy"); }
+        $d("pix-copiar").textContent = "Código copiado!";
+        setTimeout(() => $d("pix-copiar").textContent = "Copiar código Pix", 2500);
+      };
+      $d("pix-enviar").onclick = () => {
+        if (typeof medir === "function") medir("pix_pago", { tipo: "sinal" });
+        irZap(msg + "\n✅ Sinal de 50% pago pelo Pix: " + brlPix(sinal) + "\n⏳ Restante na entrega: " + brlPix(resto) + "\nSegue o comprovante do pagamento 👇");
+      };
+    }
     const mpBtn = $d("mp-pagar");
-    mpBtn.disabled = false; mpBtn.textContent = "Pagar com Mercado Pago";
+    mpBtn.disabled = false; mpBtn.textContent = "Pagar o sinal de " + brlPix(sinal);
     mpBtn.onclick = async () => {
-      mpBtn.disabled = true; mpBtn.textContent = "Abrindo o Mercado Pago...";
-      if (typeof medir === "function") medir("mercadopago", { tipo: escolhido });
-      try { await window.pagarMercadoPago(codigo, escolhido, msg); }
-      catch (e) {
-        mpBtn.disabled = false; mpBtn.textContent = "Pagar com Mercado Pago";
-        $d("mp-erro").textContent = "Não foi possível abrir o Mercado Pago agora. Tente de novo ou combine pelo WhatsApp.";
+      mpBtn.disabled = true; mpBtn.textContent = "Abrindo o pagamento...";
+      if (typeof medir === "function") medir("mercadopago", { tipo: "sinal" });
+      try {
+        if (salvamento) await salvamento;
+        await window.pagarMercadoPago(codigo, pedido);
+      } catch (e) {
+        mpBtn.disabled = false; mpBtn.textContent = "Pagar o sinal de " + brlPix(sinal);
+        $d("mp-erro").textContent = "Não foi possível abrir o pagamento agora. Tente de novo ou combine pelo WhatsApp.";
         $d("mp-erro").hidden = false;
+        $d("pix-depois").hidden = false;
       }
     };
-    mostrar("sinal");
     dlg.showModal();
     return true;
   };

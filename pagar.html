@@ -40,6 +40,15 @@
   .ou { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--cacau-suave); }
   .ou::before, .ou::after { content: ""; flex: 1; border-top: 1px solid var(--linha); }
   .erro { color: #A4453A; font-size: 14px; }
+  .checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; text-align: left; }
+  .checklist li { display: flex; gap: 10px; align-items: center; font-size: 16px; }
+  .checklist .ok { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 13px; flex: none; }
+  .comprovante { display: grid; gap: 12px; background: var(--creme); border-radius: 14px; padding: 16px; text-align: left; }
+  .comp-topo { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--cacau-suave); }
+  .comp-topo b { color: var(--cacau); font-size: 16px; }
+  .linhas .pago b { color: var(--ok); }
+  .zap-btn { background: #25D366; color: #fff; }
+  .zap-btn:hover { background: #1DA851; }
   .passos { text-align: left; font-size: 14px; color: var(--cacau-suave); margin: 0; padding-left: 20px; }
 </style>
 </head>
@@ -83,7 +92,6 @@
   <div id="mensagem" hidden style="display:grid;gap:16px">
     <h1 id="msg-titulo"></h1>
     <p id="msg-texto"></p>
-    <a class="btn" id="msg-zap" target="_blank" rel="noopener" hidden>Enviar o pedido no WhatsApp</a>
     <a class="btn contorno" href="./">Ver o site</a>
   </div>
 </main>
@@ -101,24 +109,77 @@
 
   if (!codigo || !cfg.url) return aviso("Link incompleto", "Peça um novo link de pagamento pelo WhatsApp.");
 
-  // Volta do Mercado Pago: mostra o resultado e oferece mandar o pedido no WhatsApp.
-  const retorno = new URLSearchParams(location.search).get("mp");
-  if (retorno) {
-    let msg = "";
-    try { msg = sessionStorage.getItem("sg-msg-" + codigo) || ""; } catch {}
-    const textos = {
-      ok: ["Pagamento aprovado!", "Recebemos o seu pagamento do pedido #" + codigo + ". Agora é só mandar o pedido no WhatsApp para a gente combinar os detalhes.", "Paguei pelo Mercado Pago (pagamento aprovado)."],
-      pendente: ["Pagamento em análise", "O Mercado Pago ainda está confirmando o pagamento do pedido #" + codigo + ". Assim que cair, o pedido é confirmado. Mande o pedido no WhatsApp enquanto isso.", "Fiz o pagamento pelo Mercado Pago e está em análise."],
-      falhou: ["O pagamento não foi concluído", "Nada foi cobrado. Você pode tentar de novo ou combinar o pagamento pelo WhatsApp.", "Tentei pagar pelo Mercado Pago e não deu certo."]
-    }[retorno] || null;
-    if (textos) {
-      aviso(textos[0], textos[1]);
-      const z = $("msg-zap");
-      z.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent((msg || "Olá, Sweet Grace! Pedido #" + codigo + ".") + "\n" + textos[2]);
-      z.hidden = false;
-      if (retorno === "falhou") { const t = document.createElement("a"); t.className = "btn contorno"; t.href = location.pathname + "?pedido=" + codigo; t.textContent = "Tentar de novo"; z.after(t); }
+  // Volta do Mercado Pago: mostra o pedido em forma de checklist, serve de comprovante
+  // (dá para tirar print) e leva o pedido pronto para o WhatsApp.
+  const params = new URLSearchParams(location.search);
+  const retorno = params.get("mp");
+  if (retorno && cfg.url) {
+    const cabR = { apikey: cfg.chave, Authorization: "Bearer " + cfg.chave };
+    let local = null;
+    try { local = JSON.parse(sessionStorage.getItem("sg-pedido-" + codigo) || "null"); } catch {}
+    const lerResumo = () => fetch(cfg.url + "/functions/v1/mercadopago?resumo=" + codigo, { headers: cabR }).then(r => r.ok ? r.json() : null).catch(() => null);
+    let r = await lerResumo();
+    // O aviso do Mercado Pago pode chegar uns segundos depois da volta.
+    for (let i = 0; retorno === "ok" && r && !r.sinal_pago && i < 4; i++) { await new Promise(ok => setTimeout(ok, 2000)); r = await lerResumo() || r; }
+    if (!r && !local) return aviso("Pedido #" + codigo, "Mande o número do pedido e o comprovante pelo WhatsApp: (91) 98561-4644.");
+    const itens = (r && r.itens && r.itens.length ? r.itens : (local && local.itens) || []);
+    const total = r ? Number(r.total) : Number(local.valor);
+    const sinal = r ? Number(r.sinal) : Math.round(total * 50) / 100;
+    const restante = r ? Number(r.restante) : Math.round((total - sinal) * 100) / 100;
+    const docinhos = r ? r.total_docinhos : local.total;
+    const dataFesta = (r && r.data_festa) || (local && local.data) || "";
+    const idPag = params.get("payment_id") || params.get("collection_id") || "";
+    const pago = retorno === "ok";
+    const brlS = brl;
+
+    $("carregando").hidden = true;
+    const caixa = $("caixa");
+    caixa.replaceChildren();
+    const novo = (tag, props, ...filhos) => { const e = document.createElement(tag); Object.assign(e, props || {}); e.append(...filhos); return e; };
+    caixa.append(novo("img", { className: "logo", src: "assets/logo.jpeg", alt: "Sweet Grace" }));
+    const titulos = { ok: "Pagamento aprovado!", pendente: "Pagamento em processamento", falhou: "O pagamento não foi concluído" };
+    caixa.append(novo("h1", null, titulos[retorno] || "Pedido #" + codigo));
+    if (retorno === "falhou") {
+      caixa.append(novo("p", null, "Nada foi cobrado. Tente de novo ou fale com a gente no WhatsApp."),
+        novo("a", { className: "btn", href: location.pathname + "?pedido=" + codigo }, "Tentar pagar de novo"),
+        novo("a", { className: "btn contorno", href: "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent("Olá, Sweet Grace! Tentei pagar o sinal do pedido #" + codigo + " pelo site e não deu certo."), target: "_blank", rel: "noopener" }, "Falar no WhatsApp"));
       return;
     }
+    caixa.append(novo("p", null, pago ? "Sua data está reservada. Falta só um passo: enviar o pedido e o comprovante no WhatsApp." : "O Mercado Pago ainda está confirmando o pagamento. Envie o pedido no WhatsApp enquanto isso."));
+
+    const lista = novo("ul", { className: "checklist" });
+    itens.forEach(i => lista.append(novo("li", null, novo("span", { className: "ok", ariaHidden: "true" }, "✓"), i.qtd + " " + i.nome)));
+    const comp = novo("div", { className: "comprovante" },
+      novo("div", { className: "comp-topo" }, novo("b", null, "Pedido #" + codigo), novo("span", null, new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }))),
+      lista);
+    const linhas = novo("div", { className: "linhas" });
+    const linha = (a, b, cls) => linhas.append(novo("div", { className: cls || "" }, novo("span", null, a), novo("b", null, b)));
+    linha("Total (" + docinhos + " docinhos)", brlS(total));
+    if (dataFesta) linha("Data da festa", dataFesta.split("-").reverse().join("/"));
+    linha(pago ? "Sinal pago (50%)" : "Sinal (50%) em processamento", brlS(sinal), pago ? "pago" : "");
+    linha("Restante na entrega", brlS(restante));
+    if (idPag) linha("Pagamento Mercado Pago", "nº " + idPag);
+    comp.append(linhas);
+    caixa.append(comp);
+
+    let msg = "Olá, Sweet Grace! Fiz meu pedido pelo site 💕\nPedido #" + codigo;
+    if (local && local.nome) msg += "\nNome: " + local.nome;
+    msg += "\n\n" + itens.map(i => "✅ " + i.qtd + " " + i.nome).join("\n");
+    msg += "\n\nTotal: " + docinhos + " docinhos · " + brlS(total);
+    if (dataFesta) msg += "\nData da festa: " + dataFesta.split("-").reverse().join("/");
+    if (local && local.obs) msg += "\nObservações: " + local.obs;
+    msg += pago ? "\n\n✅ Sinal de 50% pago pelo site: " + brlS(sinal) : "\n\n⏳ Sinal de 50% (" + brlS(sinal) + ") em processamento no Mercado Pago";
+    if (idPag) msg += " (pagamento nº " + idPag + ")";
+    msg += "\n⏳ Restante na entrega: " + brlS(restante);
+    msg += "\n\nSegue o comprovante do pagamento 👇";
+
+    caixa.append(
+      novo("ol", { className: "passos" },
+        novo("li", null, "Tire um print desta tela (ou use o comprovante que o Mercado Pago mandou no seu e-mail)."),
+        novo("li", null, "Toque no botão abaixo. A mensagem já vai pronta com o pedido."),
+        novo("li", null, "Na conversa, anexe o comprovante e envie.")),
+      novo("a", { className: "btn zap-btn", href: "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg), target: "_blank", rel: "noopener" }, "Enviar pedido e comprovante no WhatsApp"));
+    return;
   }
 
   const cab = { apikey: cfg.chave, Authorization: "Bearer " + cfg.chave, "Content-Type": "application/json" };
@@ -160,11 +221,11 @@
 
   const total = Number(pedido.total), sinal = Number(pedido.sinal);
   const restante = Math.round((total - sinal) * 100) / 100;
-  // Com o sinal pago, só sobra o restante. Sem o sinal, a cliente escolhe entre sinal e total.
+  // Primeiro o sinal de 50%; com ele pago, o link cobra o restante (na entrega).
   const opcoes = pedido.sinal_pago
     ? { restante: { valor: restante, rotulo: "Valor que falta pagar" } }
-    : { sinal: { valor: sinal, rotulo: "Valor do sinal (50%)" }, total: { valor: total, rotulo: "Valor total do pedido" } };
-  if (pedido.sinal_pago) $("opcoes").hidden = true;
+    : { sinal: { valor: sinal, rotulo: "Sinal de 50% para reservar a data" } };
+  $("opcoes").hidden = true;
 
   function mostrar(tipo) {
     const o = opcoes[tipo];

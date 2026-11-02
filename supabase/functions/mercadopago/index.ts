@@ -1,6 +1,7 @@
 // Sweet Grace: pagamento pelo Mercado Pago (Pix e cartão) direto do site.
 //
 // GET                         -> { ativo }   o site só mostra o botão quando a conta está ligada
+// GET ?resumo=CODIGO          -> resumo do pedido para a tela de volta e a mensagem do WhatsApp
 // POST { codigo, tipo }       -> { url }     cria o checkout do pedido (tipo: "sinal" ou "total")
 // POST ?aviso=1               -> aviso do Mercado Pago; marca o pedido como pago
 //
@@ -31,10 +32,11 @@ const banco = (caminho: string, init: RequestInit = {}) =>
 type Pedido = {
   id: string; codigo: string; cliente_nome: string | null; status: string; valor: number; frete: number;
   sinal_pago: boolean; restante_pago: boolean; anotacoes: string | null; total_docinhos: number;
+  itens: { nome: string; qtd: number }[] | null; data_festa: string | null;
 };
 
 async function lerPedido(codigo: string): Promise<Pedido | null> {
-  const r = await banco("pedidos?select=id,codigo,cliente_nome,status,valor,frete,sinal_pago,restante_pago,anotacoes,total_docinhos&codigo=eq." + encodeURIComponent(codigo));
+  const r = await banco("pedidos?select=id,codigo,cliente_nome,status,valor,frete,sinal_pago,restante_pago,anotacoes,total_docinhos,itens,data_festa&codigo=eq." + encodeURIComponent(codigo));
   if (!r.ok) throw new Error("banco " + r.status);
   return (await r.json())[0] || null;
 }
@@ -49,6 +51,20 @@ function cobranca(p: Pedido, tipo: string) {
   if (p.sinal_pago) return { tipo: "restante", valor: centavos(total - sinal), rotulo: "restante" };
   if (tipo === "total") return { tipo: "total", valor: total, rotulo: "valor total" };
   return { tipo: "sinal", valor: sinal, rotulo: "sinal de 50%" };
+}
+
+// Só o que a cliente já sabe do próprio pedido: sem nome, telefone nem anotações.
+async function resumo(codigoBruto: string) {
+  const codigo = codigoBruto.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+  const p = codigo && await lerPedido(codigo);
+  if (!p) return json({ erro: "pedido nao encontrado" }, 404);
+  const total = centavos(Number(p.valor || 0) + Number(p.frete || 0));
+  const sinal = centavos(total / 2);
+  return json({
+    codigo, itens: (p.itens || []).map(i => ({ nome: i.nome, qtd: i.qtd })), total_docinhos: p.total_docinhos,
+    total, sinal, restante: centavos(total - sinal), data_festa: p.data_festa,
+    sinal_pago: p.sinal_pago, restante_pago: p.restante_pago, cancelado: p.status === "cancelado",
+  });
 }
 
 async function criarCheckout(req: Request) {
@@ -136,7 +152,10 @@ async function receberAviso(req: Request) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   try {
-    if (req.method === "GET") return json({ ativo: Boolean(TOKEN) });
+    if (req.method === "GET") {
+      const r = new URL(req.url).searchParams.get("resumo");
+      return r ? await resumo(r) : json({ ativo: Boolean(TOKEN) });
+    }
     if (req.method !== "POST") return json({ erro: "metodo" }, 405);
     if (new URL(req.url).searchParams.has("aviso")) return await receberAviso(req);
     if (!TOKEN) return json({ erro: "mercado pago desligado" }, 503);
