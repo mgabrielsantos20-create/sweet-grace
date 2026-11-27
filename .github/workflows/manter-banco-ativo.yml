@@ -20,3 +20,8 @@ jobs:
             curl -fsS "$URL/rest/v1/$TABELA?select=*&limit=1" -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
             echo
           done
+
+      - name: Acordar também o banco do Painel do Gabriel
+        run: |
+          curl -fsS -X POST "https://nnasuwrrjosxqotztdqn.supabase.co/rest/v1/rpc/painel_ping" \
+            -H "apikey: sb_publishable__Vq-OjJ12CYmI0EqAPCvPA_uTaUNtii" -H "Content-Type: application/json" -d '{}'
