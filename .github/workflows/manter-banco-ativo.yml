@@ -1,10 +1,11 @@
 # O Supabase grátis pausa o banco depois de uns dias sem uso.
-# Esta tarefa lê o cardápio a cada 3 dias para o banco continuar ligado.
+# Esta tarefa lê o banco 3 vezes por dia para ele continuar ligado
+# (desde 27/11/2026 o projeto está na organização grátis "Painel pessoal").
 name: Manter o banco ativo
 
 on:
   schedule:
-    - cron: "17 12 * * *"
+    - cron: "17 2,10,18 * * *"
   workflow_dispatch:
 
 jobs:
@@ -15,4 +16,12 @@ jobs:
         run: |
           URL="https://trlfspcbboqafosfdmoq.supabase.co"
           CHAVE="sb_publishable_boN8Ssyncz85x1XwjzH2kQ_EcVoHMir"
-          curl -fsS "$URL/rest/v1/sabores?select=id&limit=1" -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
+          for TABELA in sabores textos config; do
+            curl -fsS "$URL/rest/v1/$TABELA?select=*&limit=1" -H "apikey: $CHAVE" -H "Authorization: Bearer $CHAVE"
+            echo
+          done
+
+      - name: Acordar também o banco do Painel do Gabriel
+        run: |
+          curl -fsS -X POST "https://nnasuwrrjosxqotztdqn.supabase.co/rest/v1/rpc/painel_ping" \
+            -H "apikey: sb_publishable__Vq-OjJ12CYmI0EqAPCvPA_uTaUNtii" -H "Content-Type: application/json" -d '{}'
